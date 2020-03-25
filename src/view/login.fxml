@@ -1,25 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/8" >
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.Login">
    <children>
-         <Label layoutX="122.0" layoutY="81.0" text="Username">
-            <font>
-               <Font size="14.0" />
-            </font>
-         </Label>
-         <Label layoutX="123.0" layoutY="142.0" text="Password">
-            <font>
-               <Font size="14.0" />
-            </font>
-         </Label>
-         <TextField layoutX="229.0" layoutY="78.0" />
-         <TextField layoutX="229.0" layoutY="139.0" />
-         <Button layoutX="154.0" layoutY="215.0" minWidth="100.0" mnemonicParsing="false" text="Log in" />
-         <Button layoutX="262.0" layoutY="215.0" minWidth="100.0" mnemonicParsing="false" text="Exit" />
+         <TextField fx:id="userTextField" layoutX="130.0" layoutY="73.0" promptText="Username" />
+         <TextField fx:id="passTextField" layoutX="130.0" layoutY="134.0" promptText="Password" />
+         <Button fx:id="loginBtn" layoutX="66.0" layoutY="205.0" minWidth="120.0" mnemonicParsing="false" onAction="#clickLogin" style="-fx-background-radius: 15; -fx-border-radius: 10;" text="Log in" textFill="#616060" />
+         <Button fx:id="exitBtn" layoutX="215.0" layoutY="205.0" minWidth="120.0" mnemonicParsing="false" onAction="#clickExit" style="-fx-background-radius: 15; -fx-border-radius: 10;" text="Exit" textFill="#616060" />
    </children>
 </AnchorPane>
