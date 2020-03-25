@@ -10,6 +10,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import utils.DBConnection;
 
 import java.util.Locale;
 import java.util.Optional;
@@ -22,7 +23,7 @@ public class App extends Application {
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("../view/login.fxml"));
 
-        ResourceBundle resourceBundle = getResourceBundle();
+        ResourceBundle resourceBundle = App.getResourceBundle();
         loader.setResources(resourceBundle);
         Parent root = loader.load();
 
@@ -34,7 +35,9 @@ public class App extends Application {
     }
 
     public static void main(String[] args) {
+        DBConnection.startConnection();
         launch(args);
+        DBConnection.closeConnection();
     }
 
 
@@ -55,8 +58,7 @@ public class App extends Application {
 
     static ResourceBundle getResourceBundle(){
 
-        // 1. Check for current locale
-        Locale loc = Locale.getDefault();
+        Locale loc = Locale.getDefault();// 1. Check for current locale
 
         // 2. Get appropriate Resource Bundle
         if(!loc.toLanguageTag().equals("en-US")){ // if locale is NOT english (default)
