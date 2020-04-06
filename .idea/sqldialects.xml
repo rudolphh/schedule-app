@@ -2,5 +2,7 @@
 <project version="4">
   <component name="SqlDialectMappings">
     <file url="file://$PROJECT_DIR$/src/controller/Login.java" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/src/dao/file/UserFileDao.java" dialect="GenericSQL" />
+    <file url="PROJECT" dialect="MySQL" />
   </component>
 </project>

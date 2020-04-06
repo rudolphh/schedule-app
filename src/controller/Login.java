@@ -1,5 +1,9 @@
 package controller;
 
+
+import dao.file.UserFileDao;
+import dao.mysql.CustomerMysqlDao;
+import dao.mysql.UserMysqlDao;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -7,18 +11,25 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
-import utils.DBConnection;
 
-import javax.xml.transform.Result;
+import model.Customer;
+import model.User;
+import utils.DBConnection;
+import utils.TimeZoning;
+
+import java.io.IOException;
 import java.net.URL;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.TimeZone;
 
 public class Login implements Initializable {
 
@@ -39,7 +50,11 @@ public class Login implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
-        // jdbc:mysql://3.227.166.251/U04WIA
+//        UserFileDao userFileDao = new UserFileDao();
+//        userFileDao.create(new User(4, "noah", "blah", 0));
+
+        Customer myCustomer = CustomerMysqlDao.findCustomer(1).get();
+        System.out.println(myCustomer.getCustomerName());
 
         rb = resources;
         userTextField.setPromptText(rb.getString("username"));
@@ -65,9 +80,10 @@ public class Login implements Initializable {
 
             Stage newWindow = new Stage();
             //newWindow.initModality(Modality.APPLICATION_MODAL);
-            newWindow.setTitle("Main window");
+            newWindow.setTitle("Customer Scheduling - Main");
             newWindow.setMinHeight(500);
             newWindow.setMinWidth(996);
+            newWindow.setResizable(false);
             newWindow.setScene(new Scene(theParent));
 
             //controller.initScreenLabel(screenLabel);
@@ -81,26 +97,20 @@ public class Login implements Initializable {
 
     public void clickLogin(ActionEvent actionEvent) {
 
-        Connection conn = DBConnection.startConnection();
         String user = userTextField.getText();
         String pass = passTextField.getText();
 
-        try{
-            Statement statement = conn.createStatement();
-            String sql = "Select * FROM user WHERE userName='" + user + "' AND password='" + pass + "';";
-            ResultSet resultSet = statement.executeQuery(sql);
+        Optional<User> searchedUser = UserMysqlDao.findUser(user, pass);
 
-            if(resultSet.next()){
-                loadMainScreen();
-                App.closeThisWindow(actionEvent);
-            } else {
-                App.dialog(Alert.AlertType.INFORMATION, rb.getString("loginFailTitle"),
-                        rb.getString("loginFailHeader"),
-                        rb.getString("loginFailContent"));
-            }
-
-        } catch (SQLException e){
-            System.out.println("Error: " + e.getMessage());
+        if(searchedUser.isPresent()){
+            // log the user to text file
+            UserFileDao.logUser(searchedUser.get());
+            loadMainScreen();
+            App.closeThisWindow(actionEvent);
+        } else {
+            App.dialog(Alert.AlertType.INFORMATION, rb.getString("loginFailTitle"),
+                    rb.getString("loginFailHeader"),
+                    rb.getString("loginFailContent"));
         }
     }
 
@@ -115,3 +125,18 @@ public class Login implements Initializable {
 
 
 }
+
+
+
+//    Instant instant = Instant.now();
+//    OffsetDateTime now = OffsetDateTime.now();
+//
+//    DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//            df.setTimeZone(TimeZone.getTimeZone("UTC"));
+//
+//                    df.format(Timestamp.from(instant));
+//                    System.out.println("UTC Zulu : "+instant.toString());
+//                    System.out.println("UTC Zulu : "+df.format(Timestamp.from(instant)).toString());
+//                    System.out.println("UTC Local : "+Timestamp.from(instant).toString());
+//
+//                    System.out.println("Modesto : "+now.toString());
