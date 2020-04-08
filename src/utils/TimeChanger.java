@@ -6,7 +6,7 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 
-public class TimeZoning {
+public class TimeChanger {
 
     private static final ZoneId utc = ZoneId.of("UTC");
     private static final ZoneId local = ZoneId.systemDefault();

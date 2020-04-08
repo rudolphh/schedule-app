@@ -15,21 +15,10 @@ import javafx.stage.Stage;
 
 import model.Customer;
 import model.User;
-import utils.DBConnection;
-import utils.TimeZoning;
 
-import java.io.IOException;
 import java.net.URL;
-import java.sql.*;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 import java.util.Optional;
 import java.util.ResourceBundle;
-import java.util.TimeZone;
 
 public class Login implements Initializable {
 
