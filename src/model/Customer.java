@@ -3,6 +3,9 @@ package model;
 public class Customer {
 
     private int customerId;
+    private int addressId;
+    private int cityId;
+    private int countryId;
     private String customerName;
     private String address;
     private String address2;
@@ -12,9 +15,12 @@ public class Customer {
     private String phone;
     private int active;
 
-    public Customer(int customerId, String customerName, String address, String address2, String city,
-                    String country, String postalCode, String phone, int active) {
+    public Customer(int customerId, int addressId, int cityId, int countryId, String customerName, String address,
+                    String address2, String city, String country, String postalCode, String phone, int active) {
         this.customerId = customerId;
+        this.addressId = addressId;
+        this.cityId = cityId;
+        this.countryId = countryId;
         this.customerName = customerName;
         this.address = address;
         this.address2 = address2;
@@ -31,6 +37,30 @@ public class Customer {
 
     public void setCustomerId(int customerId) {
         this.customerId = customerId;
+    }
+
+    public int getAddressId() {
+        return addressId;
+    }
+
+    public void setAddressId(int addressId) {
+        this.addressId = addressId;
+    }
+
+    public int getCityId() {
+        return cityId;
+    }
+
+    public void setCityId(int cityId) {
+        this.cityId = cityId;
+    }
+
+    public int getCountryId() {
+        return countryId;
+    }
+
+    public void setCountryId(int countryId) {
+        this.countryId = countryId;
     }
 
     public String getCustomerName() {

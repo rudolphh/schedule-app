@@ -115,17 +115,3 @@ public class Login implements Initializable {
 
 }
 
-
-
-//    Instant instant = Instant.now();
-//    OffsetDateTime now = OffsetDateTime.now();
-//
-//    DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-//            df.setTimeZone(TimeZone.getTimeZone("UTC"));
-//
-//                    df.format(Timestamp.from(instant));
-//                    System.out.println("UTC Zulu : "+instant.toString());
-//                    System.out.println("UTC Zulu : "+df.format(Timestamp.from(instant)).toString());
-//                    System.out.println("UTC Local : "+Timestamp.from(instant).toString());
-//
-//                    System.out.println("Modesto : "+now.toString());

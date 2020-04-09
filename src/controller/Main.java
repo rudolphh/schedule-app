@@ -1,21 +1,22 @@
 package controller;
 
 import dao.mysql.AppointmentMysqlDao;
+import dao.mysql.CustomerMysqlDao;
+import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import model.Appointment;
+import model.Customer;
 
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
 import java.util.ResourceBundle;
 
 
@@ -48,6 +49,19 @@ public class Main implements Initializable {
     @FXML
     private TableColumn<Appointment, String> customerCol;
 
+
+    //////////// Customer TableView
+    @FXML
+    private TableView<Customer> customerTableView;
+
+    @FXML
+    private TableColumn<Customer, String> customerNameCol;
+    @FXML
+    private TableColumn<Customer, String> customerAddressCol;
+    @FXML
+    private TableColumn<Customer, String> customerPhoneCol;
+
+
     //////////// Current date value
     private static final LocalDate currentDate = LocalDate.now();
 
@@ -63,15 +77,30 @@ public class Main implements Initializable {
         fillWeekCombo(currentWeek);
 
         ObservableList<Appointment> appointments = AppointmentMysqlDao.getAllAppointments();
+        ObservableList<Customer> customers = CustomerMysqlDao.getAllCustomers();
 
-        dateCol.setCellValueFactory(new PropertyValueFactory<>("date"));
-        startCol.setCellValueFactory(new PropertyValueFactory<>("start"));
-        endCol.setCellValueFactory(new PropertyValueFactory<>("end"));
+        /////////// appointment table view columns
+
+        // formatting date, start, and end times
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("hh:mm a");
+
+        dateCol.setCellValueFactory(cellData -> new ReadOnlyStringWrapper(cellData.getValue().getStart().format(dateFormatter)));
+        startCol.setCellValueFactory(cellData -> new ReadOnlyStringWrapper(cellData.getValue().getStart().format(timeFormatter)));
+        endCol.setCellValueFactory(cellData -> new ReadOnlyStringWrapper(cellData.getValue().getEnd().format(timeFormatter)));
         typeCol.setCellValueFactory(new PropertyValueFactory<>("type"));
         consultantCol.setCellValueFactory(new PropertyValueFactory<>("userName"));
         customerCol.setCellValueFactory(new PropertyValueFactory<>("customerName"));
 
+        ////////// customer table view columns
+        customerNameCol.setCellValueFactory(new PropertyValueFactory<>("customerName"));
+        customerAddressCol.setCellValueFactory(cellData ->
+            new ReadOnlyStringWrapper(cellData.getValue().getAddress() + " " + cellData.getValue().getCity() + " " + cellData.getValue().getPostalCode() + " " +
+                    cellData.getValue().getCountry()));
+        customerPhoneCol.setCellValueFactory(new PropertyValueFactory<>("phone"));
+
         appointmentTableView.setItems(appointments);
+        customerTableView.setItems(customers);
     }
     //////////////////////////////////
 
