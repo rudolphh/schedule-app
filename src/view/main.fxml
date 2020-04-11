@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
 
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-
-<AnchorPane minHeight="600.0" minWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.Main">
+<AnchorPane minHeight="600.0" minWidth="800.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.Main">
    <children>
       <TabPane layoutX="14.0" layoutY="45.0" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <tabs>
@@ -21,7 +30,7 @@
                                     <ComboBox fx:id="monthCombo" nodeOrientation="LEFT_TO_RIGHT" onAction="#monthComboAction" />
                                     <Separator orientation="VERTICAL" />
                                     <CheckBox fx:id="weekCheckBox" mnemonicParsing="false" onAction="#onCheckWeekBox" text="Week of" />
-                                    <ComboBox fx:id="weekCombo" disable="true" />
+                                    <ComboBox fx:id="weekCombo" disable="true" onAction="#weekComboAction" />
                                     <Region HBox.hgrow="ALWAYS" />
                                     <Button minWidth="150.0" mnemonicParsing="false" text="New Appointment" />
                                  </children>

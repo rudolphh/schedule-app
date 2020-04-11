@@ -76,7 +76,7 @@ public class Main implements Initializable {
         fillMonthCombo();
         fillWeekCombo(currentWeek);
 
-        ObservableList<Appointment> appointments = AppointmentMysqlDao.getAllAppointments();
+        ObservableList<Appointment> appointments = AppointmentMysqlDao.getAllAppointments(currentDate.getMonthValue());
         ObservableList<Customer> customers = CustomerMysqlDao.getAllCustomers();
 
         /////////// appointment table view columns
@@ -85,32 +85,42 @@ public class Main implements Initializable {
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("hh:mm a");
 
-        dateCol.setCellValueFactory(cellData -> new ReadOnlyStringWrapper(cellData.getValue().getStart().format(dateFormatter)));
-        startCol.setCellValueFactory(cellData -> new ReadOnlyStringWrapper(cellData.getValue().getStart().format(timeFormatter)));
-        endCol.setCellValueFactory(cellData -> new ReadOnlyStringWrapper(cellData.getValue().getEnd().format(timeFormatter)));
+        dateCol.setCellValueFactory(cellData ->
+                new ReadOnlyStringWrapper(cellData.getValue().getStart().format(dateFormatter)));
+        startCol.setCellValueFactory(cellData ->
+                new ReadOnlyStringWrapper(cellData.getValue().getStart().format(timeFormatter)));
+        endCol.setCellValueFactory(cellData ->
+                new ReadOnlyStringWrapper(cellData.getValue().getEnd().format(timeFormatter)));
         typeCol.setCellValueFactory(new PropertyValueFactory<>("type"));
         consultantCol.setCellValueFactory(new PropertyValueFactory<>("userName"));
         customerCol.setCellValueFactory(new PropertyValueFactory<>("customerName"));
 
         ////////// customer table view columns
         customerNameCol.setCellValueFactory(new PropertyValueFactory<>("customerName"));
-        customerAddressCol.setCellValueFactory(cellData ->
-            new ReadOnlyStringWrapper(cellData.getValue().getAddress() + " " + cellData.getValue().getCity() + " " + cellData.getValue().getPostalCode() + " " +
-                    cellData.getValue().getCountry()));
+        customerAddressCol.setCellValueFactory(cellData -> new ReadOnlyStringWrapper(
+                cellData.getValue().getAddress() + " " + cellData.getValue().getCity() + " " +
+                        cellData.getValue().getPostalCode() + " " + cellData.getValue().getCountry()));
         customerPhoneCol.setCellValueFactory(new PropertyValueFactory<>("phone"));
 
         appointmentTableView.setItems(appointments);
+        appointmentTableView.setPlaceholder(new Label("No appointments during this time"));
         customerTableView.setItems(customers);
+        customerTableView.setPlaceholder(new Label("Currently no customers"));
+
     }
     //////////////////////////////////
 
     @FXML
     private void monthComboAction(ActionEvent event) {
 
-        System.out.println(monthCombo.getValue());
-        YearMonth yearMonth = YearMonth.of(currentDate.getYear(), monthCombo.getSelectionModel().getSelectedIndex()+1);
-        int daysInMonth = yearMonth.lengthOfMonth();
-        System.out.println(daysInMonth);
+//        System.out.println(monthCombo.getValue());
+//        YearMonth yearMonth = YearMonth.of(currentDate.getYear(), monthCombo.getSelectionModel().getSelectedIndex()+1);
+//        int daysInMonth = yearMonth.lengthOfMonth();
+//        System.out.println(daysInMonth);
+
+        int monthStart = monthCombo.getSelectionModel().getSelectedIndex()+1;
+        appointmentTableView.getItems().clear();
+        appointmentTableView.setItems(AppointmentMysqlDao.getAllAppointments(monthStart));
         fillWeekCombo(0);
     }
 
@@ -118,13 +128,25 @@ public class Main implements Initializable {
         monthCombo.getItems().addAll("January", "February", "March", "April", "May", "June",
                 "July",  "August", "September", "October", "November", "December");
 
-        String currentMonth = currentDate.getMonth().toString();
-        monthCombo.setValue(currentMonth.substring(0, 1).toUpperCase() + currentMonth.substring(1).toLowerCase());
+        String currentMonth = currentDate.getMonth().toString();// returns all uppercase name of month
+        // so convert to Upper first only
+        currentMonth = currentMonth.substring(0, 1).toUpperCase() + currentMonth.substring(1).toLowerCase();
+        monthCombo.setValue(currentMonth);// and use it to set initial value of month combo
         monthCombo.setVisibleRowCount(6);
     }
 
+    @FXML
+    private void weekComboAction(ActionEvent actionEvent){
+        int currentWeek = weekCombo.getSelectionModel().getSelectedIndex()+1;
+        int dateStart = weekCheckBox.isSelected() ? currentWeek * 7 - 6 : 0;
+        int monthStart = monthCombo.getSelectionModel().getSelectedIndex()+1;
+        System.out.println("month: " + monthStart +" date: " + dateStart);
+        appointmentTableView.getItems().clear();
+        appointmentTableView.setItems(AppointmentMysqlDao.getAllAppointments(monthStart, dateStart));
+    }
+
     private void fillWeekCombo(int selection){
-        selection -= 1; // subtract 1 for index position
+        selection -= 1; // subtract 1 for index position within the combobox
         weekCombo.getItems().clear();
         YearMonth yearMonth = YearMonth.of(currentDate.getYear(), monthCombo.getSelectionModel().getSelectedIndex()+1);
         int daysInMonth = yearMonth.lengthOfMonth();
@@ -138,8 +160,10 @@ public class Main implements Initializable {
     public void onCheckWeekBox(ActionEvent actionEvent) {
         if (weekCombo.isDisabled()) {
             weekCombo.setDisable(false);
+            weekComboAction(new ActionEvent());
         } else {
             weekCombo.setDisable(true);
+            weekComboAction(new ActionEvent());
         }
     }
 
