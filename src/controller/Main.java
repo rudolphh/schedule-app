@@ -6,15 +6,18 @@ import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.Stage;
 import model.Appointment;
 import model.Customer;
 
 import java.net.URL;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.ResourceBundle;
@@ -73,8 +76,8 @@ public class Main implements Initializable {
         int currentWeek = ((currentDate.getDayOfMonth() - 1)/7) + 1;
 
         // populate and set default selection of combo boxes
-        fillMonthCombo();
-        fillWeekCombo(currentWeek);
+        initializeMonthCombo();
+        resetWeekCombo(currentWeek);
 
         ObservableList<Appointment> appointments = AppointmentMysqlDao.getAllAppointments(currentDate.getMonthValue());
         ObservableList<Customer> customers = CustomerMysqlDao.getAllCustomers();
@@ -110,21 +113,7 @@ public class Main implements Initializable {
     }
     //////////////////////////////////
 
-    @FXML
-    private void monthComboAction(ActionEvent event) {
-
-//        System.out.println(monthCombo.getValue());
-//        YearMonth yearMonth = YearMonth.of(currentDate.getYear(), monthCombo.getSelectionModel().getSelectedIndex()+1);
-//        int daysInMonth = yearMonth.lengthOfMonth();
-//        System.out.println(daysInMonth);
-
-        int monthStart = monthCombo.getSelectionModel().getSelectedIndex()+1;
-        appointmentTableView.getItems().clear();
-        appointmentTableView.setItems(AppointmentMysqlDao.getAllAppointments(monthStart));
-        fillWeekCombo(0);
-    }
-
-    private void fillMonthCombo(){
+    private void initializeMonthCombo(){
         monthCombo.getItems().addAll("January", "February", "March", "April", "May", "June",
                 "July",  "August", "September", "October", "November", "December");
 
@@ -136,35 +125,87 @@ public class Main implements Initializable {
     }
 
     @FXML
-    private void weekComboAction(ActionEvent actionEvent){
-        int currentWeek = weekCombo.getSelectionModel().getSelectedIndex()+1;
-        int dateStart = weekCheckBox.isSelected() ? currentWeek * 7 - 6 : 0;
-        int monthStart = monthCombo.getSelectionModel().getSelectedIndex()+1;
-        System.out.println("month: " + monthStart +" date: " + dateStart);
+    private void selectMonthCombo(ActionEvent event) {
+
+        weekCheckBox.setSelected(false);
+        showMonthlyAppointments();
+        resetWeekCombo(0);
+    }
+
+    @FXML
+    private void selectWeekCombo(ActionEvent actionEvent){
+        if(weekCheckBox.isSelected())
+            showWeeklyAppointments();
+    }
+
+    ///////////// show methods
+    private void showWeeklyAppointments(){
+        int monthStart = monthCombo.getSelectionModel().getSelectedIndex() + 1;
+        int currentWeek = weekCombo.getSelectionModel().getSelectedIndex() + 1;
+        int dateStart = currentWeek * 7 - 6;
+
         appointmentTableView.getItems().clear();
         appointmentTableView.setItems(AppointmentMysqlDao.getAllAppointments(monthStart, dateStart));
     }
 
-    private void fillWeekCombo(int selection){
+    private void showMonthlyAppointments(){
+        int monthStart = monthCombo.getSelectionModel().getSelectedIndex() + 1;
+        appointmentTableView.getItems().clear();
+        appointmentTableView.setItems(AppointmentMysqlDao.getAllAppointments(monthStart));
+    }
+
+    ///////////////////////////
+
+    private void resetWeekCombo(int selection){
         selection -= 1; // subtract 1 for index position within the combobox
-        weekCombo.getItems().clear();
+
         YearMonth yearMonth = YearMonth.of(currentDate.getYear(), monthCombo.getSelectionModel().getSelectedIndex()+1);
         int daysInMonth = yearMonth.lengthOfMonth();
 
+        weekCombo.getItems().clear();
         weekCombo.getItems().addAll("1 - 7", "8 - 14", "15 - 21", "22 - 28",
                 (daysInMonth == 29) ? "29" : "29 - " + daysInMonth);
 
         weekCombo.getSelectionModel().select(0);
     }
 
-    public void onCheckWeekBox(ActionEvent actionEvent) {
-        if (weekCombo.isDisabled()) {
+    public void checkWeekCheckBox(ActionEvent actionEvent) {
+        // checkbox has been checked or unchecked
+        if (weekCheckBox.isSelected()) {
             weekCombo.setDisable(false);
-            weekComboAction(new ActionEvent());
+            showWeeklyAppointments();
         } else {
             weekCombo.setDisable(true);
-            weekComboAction(new ActionEvent());
+            showMonthlyAppointments();
         }
     }
+
+
+    @FXML
+    private void clickNewAppointmentButton(ActionEvent actionEvent) {
+        loadAppointmentScreen();
+    }
+
+    private void loadAppointmentScreen(){
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("../view/appointment.fxml"));
+            Parent theParent = loader.load();
+            Main controller = loader.getController();
+
+            Stage newWindow = new Stage();
+            //newWindow.initModality(Modality.APPLICATION_MODAL);
+            newWindow.setTitle("Customer Scheduling - New Appointment");
+            newWindow.setResizable(false);
+            newWindow.setScene(new Scene(theParent));
+
+            //controller.initScreenLabel(screenLabel);
+            //controller.setProduct(theProduct);
+            //controller.initializeFieldData();
+            newWindow.show();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
 
 }// end Main

@@ -14,12 +14,11 @@ public class UserFileDao {
     public static void logUser(User user) {
         try {
             BufferedWriter writer = new BufferedWriter(new FileWriter(fileName, true));
-            System.out.println(LocalDateTime.now().toString());
             String localTIme = LocalDateTime.now().toString();
             String logEntry = localTIme + " : " + user.getUserName();
+
             writer.append(logEntry);
             writer.newLine();
-
             writer.close();
         } catch (IOException e){
             System.out.println(e.getMessage());
