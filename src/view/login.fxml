@@ -3,11 +3,17 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.Login">
-   <children>
-         <TextField fx:id="userTextField" layoutX="130.0" layoutY="73.0" promptText="Username" />
-         <PasswordField fx:id="passTextField" layoutX="130.0" layoutY="134.0" promptText="Password" />
-         <Button fx:id="loginBtn" layoutX="66.0" layoutY="205.0" minWidth="120.0" mnemonicParsing="false" onAction="#clickLogin" style="-fx-background-radius: 15; -fx-border-radius: 10;" text="Log in" textFill="#616060" />
-         <Button fx:id="exitBtn" layoutX="215.0" layoutY="205.0" minWidth="120.0" mnemonicParsing="false" onAction="#clickExit" style="-fx-background-radius: 15; -fx-border-radius: 10;" text="Exit" textFill="#616060" />
-   </children>
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0"
+            prefWidth="400.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controller.Login">
+    <children>
+        <TextField fx:id="userTextField" layoutX="130.0" layoutY="73.0" promptText="Username"/>
+        <PasswordField fx:id="passTextField" layoutX="130.0" layoutY="134.0" promptText="Password"/>
+        <Button fx:id="loginBtn" layoutX="66.0" layoutY="205.0" minWidth="120.0" mnemonicParsing="false"
+                onAction="#clickLogin" style="-fx-background-radius: 15; -fx-border-radius: 10;" text="Log in"
+                textFill="#616060"/>
+        <Button fx:id="exitBtn" layoutX="215.0" layoutY="205.0" minWidth="120.0" mnemonicParsing="false"
+                onAction="#clickExit" style="-fx-background-radius: 15; -fx-border-radius: 10;" text="Exit"
+                textFill="#616060"/>
+    </children>
 </AnchorPane>

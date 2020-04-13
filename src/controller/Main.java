@@ -12,6 +12,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.Appointment;
 import model.Customer;
@@ -180,9 +181,7 @@ public class Main implements Initializable {
         }
     }
 
-
-    @FXML
-    private void clickNewAppointmentButton(ActionEvent actionEvent) {
+    public void clickNewAppointmentButton(ActionEvent actionEvent) {
         loadAppointmentScreen();
     }
 
@@ -190,10 +189,10 @@ public class Main implements Initializable {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("../view/appointment.fxml"));
             Parent theParent = loader.load();
-            Main controller = loader.getController();
+            //Appointment controller = loader.getController();
 
             Stage newWindow = new Stage();
-            //newWindow.initModality(Modality.APPLICATION_MODAL);
+            newWindow.initModality(Modality.APPLICATION_MODAL);
             newWindow.setTitle("Customer Scheduling - New Appointment");
             newWindow.setResizable(false);
             newWindow.setScene(new Scene(theParent));

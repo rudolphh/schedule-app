@@ -15,6 +15,8 @@ public class UserMysqlDao {
         User user = null;
         try{
             String sql = "Select * FROM user WHERE userName = ? AND password = ?";
+
+            System.out.println("findUser connection");
             PreparedStatement preparedStatement = DBConnection.startConnection().prepareStatement(sql);
             preparedStatement.setString(1, userName);
             preparedStatement.setString(2, password);

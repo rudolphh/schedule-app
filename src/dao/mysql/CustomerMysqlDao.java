@@ -58,6 +58,7 @@ public class CustomerMysqlDao {
         String sql = selectCustomersQuery();
 
         try {
+            System.out.println("getAllCustomers connection");
             PreparedStatement preparedStatement = DBConnection.startConnection().prepareStatement(sql);
             ResultSet resultSet = preparedStatement.executeQuery();
 
@@ -76,6 +77,7 @@ public class CustomerMysqlDao {
         try {
             String sql = selectCustomersQuery() + "WHERE c.customerId = ?";
 
+            System.out.println("findCustomer connection");
             PreparedStatement preparedStatement = DBConnection.startConnection().prepareStatement(sql);
             preparedStatement.setInt(1, customerId);
             ResultSet resultSet = preparedStatement.executeQuery();

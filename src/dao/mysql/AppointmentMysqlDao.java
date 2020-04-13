@@ -33,6 +33,7 @@ public class AppointmentMysqlDao {
                 "where a.start >= ? and a.end < ?";
 
         try {
+            System.out.println("getallappointments connection");
             PreparedStatement preparedStatement = DBConnection.startConnection().prepareStatement(sql);
             preparedStatement.setString(1, startTime);
             preparedStatement.setString(2, endTime);

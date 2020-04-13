@@ -35,6 +35,7 @@ public class App extends Application {
     }
 
     public static void main(String[] args) {
+        System.out.println("app connection");
         DBConnection.startConnection();
         launch(args);
         DBConnection.closeConnection();
