@@ -13,6 +13,11 @@ public class User {
         this.active = active;
     }
 
+    @Override
+    public String toString() {
+        return getUserName();
+    }
+
     public int getId() {
         return id;
     }

@@ -31,6 +31,11 @@ public class Customer {
         this.active = active;
     }
 
+    @Override
+    public String toString() {
+        return getCustomerName();
+    }
+
     public int getCustomerId() {
         return customerId;
     }

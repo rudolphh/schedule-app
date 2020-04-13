@@ -43,7 +43,7 @@ public class Login implements Initializable {
 //        userFileDao.create(new User(4, "noah", "blah", 0));
 
         Customer myCustomer = CustomerMysqlDao.findCustomer(1).get();
-        System.out.println(myCustomer.getCustomerName());
+        System.out.println(myCustomer.toString());
 
         rb = resources;
         userTextField.setPromptText(rb.getString("username"));
