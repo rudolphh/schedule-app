@@ -158,7 +158,7 @@ public class Main implements Initializable {
     ///////////////////////////
 
     private void resetWeekCombo(int selection){
-        selection -= 1; // subtract 1 for index position within the combobox
+        //selection -= 1; // subtract 1 for index position within the combobox
 
         YearMonth yearMonth = YearMonth.of(currentDate.getYear(), monthCombo.getSelectionModel().getSelectedIndex()+1);
         int daysInMonth = yearMonth.lengthOfMonth();
@@ -182,26 +182,28 @@ public class Main implements Initializable {
     }
 
     public void clickNewAppointmentButton(ActionEvent actionEvent) {
-        loadAppointmentScreen();
+        loadAppointmentScreen(null, "Customer Scheduling - New Appointment",
+                "Cannot load new appointment window");
     }
 
-    private void loadAppointmentScreen(){
+    private void loadAppointmentScreen(Appointment appointment, String title, String exceptionMsg){
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("../view/appointment.fxml"));
             Parent theParent = loader.load();
-            //Appointment controller = loader.getController();
+            Appointments controller = loader.getController();
 
             Stage newWindow = new Stage();
             newWindow.initModality(Modality.APPLICATION_MODAL);
-            newWindow.setTitle("Customer Scheduling - New Appointment");
+            newWindow.setTitle(title);
             newWindow.setResizable(false);
             newWindow.setScene(new Scene(theParent));
 
             //controller.initScreenLabel(screenLabel);
-            //controller.setProduct(theProduct);
-            //controller.initializeFieldData();
+            controller.setAppointment(appointment);
+            controller.initializeFieldData();
             newWindow.show();
         } catch (Exception e){
+            System.out.println(exceptionMsg);
             e.printStackTrace();
         }
     }

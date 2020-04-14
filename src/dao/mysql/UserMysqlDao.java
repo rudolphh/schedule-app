@@ -1,11 +1,16 @@
 package dao.mysql;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import model.Appointment;
 import model.User;
 import utils.DBConnection;
+import utils.TimeChanger;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.Optional;
 
 public class UserMysqlDao {
@@ -33,5 +38,30 @@ public class UserMysqlDao {
         }
 
          return Optional.ofNullable(user);
+    }
+
+    public static ObservableList<User> getAllUsers(){
+        ObservableList<User> users = FXCollections.observableArrayList();
+        String sql = "Select userId, userName, password, active from user";
+
+        try {
+            System.out.println("getallusers connection");
+            PreparedStatement preparedStatement = DBConnection.startConnection().prepareStatement(sql);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while(resultSet.next()){
+
+                int userId = resultSet.getInt("userId");
+                System.out.println(userId);
+                String userName = resultSet.getString("userName");
+                String password = resultSet.getString("password");
+                int active = resultSet.getInt("active");
+
+                users.add(new User(userId, userName, password, active));
+            }
+        } catch (SQLException e){
+            System.out.println(e.getMessage());
+        }
+        return users;
     }
 }

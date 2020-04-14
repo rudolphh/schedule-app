@@ -88,4 +88,5 @@ public class Appointment {
     public void setEnd(LocalDateTime end) {
         this.end = end;
     }
+
 }
