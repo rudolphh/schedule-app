@@ -26,6 +26,7 @@ public class DBConnection {
 
 
     public static Connection startConnection() {
+        if(conn != null) return conn;//
         try{
             Class.forName(MYSQLJDBCDriver);
             conn = DriverManager.getConnection(jdbcURL, username, password);

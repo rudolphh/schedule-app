@@ -2,15 +2,12 @@ package dao.mysql;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import model.Appointment;
 import model.User;
 import utils.DBConnection;
-import utils.TimeChanger;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.Optional;
 
 public class UserMysqlDao {
@@ -21,7 +18,6 @@ public class UserMysqlDao {
         try{
             String sql = "Select * FROM user WHERE userName = ? AND password = ?";
 
-            System.out.println("findUser connection");
             PreparedStatement preparedStatement = DBConnection.startConnection().prepareStatement(sql);
             preparedStatement.setString(1, userName);
             preparedStatement.setString(2, password);
@@ -45,7 +41,6 @@ public class UserMysqlDao {
         String sql = "Select userId, userName, password, active from user";
 
         try {
-            System.out.println("getallusers connection");
             PreparedStatement preparedStatement = DBConnection.startConnection().prepareStatement(sql);
             ResultSet resultSet = preparedStatement.executeQuery();
 

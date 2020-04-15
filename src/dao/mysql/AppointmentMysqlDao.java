@@ -33,7 +33,6 @@ public class AppointmentMysqlDao {
                 "where a.start >= ? and a.end < ?";
 
         try {
-            System.out.println("getallappointments connection");
             PreparedStatement preparedStatement = DBConnection.startConnection().prepareStatement(sql);
             preparedStatement.setString(1, startTime);
             preparedStatement.setString(2, endTime);
@@ -81,9 +80,8 @@ public class AppointmentMysqlDao {
         At 29, or (22 for Feb) we query from dayStart to the beginning of the next month
     */
     private static String makeDBEndDateString (int monthStart, int dayStart) {
-        final int defaultDay = dayStart;
-        int monthEnd = (defaultDay == 0 || (defaultDay == 22 && monthStart == 2)) ? monthStart+1 : monthStart;
-        int dayEnd = ((defaultDay == 22 && monthStart == 2) || defaultDay == 29) ? 1 : dayStart+7;
+        int monthEnd = (dayStart == 0 || (dayStart == 22 && monthStart == 2)) ? monthStart+1 : monthStart;
+        int dayEnd = ((dayStart == 22 && monthStart == 2) || dayStart == 29) ? 1 : dayStart+7;
         String endTime = makeDateString(currentDate.getYear(), monthEnd, dayEnd);
 
         // convert the appointment times we're looking for (in our time zone) to UTC time within the database
