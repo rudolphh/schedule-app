@@ -6,15 +6,13 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.DatePicker;
+import javafx.scene.control.*;
 
-import javafx.scene.control.TextField;
 import model.Appointment;
 import model.Customer;
 import model.User;
 import utils.NumberTextField;
+import utils.TimeChanger;
 
 import java.net.URL;
 import java.text.DecimalFormat;
@@ -74,12 +72,44 @@ public class Appointments implements Initializable {
     ////////////////////////////
 
 
+    private LocalDateTime getTimeInput(DatePicker date, NumberTextField hour, NumberTextField min,
+                                       ComboBox<String> period) {
+        DecimalFormat formatter = new DecimalFormat("00");
+        int hourNum = Integer.parseInt(hour.getText());
+        String startStr = date.getValue() + " " + formatter.format(hourNum) + ":" +
+                min.getText() + ":00 " + period.getValue();
+
+        return TimeChanger.ldtFromString(startStr, "yyyy-MM-dd hh:mm:ss a");
+    }
+
     public void clickSaveAppointment(ActionEvent actionEvent) {
+
+        // extract from fields
+        int appointmentId = selectedAppointment.getAppointmentId();
+        User user = userCombo.getSelectionModel().getSelectedItem();
+        int userId = user.getId();
+        String userName = user.getUserName();
+
+        Customer customer = customerCombo.getSelectionModel().getSelectedItem();
+        int customerId = customer.getCustomerId();
+        String customerName = customer.getCustomerName();
+
+        String type = typeTextField.getText();
+
+        // convert the user input for time into LocalDateTime
+        LocalDateTime start = getTimeInput(datePicker, startHourNumberTextField, startMinNumberTextField, startPeriodCombo);
+        LocalDateTime end = getTimeInput(datePicker, endHourNumberTextField, endMinNumberTextField, endPeriodCombo);
+
 
     }
 
     public void clickCancelAppointment(ActionEvent actionEvent) {
+        Optional<ButtonType> result = App.dialog(Alert.AlertType.CONFIRMATION,
+                "Cancel Appointment", "Confirm cancel",
+                "Are you sure you want to cancel?\n\n");
 
+        if (result.isPresent() && result.get() == ButtonType.OK)
+            App.closeThisWindow(actionEvent);
     }
 
     ////////////////////////////// Controller methods
@@ -94,7 +124,7 @@ public class Appointments implements Initializable {
     void initializeFieldData(){
 
         DecimalFormat formatter = new DecimalFormat("00");
-        DateTimeFormatter hour = DateTimeFormatter.ofPattern("h");// get AM or PM
+        DateTimeFormatter hour = DateTimeFormatter.ofPattern("h");// get hour (non-military)
         DateTimeFormatter period = DateTimeFormatter.ofPattern("a");// get AM or PM
 
         userCombo.setItems(users);

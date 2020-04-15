@@ -70,7 +70,7 @@ public class AppointmentMysqlDao {
         String startTime = makeDateString(currentDate.getYear(), monthStart, dayStart);
 
         // convert the appointment times we're looking for (in our time zone) to UTC time within the database
-        LocalDateTime starting = TimeChanger.ldtFromString(startTime);
+        LocalDateTime starting = TimeChanger.ldtFromString(startTime, "yyyy-MM-dd HH:mm:ss");
         return TimeChanger.toUTC(starting).toString();
     }
 
@@ -85,7 +85,7 @@ public class AppointmentMysqlDao {
         String endTime = makeDateString(currentDate.getYear(), monthEnd, dayEnd);
 
         // convert the appointment times we're looking for (in our time zone) to UTC time within the database
-        LocalDateTime ending = TimeChanger.ldtFromString(endTime);
+        LocalDateTime ending = TimeChanger.ldtFromString(endTime, "yyyy-MM-dd HH:mm:ss");
         return TimeChanger.toUTC(ending).toString();
     }
 

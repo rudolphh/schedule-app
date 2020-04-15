@@ -12,8 +12,8 @@ public class TimeChanger {
     private static final ZoneId utc = ZoneId.of("UTC");
     private static final ZoneId local = ZoneId.systemDefault();
 
-    public static LocalDateTime ldtFromString(String ldtStr){
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    public static LocalDateTime ldtFromString(String ldtStr, String pattern){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
         return LocalDateTime.parse(ldtStr, formatter);
     }
 
