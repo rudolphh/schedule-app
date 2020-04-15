@@ -16,11 +16,11 @@ public class AppointmentMysqlDao {
     private static final LocalDate currentDate = LocalDate.now();
 
     ///////////////////////// Public methods
-    public static ObservableList<Appointment> getAllAppointments(int monthStart){
-        return getAllAppointments(monthStart, 0);
+    public static ObservableList<Appointment> findAllAppointments(int monthStart){
+        return findAllAppointments(monthStart, 0);
     }
 
-    public static ObservableList<Appointment> getAllAppointments(int monthStart, int dayStart){
+    public static ObservableList<Appointment> findAllAppointments(int monthStart, int dayStart){
         ObservableList<Appointment> appointments = FXCollections.observableArrayList();
         String startTime = makeDBStartDateString(monthStart, dayStart);
         String endTime = makeDBEndDateString(monthStart, dayStart);
@@ -55,6 +55,50 @@ public class AppointmentMysqlDao {
             System.out.println(e.getMessage());
         }
         return appointments;
+    }
+
+    public static int createAppointment(Appointment appointment){
+        String sql = "INSERT INTO appointment (customerId, userId, title, description, location, contact, type, " +
+                "url, start, end, createDate, createdBy, lastUpdate, lastUpdateBy) " +
+                "VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        ResultSet rs = null;
+
+        try{
+            PreparedStatement preparedStatement = DBConnection.startConnection().prepareStatement(sql,
+                    Statement.RETURN_GENERATED_KEYS);
+            preparedStatement.setInt(1, appointment.getCustomerId());
+            preparedStatement.setInt(2, appointment.getUserId());
+            preparedStatement.setString(3,"not needed");
+            preparedStatement.setString(4,"not needed");
+            preparedStatement.setString(5,"not needed");
+            preparedStatement.setString(6,"not needed");
+            preparedStatement.setString(7, appointment.getType());
+            preparedStatement.setString(8,"not needed");
+            preparedStatement.setTimestamp(9, TimeChanger.toUTC(appointment.getStart()));
+            preparedStatement.setTimestamp(10, TimeChanger.toUTC(appointment.getEnd()));
+            preparedStatement.setTimestamp(11, TimeChanger.toUTC(LocalDateTime.now()));
+            preparedStatement.setString(12, appointment.getUserName());
+            preparedStatement.setTimestamp(13, TimeChanger.toUTC(LocalDateTime.now()));
+            preparedStatement.setString(14, appointment.getUserName());
+
+            preparedStatement.executeUpdate();
+            rs = preparedStatement.getGeneratedKeys();
+            if(rs != null && rs.next()){
+                return rs.getInt(1);
+            } else return 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println(e.getMessage());
+            return 0;
+        }
+    }
+
+    public static int updateAppointment(Appointment appointment){
+        int index = appointment.getAppointmentId();
+
+
+        return index;
     }
 
     //////////////////////// Private helper methods

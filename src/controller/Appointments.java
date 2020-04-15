@@ -1,5 +1,6 @@
 package controller;
 
+import dao.mysql.AppointmentMysqlDao;
 import dao.mysql.CustomerMysqlDao;
 import dao.mysql.UserMysqlDao;
 import javafx.collections.ObservableList;
@@ -85,7 +86,6 @@ public class Appointments implements Initializable {
     public void clickSaveAppointment(ActionEvent actionEvent) {
 
         // extract from fields
-        int appointmentId = selectedAppointment.getAppointmentId();
         User user = userCombo.getSelectionModel().getSelectedItem();
         int userId = user.getId();
         String userName = user.getUserName();
@@ -100,7 +100,22 @@ public class Appointments implements Initializable {
         LocalDateTime start = getTimeInput(datePicker, startHourNumberTextField, startMinNumberTextField, startPeriodCombo);
         LocalDateTime end = getTimeInput(datePicker, endHourNumberTextField, endMinNumberTextField, endPeriodCombo);
 
+        int index = 0;
+        if(selectedAppointment == null){
+            selectedAppointment = new Appointment(0, customerId, userId, type, userName, customerName,
+                                                    start, end);
+            index = AppointmentMysqlDao.createAppointment(selectedAppointment);
+        } else {
+            selectedAppointment.setUserId(userId);
+            selectedAppointment.setUserName(userName);
+            selectedAppointment.setStart(start);
+            selectedAppointment.setEnd(end);
+            selectedAppointment.setType(type);
 
+            index = AppointmentMysqlDao.updateAppointment(selectedAppointment);
+        }
+
+        if(index > 0) App.closeThisWindow(actionEvent);
     }
 
     public void clickCancelAppointment(ActionEvent actionEvent) {

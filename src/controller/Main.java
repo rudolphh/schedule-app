@@ -84,9 +84,9 @@ public class Main implements Initializable {
         initializeMonthCombo();
         resetWeekCombo(currentWeek);
 
-        appointments = AppointmentMysqlDao.getAllAppointments(currentDate.getMonthValue());
-        customers = CustomerMysqlDao.getAllCustomers();
-        users = UserMysqlDao.getAllUsers();
+        appointments = AppointmentMysqlDao.findAllAppointments(currentDate.getMonthValue());
+        customers = CustomerMysqlDao.findAllCustomers();
+        users = UserMysqlDao.findAllUsers();
 
         /////////// appointment table view columns
 
@@ -151,16 +151,16 @@ public class Main implements Initializable {
         int dateStart = currentWeek * 7 - 6;
 
         appointmentTableView.getItems().clear();
-        appointments = AppointmentMysqlDao.getAllAppointments(monthStart, dateStart);// update appointments
-        customers = CustomerMysqlDao.getAllCustomers();
+        appointments = AppointmentMysqlDao.findAllAppointments(monthStart, dateStart);// update appointments
+        customers = CustomerMysqlDao.findAllCustomers();
         appointmentTableView.setItems(appointments);
     }
 
     private void showMonthlyAppointments(){
         int monthStart = monthCombo.getSelectionModel().getSelectedIndex() + 1;
         appointmentTableView.getItems().clear();
-        appointments = AppointmentMysqlDao.getAllAppointments(monthStart);
-        customers = CustomerMysqlDao.getAllCustomers();
+        appointments = AppointmentMysqlDao.findAllAppointments(monthStart);
+        customers = CustomerMysqlDao.findAllCustomers();
         appointmentTableView.setItems(appointments);
     }
 

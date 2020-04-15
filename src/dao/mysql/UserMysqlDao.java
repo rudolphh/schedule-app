@@ -36,7 +36,7 @@ public class UserMysqlDao {
          return Optional.ofNullable(user);
     }
 
-    public static ObservableList<User> getAllUsers(){
+    public static ObservableList<User> findAllUsers(){
         ObservableList<User> users = FXCollections.observableArrayList();
         String sql = "Select userId, userName, password, active from user";
 

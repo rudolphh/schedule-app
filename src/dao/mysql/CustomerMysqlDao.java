@@ -53,7 +53,7 @@ public class CustomerMysqlDao {
 
     //////////////////////////////  PUBLIC methods
 
-    public static ObservableList<Customer> getAllCustomers(){
+    public static ObservableList<Customer> findAllCustomers(){
         ObservableList<Customer> customers = FXCollections.observableArrayList();
         String sql = selectCustomersQuery();
 
