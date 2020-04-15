@@ -52,7 +52,6 @@ public class UserMysqlDao {
             while(resultSet.next()){
 
                 int userId = resultSet.getInt("userId");
-                System.out.println(userId);
                 String userName = resultSet.getString("userName");
                 String password = resultSet.getString("password");
                 int active = resultSet.getInt("active");

@@ -10,6 +10,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 
+import javafx.scene.control.TextField;
 import model.Appointment;
 import model.Customer;
 import model.User;
@@ -19,6 +20,7 @@ import java.net.URL;
 import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class Appointments implements Initializable {
@@ -47,12 +49,17 @@ public class Appointments implements Initializable {
     private ComboBox<String> endPeriodCombo;
 
     @FXML
+    private TextField typeTextField;
+
+    @FXML
     private Button appointmentSaveBtn;
 
     @FXML
     private Button appointmentCancelBtn;
 
     private Appointment selectedAppointment = null;
+    private ObservableList<Customer> customers = null;
+    private ObservableList<User> users = null;
     private int selectedAppointmentIndex;
 
     ////////////////////////////// Initialize
@@ -77,36 +84,66 @@ public class Appointments implements Initializable {
 
     ////////////////////////////// Controller methods
 
-    void setAppointment(Appointment appointment) {
+    void setAppointment(Appointment appointment, ObservableList<Customer> customers,
+                        ObservableList<User> users) {
         this.selectedAppointment = appointment;
+        this.customers = customers;
+        this.users = users;
     }
 
     void initializeFieldData(){
 
-        ObservableList<User> users = UserMysqlDao.getAllUsers();
+        DecimalFormat formatter = new DecimalFormat("00");
+        DateTimeFormatter hour = DateTimeFormatter.ofPattern("h");// get AM or PM
+        DateTimeFormatter period = DateTimeFormatter.ofPattern("a");// get AM or PM
+
         userCombo.setItems(users);
 
-        if(selectedAppointment == null) {
+        if(selectedAppointment == null) { // then we are making a new appointment
 
-            ObservableList<Customer> customers = CustomerMysqlDao.getAllCustomers();
             customerCombo.setItems(customers);
 
-            DecimalFormat formatter = new DecimalFormat("00");
-            DateTimeFormatter period = DateTimeFormatter.ofPattern("a");// get AM or PM
             LocalDateTime localDateTime = LocalDateTime.now();
 
             // set default time to today's date and current time
             datePicker.setValue(localDateTime.toLocalDate());
-            startHourNumberTextField.setText(String.valueOf(localDateTime.getHour()));
+            startHourNumberTextField.setText(localDateTime.format(hour));
             startMinNumberTextField.setText(formatter.format(localDateTime.getMinute()));
             startPeriodCombo.setValue(localDateTime.format(period));
 
             LocalDateTime thirtyMinLater = localDateTime.plusMinutes(30);// add 30 minutes to make default end time
-            endHourNumberTextField.setText(String.valueOf(thirtyMinLater.getHour()));
+            endHourNumberTextField.setText(thirtyMinLater.format(hour));
             endMinNumberTextField.setText(formatter.format(thirtyMinLater.getMinute()));
             endPeriodCombo.setValue(thirtyMinLater.format(period));
 
-        } else {
+        } else { // we are editing an appointment that already exists
+
+            // set the consultant (user) for this appointment
+            userCombo.getItems().forEach(user -> {
+                if(user.getUserName().equals(selectedAppointment.getUserName()))
+                    userCombo.setValue(user);
+            });
+
+            customers.forEach(customer -> {
+                if(selectedAppointment.getCustomerName().equals(customer.getCustomerName()))
+                    customerCombo.getItems().add(customer);
+                    customerCombo.getSelectionModel().selectFirst();
+                    customerCombo.setDisable(true);
+                    customerCombo.setStyle("-fx-opacity: 1;");
+            });
+
+            LocalDateTime start = selectedAppointment.getStart();
+            datePicker.setValue(start.toLocalDate());
+            startHourNumberTextField.setText(start.format(hour));
+            startMinNumberTextField.setText(formatter.format(start.getMinute()));
+            startPeriodCombo.setValue(start.format(period));
+
+            LocalDateTime end = selectedAppointment.getEnd();
+            endHourNumberTextField.setText(end.format(hour));
+            endMinNumberTextField.setText(formatter.format(end.getMinute()));
+            endPeriodCombo.setValue(end.format(period));
+
+            typeTextField.setText(selectedAppointment.getType());
 
         }
 

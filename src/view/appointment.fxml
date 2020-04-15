@@ -81,7 +81,7 @@
                                         <Insets left="50.0" />
                                     </HBox.margin>
                                 </Label>
-                                <NumberTextField fx:id="startHourNumberTextField" maxWidth="35.0" promptText="hh" timeFieldType="hour">
+                                <NumberTextField fx:id="startHourNumberTextField" alignment="CENTER" maxWidth="35.0" promptText="hh" timeFieldType="hour">
                                 </NumberTextField>
                                 <Label text=":">
                            <HBox.margin>
@@ -113,7 +113,7 @@
                               <Insets left="50.0" />
                            </HBox.margin>
                         </Label>
-                        <NumberTextField fx:id="endHourNumberTextField" maxWidth="35.0" promptText="hh" timeFieldType="hour">
+                        <NumberTextField fx:id="endHourNumberTextField" alignment="CENTER" maxWidth="35.0" promptText="hh" timeFieldType="hour">
                         </NumberTextField>
                         <Label text=":" />
                          <NumberTextField fx:id="endMinNumberTextField" maxWidth="35.0" promptText="mm" timeFieldType="min">

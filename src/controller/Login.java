@@ -39,12 +39,6 @@ public class Login implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
-//        UserFileDao userFileDao = new UserFileDao();
-//        userFileDao.create(new User(4, "noah", "blah", 0));
-
-        Customer myCustomer = CustomerMysqlDao.findCustomer(1).get();
-        System.out.println(myCustomer.toString());
-
         rb = resources;
         userTextField.setPromptText(rb.getString("username"));
         passTextField.setPromptText(rb.getString("password"));

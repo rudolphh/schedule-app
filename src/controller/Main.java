@@ -2,6 +2,7 @@ package controller;
 
 import dao.mysql.AppointmentMysqlDao;
 import dao.mysql.CustomerMysqlDao;
+import dao.mysql.UserMysqlDao;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -16,6 +17,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.Appointment;
 import model.Customer;
+import model.User;
 
 import java.net.URL;
 import java.time.LocalDate;
@@ -68,7 +70,9 @@ public class Main implements Initializable {
 
     //////////// Current date value
     private static final LocalDate currentDate = LocalDate.now();
-
+    ObservableList<Appointment> appointments;
+    ObservableList<Customer> customers;
+    ObservableList<User> users;
 
     ///////////////////////////////////////  Initialize Controller
     @Override
@@ -80,8 +84,9 @@ public class Main implements Initializable {
         initializeMonthCombo();
         resetWeekCombo(currentWeek);
 
-        ObservableList<Appointment> appointments = AppointmentMysqlDao.getAllAppointments(currentDate.getMonthValue());
-        ObservableList<Customer> customers = CustomerMysqlDao.getAllCustomers();
+        appointments = AppointmentMysqlDao.getAllAppointments(currentDate.getMonthValue());
+        customers = CustomerMysqlDao.getAllCustomers();
+        users = UserMysqlDao.getAllUsers();
 
         /////////// appointment table view columns
 
@@ -146,13 +151,17 @@ public class Main implements Initializable {
         int dateStart = currentWeek * 7 - 6;
 
         appointmentTableView.getItems().clear();
-        appointmentTableView.setItems(AppointmentMysqlDao.getAllAppointments(monthStart, dateStart));
+        appointments = AppointmentMysqlDao.getAllAppointments(monthStart, dateStart);// update appointments
+        customers = CustomerMysqlDao.getAllCustomers();
+        appointmentTableView.setItems(appointments);
     }
 
     private void showMonthlyAppointments(){
         int monthStart = monthCombo.getSelectionModel().getSelectedIndex() + 1;
         appointmentTableView.getItems().clear();
-        appointmentTableView.setItems(AppointmentMysqlDao.getAllAppointments(monthStart));
+        appointments = AppointmentMysqlDao.getAllAppointments(monthStart);
+        customers = CustomerMysqlDao.getAllCustomers();
+        appointmentTableView.setItems(appointments);
     }
 
     ///////////////////////////
@@ -182,11 +191,28 @@ public class Main implements Initializable {
     }
 
     public void clickNewAppointmentButton(ActionEvent actionEvent) {
-        loadAppointmentScreen(null, "Customer Scheduling - New Appointment",
+        loadAppointmentScreen(null, this.customers, this.users,"Customer Scheduling - New Appointment",
                 "Cannot load new appointment window");
     }
 
-    private void loadAppointmentScreen(Appointment appointment, String title, String exceptionMsg){
+    public void clickEditAppointment(ActionEvent actionEvent){
+        Appointment theAppointment = appointmentTableView.getSelectionModel().getSelectedItem();
+
+        if(theAppointment == null){
+            App.dialog(Alert.AlertType.INFORMATION, "Select Appointment", "No appointment selected",
+                    "You must select an appointment to edit");
+        } else {
+            loadAppointmentScreen(theAppointment, this.customers, this.users,"Customer Scheduling - Edit Appointment",
+                    "Cannot load edit appointment window");
+        }
+    }
+
+    public void clickDeleteAppointment(ActionEvent actionEvent){
+
+    }
+
+    private void loadAppointmentScreen(Appointment appointment, ObservableList<Customer> customers,
+                                       ObservableList<User> users, String title, String exceptionMsg){
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("../view/appointment.fxml"));
             Parent theParent = loader.load();
@@ -199,7 +225,7 @@ public class Main implements Initializable {
             newWindow.setScene(new Scene(theParent));
 
             //controller.initScreenLabel(screenLabel);
-            controller.setAppointment(appointment);
+            controller.setAppointment(appointment, this.customers, this.users);
             controller.initializeFieldData();
             newWindow.show();
         } catch (Exception e){
