@@ -14,6 +14,7 @@ import javafx.scene.control.*;
 import javafx.stage.Stage;
 
 import model.Customer;
+import model.Scheduler;
 import model.User;
 
 import java.net.URL;
@@ -66,7 +67,7 @@ public class Login implements Initializable {
             newWindow.setTitle("Customer Scheduling - Main");
             newWindow.setMinHeight(500);
             newWindow.setMinWidth(996);
-            newWindow.setResizable(false);
+            //newWindow.setResizable(false);
             newWindow.setScene(new Scene(theParent));
 
             //controller.initScreenLabel(screenLabel);
@@ -86,8 +87,9 @@ public class Login implements Initializable {
         Optional<User> searchedUser = UserMysqlDao.findUser(user, pass);
 
         if(searchedUser.isPresent()){
-            // log the user to text file
-            UserFileDao.logUser(searchedUser.get());
+            User loggedIn = searchedUser.get();
+            Scheduler.setLoggedUser(loggedIn);
+            UserFileDao.logUser(loggedIn);// log the user to text file
             loadMainScreen();
             App.closeThisWindow(actionEvent);
         } else {

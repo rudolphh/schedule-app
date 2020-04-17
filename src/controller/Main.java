@@ -4,7 +4,6 @@ import dao.mysql.AppointmentMysqlDao;
 import dao.mysql.CustomerMysqlDao;
 import dao.mysql.UserMysqlDao;
 import javafx.beans.property.ReadOnlyStringWrapper;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -17,12 +16,13 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.Appointment;
 import model.Customer;
-import model.User;
+import model.Scheduler;
 
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 
@@ -70,9 +70,6 @@ public class Main implements Initializable {
 
     //////////// Current date value
     private static final LocalDate currentDate = LocalDate.now();
-    ObservableList<Appointment> appointments;
-    ObservableList<Customer> customers;
-    ObservableList<User> users;
 
     ///////////////////////////////////////  Initialize Controller
     @Override
@@ -84,9 +81,9 @@ public class Main implements Initializable {
         initializeMonthCombo();
         resetWeekCombo(currentWeek);
 
-        appointments = AppointmentMysqlDao.findAllAppointments(currentDate.getMonthValue());
-        customers = CustomerMysqlDao.findAllCustomers();
-        users = UserMysqlDao.findAllUsers();
+        AppointmentMysqlDao.findAllAppointments(currentDate.getMonthValue());
+        CustomerMysqlDao.findAllCustomers();
+        UserMysqlDao.findAllUsers();
 
         /////////// appointment table view columns
 
@@ -111,9 +108,22 @@ public class Main implements Initializable {
                         cellData.getValue().getPostalCode() + " " + cellData.getValue().getCountry()));
         customerPhoneCol.setCellValueFactory(new PropertyValueFactory<>("phone"));
 
-        appointmentTableView.setItems(appointments);
+        appointmentTableView.setItems(Scheduler.getAllAppointments());
+
+        appointmentTableView.setRowFactory( tv -> {
+            TableRow<Appointment> appointmentRow = new TableRow<>();
+            appointmentRow.setOnMouseClicked(event -> {
+                if (event.getClickCount() == 2 && (! appointmentRow.isEmpty()) ) {
+                    Appointment appointment = appointmentRow.getItem();
+                    System.out.println(appointment.getCustomerName());
+                    loadAppointmentScreen(appointment, "Edit Appointment", "Could not load edit");
+                }
+            });
+            return appointmentRow ;
+        });
+
         appointmentTableView.setPlaceholder(new Label("No appointments during this time"));
-        customerTableView.setItems(customers);
+        customerTableView.setItems(Scheduler.getAllCustomers());
         customerTableView.setPlaceholder(new Label("Currently no customers"));
 
     }
@@ -132,7 +142,6 @@ public class Main implements Initializable {
 
     @FXML
     private void selectMonthCombo(ActionEvent event) {
-
         weekCheckBox.setSelected(false);
         showMonthlyAppointments();
         resetWeekCombo(0);
@@ -151,17 +160,15 @@ public class Main implements Initializable {
         int dateStart = currentWeek * 7 - 6;
 
         appointmentTableView.getItems().clear();
-        appointments = AppointmentMysqlDao.findAllAppointments(monthStart, dateStart);// update appointments
-        customers = CustomerMysqlDao.findAllCustomers();
-        appointmentTableView.setItems(appointments);
+        AppointmentMysqlDao.findAllAppointments(monthStart, dateStart);// update appointments
+        appointmentTableView.setItems(Scheduler.getAllAppointments());
     }
 
     private void showMonthlyAppointments(){
         int monthStart = monthCombo.getSelectionModel().getSelectedIndex() + 1;
         appointmentTableView.getItems().clear();
-        appointments = AppointmentMysqlDao.findAllAppointments(monthStart);
-        customers = CustomerMysqlDao.findAllCustomers();
-        appointmentTableView.setItems(appointments);
+        AppointmentMysqlDao.findAllAppointments(monthStart);
+        appointmentTableView.setItems(Scheduler.getAllAppointments());
     }
 
     ///////////////////////////
@@ -191,7 +198,7 @@ public class Main implements Initializable {
     }
 
     public void clickNewAppointmentButton(ActionEvent actionEvent) {
-        loadAppointmentScreen(null, this.customers, this.users,"Customer Scheduling - New Appointment",
+        loadAppointmentScreen(null, "Customer Scheduling - New Appointment",
                 "Cannot load new appointment window");
     }
 
@@ -202,17 +209,34 @@ public class Main implements Initializable {
             App.dialog(Alert.AlertType.INFORMATION, "Select Appointment", "No appointment selected",
                     "You must select an appointment to edit");
         } else {
-            loadAppointmentScreen(theAppointment, this.customers, this.users,"Customer Scheduling - Edit Appointment",
+            loadAppointmentScreen(theAppointment,"Customer Scheduling - Edit Appointment",
                     "Cannot load edit appointment window");
         }
     }
 
     public void clickDeleteAppointment(ActionEvent actionEvent){
+        int selectedIndex = appointmentTableView.getSelectionModel().getSelectedIndex();
 
+        if(selectedIndex == -1){
+            App.dialog(Alert.AlertType.INFORMATION, "Select Appointment", "No appointment selected",
+                    "You must select an appointment to delete");
+        }
+        else {
+            Appointment appointment = appointmentTableView.getSelectionModel().getSelectedItem();
+            String customerName = appointment.getCustomerName();
+
+            Optional<ButtonType> result = App.dialog(Alert.AlertType.CONFIRMATION, "Delete Appointment: " +
+                            customerName, "Confirm Delete - Appointment with " + appointment.getUserName(),
+                    "Are you sure you want to delete the appointment for " + customerName + "?\n\n");
+
+            if (result.isPresent() && result.get() == ButtonType.OK) {
+                AppointmentMysqlDao.deleteAppointment(appointment.getAppointmentId());
+                Scheduler.removeAppointment(appointment);
+            }
+        }
     }
 
-    private void loadAppointmentScreen(Appointment appointment, ObservableList<Customer> customers,
-                                       ObservableList<User> users, String title, String exceptionMsg){
+    private void loadAppointmentScreen(Appointment appointment, String title, String exceptionMsg){
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("../view/appointment.fxml"));
             Parent theParent = loader.load();
@@ -225,7 +249,7 @@ public class Main implements Initializable {
             newWindow.setScene(new Scene(theParent));
 
             //controller.initScreenLabel(screenLabel);
-            controller.setAppointment(appointment, this.customers, this.users);
+            controller.setAppointment(appointment, this);
             controller.initializeFieldData();
             newWindow.show();
         } catch (Exception e){
@@ -233,6 +257,8 @@ public class Main implements Initializable {
             e.printStackTrace();
         }
     }
+
+    ///////////////////////////// Customer tab
 
 
 }// end Main

@@ -1,9 +1,6 @@
 package controller;
 
 import dao.mysql.AppointmentMysqlDao;
-import dao.mysql.CustomerMysqlDao;
-import dao.mysql.UserMysqlDao;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -11,6 +8,7 @@ import javafx.scene.control.*;
 
 import model.Appointment;
 import model.Customer;
+import model.Scheduler;
 import model.User;
 import utils.NumberTextField;
 import utils.TimeChanger;
@@ -19,6 +17,7 @@ import java.net.URL;
 import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -57,14 +56,11 @@ public class Appointments implements Initializable {
     private Button appointmentCancelBtn;
 
     private Appointment selectedAppointment = null;
-    private ObservableList<Customer> customers = null;
-    private ObservableList<User> users = null;
-    private int selectedAppointmentIndex;
+    private Main mainController;
 
     ////////////////////////////// Initialize
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-
 
         appointmentSaveBtn.setDefaultButton(true);
         appointmentCancelBtn.setCancelButton(true);
@@ -87,25 +83,56 @@ public class Appointments implements Initializable {
 
         // extract from fields
         User user = userCombo.getSelectionModel().getSelectedItem();
-        int userId = user.getId();
+        int userId = 0;
+        try {
+            userId = user.getId();
+        } catch (NullPointerException e){
+            App.dialog(Alert.AlertType.INFORMATION, "Select Consultant", "No consultant selected",
+                    "You must select a consultant to have an appointment with");
+            return;
+        }
         String userName = user.getUserName();
 
         Customer customer = customerCombo.getSelectionModel().getSelectedItem();
-        int customerId = customer.getCustomerId();
+        int customerId = 0;
+
+        try {
+            customerId = customer.getCustomerId();
+        } catch (NullPointerException e){
+            App.dialog(Alert.AlertType.INFORMATION, "Select Customer", "No customer selected",
+                    "You must select a customer to set an appointment for");
+            return;
+        }
         String customerName = customer.getCustomerName();
 
         String type = typeTextField.getText();
 
+        if(type.isEmpty()){
+            App.dialog(Alert.AlertType.INFORMATION, "Enter Type", "No type of appointment entered",
+                    "You must enter a type of appointment");
+            return;
+        }
+
         // convert the user input for time into LocalDateTime
         LocalDateTime start = getTimeInput(datePicker, startHourNumberTextField, startMinNumberTextField, startPeriodCombo);
         LocalDateTime end = getTimeInput(datePicker, endHourNumberTextField, endMinNumberTextField, endPeriodCombo);
+
+        long diff = ChronoUnit.MINUTES.between(start, end);
+        if (diff <= 0) {
+            App.dialog(Alert.AlertType.INFORMATION, "Invalid times", "End time must be after start time",
+                    "You must enter an end time after the start time");
+            return;
+        }
 
         int index = 0;
         if(selectedAppointment == null){
             selectedAppointment = new Appointment(0, customerId, userId, type, userName, customerName,
                                                     start, end);
             index = AppointmentMysqlDao.createAppointment(selectedAppointment);
+            //Scheduler.addAppointment(selectedAppointment);
         } else {
+            int selectedAppointmentIndex = Scheduler.getAllAppointments().indexOf(selectedAppointment);
+            System.out.println(selectedAppointmentIndex);
             selectedAppointment.setUserId(userId);
             selectedAppointment.setUserName(userName);
             selectedAppointment.setStart(start);
@@ -113,9 +140,13 @@ public class Appointments implements Initializable {
             selectedAppointment.setType(type);
 
             index = AppointmentMysqlDao.updateAppointment(selectedAppointment);
+            //Scheduler.setAppointment(selectedAppointmentIndex, selectedAppointment);
         }
 
-        if(index > 0) App.closeThisWindow(actionEvent);
+        if(index > 0) {
+            App.closeThisWindow(actionEvent);
+            mainController.checkWeekCheckBox(new ActionEvent());
+        }
     }
 
     public void clickCancelAppointment(ActionEvent actionEvent) {
@@ -129,11 +160,9 @@ public class Appointments implements Initializable {
 
     ////////////////////////////// Controller methods
 
-    void setAppointment(Appointment appointment, ObservableList<Customer> customers,
-                        ObservableList<User> users) {
+    void setAppointment(Appointment appointment, Main mainController) {
         this.selectedAppointment = appointment;
-        this.customers = customers;
-        this.users = users;
+        this.mainController = mainController;
     }
 
     void initializeFieldData(){
@@ -142,11 +171,11 @@ public class Appointments implements Initializable {
         DateTimeFormatter hour = DateTimeFormatter.ofPattern("h");// get hour (non-military)
         DateTimeFormatter period = DateTimeFormatter.ofPattern("a");// get AM or PM
 
-        userCombo.setItems(users);
+        userCombo.setItems(Scheduler.getAllUsers());
 
         if(selectedAppointment == null) { // then we are making a new appointment
 
-            customerCombo.setItems(customers);
+            customerCombo.setItems(Scheduler.getAllCustomers());
 
             LocalDateTime localDateTime = LocalDateTime.now();
 
@@ -169,7 +198,7 @@ public class Appointments implements Initializable {
                     userCombo.setValue(user);
             });
 
-            customers.forEach(customer -> {
+            Scheduler.getAllCustomers().forEach(customer -> {
                 if(selectedAppointment.getCustomerName().equals(customer.getCustomerName()))
                     customerCombo.getItems().add(customer);
                     customerCombo.getSelectionModel().selectFirst();

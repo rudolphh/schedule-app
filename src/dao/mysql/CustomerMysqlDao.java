@@ -4,6 +4,7 @@ import com.sun.org.apache.xpath.internal.operations.Bool;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import model.Customer;
+import model.Scheduler;
 import utils.DBConnection;
 
 import java.sql.PreparedStatement;
@@ -53,8 +54,7 @@ public class CustomerMysqlDao {
 
     //////////////////////////////  PUBLIC methods
 
-    public static ObservableList<Customer> findAllCustomers(){
-        ObservableList<Customer> customers = FXCollections.observableArrayList();
+    public static void findAllCustomers(){
         String sql = selectCustomersQuery();
 
         try {
@@ -62,12 +62,11 @@ public class CustomerMysqlDao {
             ResultSet resultSet = preparedStatement.executeQuery();
 
             while (resultSet.next()) {
-                customers.add(makeCustomer(resultSet));
+                Scheduler.addCustomer(makeCustomer(resultSet));
             }
         } catch (SQLException e){
             System.out.println(e.getMessage());
         }
-        return customers;
     }
 
     public static Optional<Customer> findCustomer(int customerId){

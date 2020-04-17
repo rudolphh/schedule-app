@@ -2,6 +2,7 @@ package dao.mysql;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import model.Scheduler;
 import model.User;
 import utils.DBConnection;
 
@@ -36,8 +37,7 @@ public class UserMysqlDao {
          return Optional.ofNullable(user);
     }
 
-    public static ObservableList<User> findAllUsers(){
-        ObservableList<User> users = FXCollections.observableArrayList();
+    public static void findAllUsers(){
         String sql = "Select userId, userName, password, active from user";
 
         try {
@@ -51,11 +51,10 @@ public class UserMysqlDao {
                 String password = resultSet.getString("password");
                 int active = resultSet.getInt("active");
 
-                users.add(new User(userId, userName, password, active));
+                Scheduler.addUser(new User(userId, userName, password, active));
             }
         } catch (SQLException e){
             System.out.println(e.getMessage());
         }
-        return users;
     }
 }
