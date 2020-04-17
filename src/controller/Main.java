@@ -197,7 +197,9 @@ public class Main implements Initializable {
         }
     }
 
-    public void clickNewAppointmentButton(ActionEvent actionEvent) {
+    //////////////////////////////// Appointment tab
+
+    public void clickNewAppointmentBtn(ActionEvent actionEvent) {
         loadAppointmentScreen(null, "Customer Scheduling - New Appointment",
                 "Cannot load new appointment window");
     }
@@ -214,7 +216,7 @@ public class Main implements Initializable {
         }
     }
 
-    public void clickDeleteAppointment(ActionEvent actionEvent){
+    public void clickDeleteCustomer(ActionEvent actionEvent){
         int selectedIndex = appointmentTableView.getSelectionModel().getSelectedIndex();
 
         if(selectedIndex == -1){
@@ -260,5 +262,65 @@ public class Main implements Initializable {
 
     ///////////////////////////// Customer tab
 
+    public void clickNewCustomerBtn(ActionEvent actionEvent) {
+        loadCustomerScreen(null, "Customer Scheduling - New Customer",
+                "Cannot load new customer window");
+    }
+
+    public void clickEditCustomer(ActionEvent actionEvent){
+        Appointment theAppointment = appointmentTableView.getSelectionModel().getSelectedItem();
+
+        if(theAppointment == null){
+            App.dialog(Alert.AlertType.INFORMATION, "Select Appointment", "No appointment selected",
+                    "You must select an appointment to edit");
+        } else {
+            loadAppointmentScreen(theAppointment,"Customer Scheduling - Edit Appointment",
+                    "Cannot load edit appointment window");
+        }
+    }
+
+    public void clickDeleteAppointment(ActionEvent actionEvent){
+        int selectedIndex = appointmentTableView.getSelectionModel().getSelectedIndex();
+
+        if(selectedIndex == -1){
+            App.dialog(Alert.AlertType.INFORMATION, "Select Appointment", "No appointment selected",
+                    "You must select an appointment to delete");
+        }
+        else {
+            Appointment appointment = appointmentTableView.getSelectionModel().getSelectedItem();
+            String customerName = appointment.getCustomerName();
+
+            Optional<ButtonType> result = App.dialog(Alert.AlertType.CONFIRMATION, "Delete Appointment: " +
+                            customerName, "Confirm Delete - Appointment with " + appointment.getUserName(),
+                    "Are you sure you want to delete the appointment for " + customerName + "?\n\n");
+
+            if (result.isPresent() && result.get() == ButtonType.OK) {
+                AppointmentMysqlDao.deleteAppointment(appointment.getAppointmentId());
+                Scheduler.removeAppointment(appointment);
+            }
+        }
+    }
+
+    private void loadCustomerScreen(Customer customer, String title, String exceptionMsg){
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("../view/customer.fxml"));
+            Parent theParent = loader.load();
+            Customers controller = loader.getController();
+
+            Stage newWindow = new Stage();
+            newWindow.initModality(Modality.APPLICATION_MODAL);
+            newWindow.setTitle(title);
+            newWindow.setResizable(false);
+            newWindow.setScene(new Scene(theParent));
+
+            //controller.initScreenLabel(screenLabel);
+            //controller.setCustomer(customer, this);
+            //controller.initializeFieldData();
+            newWindow.show();
+        } catch (Exception e){
+            System.out.println(exceptionMsg);
+            e.printStackTrace();
+        }
+    }
 
 }// end Main

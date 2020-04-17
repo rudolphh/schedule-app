@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
-
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-            xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+            xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="controller.Customers">
     <children>
 
@@ -18,148 +21,113 @@
                 <HBox alignment="CENTER_LEFT" minHeight="60.0">
                     <children>
 
-                        <Label fx:id="partScreenLabel" text="Customer" HBox.hgrow="ALWAYS">
+                        <Label fx:id="customerScreenLabel" maxWidth="170.0" text="New Customer" HBox.hgrow="ALWAYS">
                             <padding>
-                                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
+                                <Insets bottom="20.0" left="20.0"/>
                             </padding>
                             <font>
                                 <Font name="System Bold Italic" size="16.0"/>
                             </font>
                         </Label>
-                        <HBox alignment="CENTER_LEFT" spacing="40.0" HBox.hgrow="ALWAYS">
-                            <children>
-
-                                <RadioButton fx:id="inHouseRadioBtn" mnemonicParsing="false"
-                                             selected="true" text="In-House">
-                                    <toggleGroup>
-                                        <ToggleGroup fx:id="toggleGroup1"/>
-                                    </toggleGroup>
-                                </RadioButton>
-                                <RadioButton fx:id="outsourcedRadioBtn" mnemonicParsing="false"
-                                             text="Outsourced"
-                                             toggleGroup="$toggleGroup1"/>
-                            </children>
-
-                            <padding>
-                                <Insets left="40.0"/>
-                            </padding>
-                        </HBox>
                     </children>
 
                 </HBox>
                 <VBox>
                     <children>
-
                         <HBox alignment="CENTER_LEFT" VBox.vgrow="ALWAYS">
                             <children>
 
-                                <Label minWidth="120.0" text="ID">
+                                <Label minWidth="100.0" text="Name">
                                     <HBox.margin>
-                                        <Insets left="60.0"/>
+                                        <Insets left="40.0"/>
                                     </HBox.margin>
                                 </Label>
-                                <TextField fx:id="partIDTextField" disable="true"/>
+                                <TextField fx:id="customerNameTextField" promptText="customer name"/>
                             </children>
 
                             <padding>
-                                <Insets bottom="20.0" right="20.0" top="20.0"/>
+                                <Insets bottom="10.0" right="10.0" top="10.0"/>
                             </padding>
                         </HBox>
-                        <HBox alignment="CENTER_LEFT" VBox.vgrow="ALWAYS">
+                        <HBox alignment="CENTER_LEFT">
                             <children>
-
-                                <Label minWidth="120.0" text="Name">
+                                <Label minWidth="100.0" text="Address">
                                     <HBox.margin>
-                                        <Insets left="60.0"/>
+                                        <Insets left="40.0"/>
                                     </HBox.margin>
                                 </Label>
-                                <TextField fx:id="partNameTextField" promptText="Part Name"/>
+                                <TextField fx:id="addressTextField" promptText="address"/>
                             </children>
-
                             <padding>
-                                <Insets bottom="20.0" right="20.0" top="20.0"/>
+                                <Insets bottom="10.0" right="10.0" top="10.0"/>
                             </padding>
                         </HBox>
-                        <HBox alignment="CENTER_LEFT" VBox.vgrow="ALWAYS">
+                        <HBox alignment="CENTER_LEFT">
                             <children>
-
-                                <Label minWidth="120.0" text="Inventory">
+                                <Label minWidth="100.0" text="City">
                                     <HBox.margin>
-                                        <Insets left="60.0"/>
+                                        <Insets left="40.0"/>
                                     </HBox.margin>
                                 </Label>
-                                <TextField fx:id="partInvTextField" promptText="Amount in Stock"/>
+                                <TextField fx:id="cityTextField" promptText="city"/>
                             </children>
-
                             <padding>
-                                <Insets bottom="20.0" right="20.0" top="20.0"/>
+                                <Insets bottom="10.0" right="10.0" top="10.0"/>
                             </padding>
                         </HBox>
-                        <HBox alignment="CENTER_LEFT" VBox.vgrow="ALWAYS">
+                        <HBox alignment="CENTER_LEFT">
                             <children>
-
-                                <Label minWidth="120.0" text="Cost / Unit">
+                                <Label minWidth="100.0" text="Country">
                                     <HBox.margin>
-                                        <Insets left="60.0"/>
+                                        <Insets left="40.0"/>
                                     </HBox.margin>
                                 </Label>
-                                <TextField fx:id="partCostTextField" promptText="Price per Unit"/>
+                                <TextField fx:id="countryTextField" promptText="country"/>
                             </children>
-
                             <padding>
-                                <Insets bottom="20.0" right="20.0" top="20.0"/>
-                            </padding>
-                        </HBox>
-                        <HBox alignment="CENTER_LEFT" VBox.vgrow="ALWAYS">
-                            <children>
-
-                                <Label minWidth="120.0" text="Min">
-                                    <HBox.margin>
-                                        <Insets left="60.0"/>
-                                    </HBox.margin>
-                                </Label>
-                                <TextField fx:id="partMinTextField" prefWidth="85.0" promptText="Minimum"/>
-                                <Label minWidth="40.0" text="Max">
-                                    <HBox.margin>
-                                        <Insets left="20.0"/>
-                                    </HBox.margin>
-                                </Label>
-                                <TextField fx:id="partMaxTextField" prefWidth="85.0" promptText="Maximum"/>
-                            </children>
-
-                            <padding>
-                                <Insets bottom="20.0" right="20.0" top="20.0"/>
-                            </padding>
-                        </HBox>
-                        <HBox alignment="CENTER_LEFT" VBox.vgrow="ALWAYS">
-                            <children>
-
-                                <Label fx:id="partMacCoLabel" minWidth="120.0" text="Machine ID">
-                                    <HBox.margin>
-                                        <Insets left="60.0"/>
-                                    </HBox.margin>
-                                </Label>
-                                <TextField fx:id="partMacCoTextField" promptText="Machine Identifier"/>
-                            </children>
-
-                            <padding>
-                                <Insets bottom="20.0" right="20.0" top="20.0"/>
+                                <Insets bottom="10.0" right="10.0" top="10.0"/>
                             </padding>
                         </HBox>
                     </children>
 
                 </VBox>
+                <HBox alignment="CENTER_LEFT">
+                    <children>
+                        <Label minWidth="100.0" text="Postal">
+                            <HBox.margin>
+                                <Insets left="40.0"/>
+                            </HBox.margin>
+                        </Label>
+                        <TextField fx:id="postalTextField" promptText="postal code"/>
+                    </children>
+                    <padding>
+                        <Insets bottom="10.0" right="10.0" top="10.0"/>
+                    </padding>
+                </HBox>
+                <HBox alignment="CENTER_LEFT">
+                    <children>
+                        <Label minWidth="100.0" text="Phone">
+                            <HBox.margin>
+                                <Insets left="40.0"/>
+                            </HBox.margin>
+                        </Label>
+                        <TextField fx:id="phoneTextField" promptText="telephone number"/>
+                    </children>
+                    <padding>
+                        <Insets bottom="10.0" right="10.0" top="10.0"/>
+                    </padding>
+                </HBox>
                 <HBox alignment="CENTER" spacing="20.0">
                     <children>
 
-                        <Button fx:id="partSaveBtn" minWidth="100.0" mnemonicParsing="false"
-                                onAction="#clickSaveCustomer"
-                                style="-fx-background-color: black;" text="Save" textFill="WHITE">
+                        <Button fx:id="customerSaveBtn" minWidth="100.0" mnemonicParsing="false"
+                                onAction="#clickSaveCustomer" style="-fx-background-color: black;" text="Save"
+                                textFill="WHITE">
                             <font>
                                 <Font name="System Bold" size="13.0"/>
                             </font>
                         </Button>
-                        <Button fx:id="partCancelBtn" minWidth="100.0" mnemonicParsing="false"
+                        <Button fx:id="customerCancelBtn" minWidth="100.0" mnemonicParsing="false"
                                 onAction="#clickCancelCustomer" style="-fx-background-color: black;" text="Cancel"
                                 textFill="WHITE">
                             <font>
@@ -177,7 +145,7 @@
         </VBox>
     </children>
     <padding>
-        <Insets bottom="40.0" left="40.0" right="40.0" top="40.0"/>
+        <Insets bottom="40.0" left="30.0" right="40.0" top="40.0"/>
     </padding>
 
 </AnchorPane>
