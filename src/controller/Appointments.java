@@ -15,6 +15,7 @@ import utils.TimeChanger;
 
 import java.net.URL;
 import java.text.DecimalFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -57,24 +58,46 @@ public class Appointments implements Initializable {
 
     private Appointment selectedAppointment = null;
     private Main mainController;
+    private String fieldVal;
 
     ////////////////////////////// Initialize
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
+        setFocusedPropertyListener(startHourNumberTextField);
+        setFocusedPropertyListener(startMinNumberTextField);
+
+        setFocusedPropertyListener(endHourNumberTextField);
+        setFocusedPropertyListener(endMinNumberTextField);
+
         appointmentSaveBtn.setDefaultButton(true);
         appointmentCancelBtn.setCancelButton(true);
+    }
+
+    private void setFocusedPropertyListener(NumberTextField ntf){
+        ntf.focusedProperty().addListener((obs, oldVal, newVal) -> {
+            if(newVal) this.fieldVal = ntf.getText();// save field value when focused
+            if(!newVal){
+                DecimalFormat formatter = new DecimalFormat("00");
+                String minStr = ntf.getText();
+                int minNum = minStr.isEmpty() ? Integer.parseInt(this.fieldVal) : Integer.parseInt(minStr);
+                if (ntf.getTimeFieldType().toLowerCase().equals("min")) {
+                    ntf.setText(formatter.format(minNum));
+                } else {
+                    ntf.setText(String.valueOf(minNum));
+                }
+            }
+        });
     }
 
     ////////////////////////////
 
 
-    private LocalDateTime getTimeInput(DatePicker date, NumberTextField hour, NumberTextField min,
-                                       ComboBox<String> period) {
+    private LocalDateTime getTimeInput(LocalDate date, String hour, String min, String period) {
         DecimalFormat formatter = new DecimalFormat("00");
-        int hourNum = Integer.parseInt(hour.getText());
-        String startStr = date.getValue() + " " + formatter.format(hourNum) + ":" +
-                min.getText() + ":00 " + period.getValue();
+        int hourNum = Integer.parseInt(hour);
+        String startStr = date + " " + formatter.format(hourNum) + ":" +
+                min + ":00 " + period;
 
         return TimeChanger.ldtFromString(startStr, "yyyy-MM-dd hh:mm:ss a");
     }
@@ -114,13 +137,31 @@ public class Appointments implements Initializable {
         }
 
         // convert the user input for time into LocalDateTime
-        LocalDateTime start = getTimeInput(datePicker, startHourNumberTextField, startMinNumberTextField, startPeriodCombo);
-        LocalDateTime end = getTimeInput(datePicker, endHourNumberTextField, endMinNumberTextField, endPeriodCombo);
+        LocalDateTime start = getTimeInput(datePicker.getValue(), startHourNumberTextField.getText(),
+                startMinNumberTextField.getText(), startPeriodCombo.getValue());
+        LocalDateTime end = getTimeInput(datePicker.getValue(), endHourNumberTextField.getText(),
+                endMinNumberTextField.getText(), endPeriodCombo.getValue());
+
+        LocalDateTime businessHourStart = getTimeInput(datePicker.getValue(), "08", "00", "AM");
+        LocalDateTime businessHourEnd = getTimeInput(datePicker.getValue(), "5", "00", "PM");
 
         long diff = ChronoUnit.MINUTES.between(start, end);
         if (diff <= 0) {
             App.dialog(Alert.AlertType.INFORMATION, "Invalid times", "End time must be after start time",
                     "You must enter an end time after the start time");
+            return;
+        }
+
+        // negative value means first time is AFTER second time
+        long diffStart = ChronoUnit.MINUTES.between(businessHourStart, start);
+        long diffEnd = ChronoUnit.MINUTES.between(end, businessHourEnd);
+
+        // if diffStart negative, start time is before business hour start
+        // if diffEnd is negative, end time is after business hour end
+        if(diffStart < 0 || diffEnd < 0){
+            App.dialog(Alert.AlertType.INFORMATION, "Not Between Business Hours",
+                    "Start and end time must be between business hours 8AM to 5PM",
+                    "You must enter start and end times between business hours");
             return;
         }
 
@@ -132,7 +173,6 @@ public class Appointments implements Initializable {
             //Scheduler.addAppointment(selectedAppointment);
         } else {
             int selectedAppointmentIndex = Scheduler.getAllAppointments().indexOf(selectedAppointment);
-            System.out.println(selectedAppointmentIndex);
             selectedAppointment.setUserId(userId);
             selectedAppointment.setUserName(userName);
             selectedAppointment.setStart(start);

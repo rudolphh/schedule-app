@@ -24,19 +24,25 @@ public class NumberTextField extends TextField
         if (validate(text))
         {
             String numStr = this.getCharacters().toString();
-            if(numStr.length() == 1 && this.getCaretPosition()  == 0){
-                numStr = text + numStr;// add to the front for the check
+            String selected = this.getSelectedText();
+
+            if(numStr.equals(selected)){
+                numStr = text;
+            } else if (numStr.substring(0,1).equals(selected)){
+                numStr = text + numStr.substring(1,2);
+            } else if (numStr.length() > 1 && numStr.substring(1,2).equals(selected)){
+                numStr = numStr.substring(0,1) + text;
             } else {
-                numStr += text;// add to the end
+                numStr += text;
             }
 
-            int numInt = Integer.parseInt(numStr);
+            int numInt = numStr.isEmpty() ? 0 : Integer.parseInt(numStr);
             if(timeFieldType.toLowerCase().equals("hour")){
                 if(numInt >= 1 && numInt <= 12){
                     super.replaceText(start, end, text);
                 }
             } else if (timeFieldType.toLowerCase().equals("min")){
-                if(numInt >= 1 && numInt <= 59){
+                if(numInt >= 0 && numInt <= 59){
                     super.replaceText(start, end, text);
                 }
             }
