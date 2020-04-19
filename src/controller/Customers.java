@@ -10,7 +10,8 @@ public class Customers implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
-    }
+        appointmentSaveBtn.setDefaultButton(true);
+        appointmentCancelBtn.setCancelButton(true);  }
 
     public void clickSaveCustomer(ActionEvent actionEvent) {
     }
