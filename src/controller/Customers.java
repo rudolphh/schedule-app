@@ -21,9 +21,9 @@ public class Customers implements Initializable {
         customerSaveBtn.setDefaultButton(true);
         customerCancelBtn.setCancelButton(true);  }
 
-    public void clickSaveCustomer(ActionEvent actionEvent) {
+    public void clickSaveCustomerBtn(ActionEvent actionEvent) {
     }
 
-    public void clickCancelCustomer(ActionEvent actionEvent) {
+    public void clickCancelCustomerBtn(ActionEvent actionEvent) {
     }
 }
