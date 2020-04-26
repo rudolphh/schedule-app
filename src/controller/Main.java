@@ -103,19 +103,23 @@ public class Main implements Initializable {
 
         ////////// customer table view columns
         customerNameCol.setCellValueFactory(new PropertyValueFactory<>("customerName"));
+
+        // lambda expression for combining the customer fields to make the address column values
         customerAddressCol.setCellValueFactory(cellData -> new ReadOnlyStringWrapper(
                 cellData.getValue().getAddress() + " " + cellData.getValue().getCity() + " " +
                         cellData.getValue().getPostalCode() + " " + cellData.getValue().getCountry()));
+
         customerPhoneCol.setCellValueFactory(new PropertyValueFactory<>("phone"));
 
         appointmentTableView.setItems(Scheduler.getAllAppointments());
 
+        // lambda expression for making a row factory that allows for a mouseClick event handler for each row shown
+        // upon double-clicking a row the appointment edit screen will be opened.
         appointmentTableView.setRowFactory( tv -> {
             TableRow<Appointment> appointmentRow = new TableRow<>();
             appointmentRow.setOnMouseClicked(event -> {
                 if (event.getClickCount() == 2 && (! appointmentRow.isEmpty()) ) {
                     Appointment appointment = appointmentRow.getItem();
-                    System.out.println(appointment.getCustomerName());
                     loadAppointmentScreen(appointment, "Edit Appointment", "Could not load edit");
                 }
             });
@@ -126,7 +130,8 @@ public class Main implements Initializable {
         customerTableView.setItems(Scheduler.getAllCustomers());
         customerTableView.setPlaceholder(new Label("Currently no customers"));
 
-    }
+    }// end initialize
+
     //////////////////////////////////
 
     private void initializeMonthCombo(){
@@ -204,7 +209,7 @@ public class Main implements Initializable {
                 "Cannot load new appointment window");
     }
 
-    public void clickEditAppointment(ActionEvent actionEvent){
+    public void clickEditAppointmentBtn(ActionEvent actionEvent){
         Appointment theAppointment = appointmentTableView.getSelectionModel().getSelectedItem();
 
         if(theAppointment == null){
@@ -216,7 +221,7 @@ public class Main implements Initializable {
         }
     }
 
-    public void clickDeleteAppointment(ActionEvent actionEvent){
+    public void clickDeleteAppointmentBtn(ActionEvent actionEvent){
         int selectedIndex = appointmentTableView.getSelectionModel().getSelectedIndex();
 
         if(selectedIndex == -1){
@@ -267,36 +272,36 @@ public class Main implements Initializable {
                 "Cannot load new customer window");
     }
 
-    public void clickEditCustomer(ActionEvent actionEvent){
-        Appointment theAppointment = appointmentTableView.getSelectionModel().getSelectedItem();
+    public void clickEditCustomerBtn(ActionEvent actionEvent){
+        Customer customer = customerTableView.getSelectionModel().getSelectedItem();
 
-        if(theAppointment == null){
-            App.dialog(Alert.AlertType.INFORMATION, "Select Appointment", "No appointment selected",
-                    "You must select an appointment to edit");
+        if(customer == null){
+            App.dialog(Alert.AlertType.INFORMATION, "Select Customer", "No customer selected",
+                    "You must select a customer to edit");
         } else {
-            loadAppointmentScreen(theAppointment,"Customer Scheduling - Edit Appointment",
+            loadCustomerScreen(customer,"Customer Scheduling - Edit Customer",
                     "Cannot load edit appointment window");
         }
     }
 
     public void clickDeleteCustomerBtn(ActionEvent actionEvent){
-        int selectedIndex = customerTableView.getSelectionModel().getSelectedIndex();
+        int selectedIndex = appointmentTableView.getSelectionModel().getSelectedIndex();
 
         if(selectedIndex == -1){
-            App.dialog(Alert.AlertType.INFORMATION, "Select Customer", "No customer selected",
-                    "You must select a customer to delete");
+            App.dialog(Alert.AlertType.INFORMATION, "Select Appointment", "No appointment selected",
+                    "You must select an appointment to delete");
         }
         else {
-            Customer customer = customerTableView.getSelectionModel().getSelectedItem();
-            String customerName = customer.getCustomerName();
+            Appointment appointment = appointmentTableView.getSelectionModel().getSelectedItem();
+            String customerName = appointment.getCustomerName();
 
-            Optional<ButtonType> result = App.dialog(Alert.AlertType.CONFIRMATION, "Delete Customer: " +
-                            customerName, "Confirm Delete - Customer: " + customer.getCustomerName(),
+            Optional<ButtonType> result = App.dialog(Alert.AlertType.CONFIRMATION, "Delete Appointment: " +
+                            customerName, "Confirm Delete - Appointment with " + appointment.getUserName(),
                     "Are you sure you want to delete the appointment for " + customerName + "?\n\n");
 
             if (result.isPresent() && result.get() == ButtonType.OK) {
-                CustomerMysqlDao.deleteCustomer(customer.getCustomerId());
-                Scheduler.removeCustomer(customer);
+                AppointmentMysqlDao.deleteAppointment(appointment.getAppointmentId());
+                Scheduler.removeAppointment(appointment);
             }
         }
     }
@@ -310,11 +315,7 @@ public class Main implements Initializable {
             Stage newWindow = new Stage();
             newWindow.initModality(Modality.APPLICATION_MODAL);
             newWindow.setTitle(title);
-
-            newWindow.setMinHeight(517);
-            newWindow.setMinWidth(391);
-
-            //newWindow.setResizable(false);
+            newWindow.setResizable(false);
             newWindow.setScene(new Scene(theParent));
 
             //controller.initScreenLabel(screenLabel);
@@ -326,5 +327,6 @@ public class Main implements Initializable {
             e.printStackTrace();
         }
     }
+
 
 }// end Main
