@@ -87,4 +87,19 @@ public class CustomerMysqlDao {
         }
         return Optional.ofNullable(searchedCustomer);
     }
+
+    public static boolean deleteCustomer(int customerId){
+        String sql = "DELETE from customer where customerId = ?";
+
+        try{
+            PreparedStatement preparedStatement = DBConnection.startConnection().prepareStatement(sql);
+            preparedStatement.setInt(1, customerId);
+            preparedStatement.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println(e.getMessage());
+        }
+        return false;
+    }
 }

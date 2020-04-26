@@ -216,7 +216,7 @@ public class Main implements Initializable {
         }
     }
 
-    public void clickDeleteCustomer(ActionEvent actionEvent){
+    public void clickDeleteAppointment(ActionEvent actionEvent){
         int selectedIndex = appointmentTableView.getSelectionModel().getSelectedIndex();
 
         if(selectedIndex == -1){
@@ -279,24 +279,24 @@ public class Main implements Initializable {
         }
     }
 
-    public void clickDeleteAppointment(ActionEvent actionEvent){
-        int selectedIndex = appointmentTableView.getSelectionModel().getSelectedIndex();
+    public void clickDeleteCustomerBtn(ActionEvent actionEvent){
+        int selectedIndex = customerTableView.getSelectionModel().getSelectedIndex();
 
         if(selectedIndex == -1){
-            App.dialog(Alert.AlertType.INFORMATION, "Select Appointment", "No appointment selected",
-                    "You must select an appointment to delete");
+            App.dialog(Alert.AlertType.INFORMATION, "Select Customer", "No customer selected",
+                    "You must select a customer to delete");
         }
         else {
-            Appointment appointment = appointmentTableView.getSelectionModel().getSelectedItem();
-            String customerName = appointment.getCustomerName();
+            Customer customer = customerTableView.getSelectionModel().getSelectedItem();
+            String customerName = customer.getCustomerName();
 
-            Optional<ButtonType> result = App.dialog(Alert.AlertType.CONFIRMATION, "Delete Appointment: " +
-                            customerName, "Confirm Delete - Appointment with " + appointment.getUserName(),
+            Optional<ButtonType> result = App.dialog(Alert.AlertType.CONFIRMATION, "Delete Customer: " +
+                            customerName, "Confirm Delete - Customer: " + customer.getCustomerName(),
                     "Are you sure you want to delete the appointment for " + customerName + "?\n\n");
 
             if (result.isPresent() && result.get() == ButtonType.OK) {
-                AppointmentMysqlDao.deleteAppointment(appointment.getAppointmentId());
-                Scheduler.removeAppointment(appointment);
+                CustomerMysqlDao.deleteCustomer(customer.getCustomerId());
+                Scheduler.removeCustomer(customer);
             }
         }
     }
@@ -310,7 +310,11 @@ public class Main implements Initializable {
             Stage newWindow = new Stage();
             newWindow.initModality(Modality.APPLICATION_MODAL);
             newWindow.setTitle(title);
-            newWindow.setResizable(false);
+
+            newWindow.setMinHeight(517);
+            newWindow.setMinWidth(391);
+
+            //newWindow.setResizable(false);
             newWindow.setScene(new Scene(theParent));
 
             //controller.initScreenLabel(screenLabel);

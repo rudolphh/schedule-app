@@ -14,7 +14,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
 
-<AnchorPane minHeight="600.0" minWidth="800.0" xmlns="http://javafx.com/javafx/11.0.1"
+<AnchorPane minHeight="600.0" minWidth="800.0" xmlns="http://javafx.com/javafx/"
             xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.Main">
     <children>
         <TabPane layoutX="14.0" layoutY="45.0" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE"
