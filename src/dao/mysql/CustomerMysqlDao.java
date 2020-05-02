@@ -1,8 +1,5 @@
 package dao.mysql;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import model.Customer;
 import model.Scheduler;
 import utils.DBConnection;

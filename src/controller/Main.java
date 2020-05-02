@@ -113,18 +113,7 @@ public class Main implements Initializable {
 
         appointmentTableView.setItems(Scheduler.getAllAppointments());
 
-        // lambda expression for making a row factory that allows for a mouseClick event handler for each row shown
-        // upon double-clicking a row the appointment edit screen will be opened.
-        appointmentTableView.setRowFactory( tv -> {
-            TableRow<Appointment> appointmentRow = new TableRow<>();
-            appointmentRow.setOnMouseClicked(event -> {
-                if (event.getClickCount() == 2 && (! appointmentRow.isEmpty()) ) {
-                    Appointment appointment = appointmentRow.getItem();
-                    loadAppointmentScreen(appointment, "Edit Appointment", "Could not load edit");
-                }
-            });
-            return appointmentRow ;
-        });
+        setupTableViewRowClickHandlers();// set up the row mouse click handlers for both table views
 
         appointmentTableView.setPlaceholder(new Label("No appointments during this time"));
         customerTableView.setItems(Scheduler.getAllCustomers());
@@ -232,8 +221,8 @@ public class Main implements Initializable {
             Appointment appointment = appointmentTableView.getSelectionModel().getSelectedItem();
             String customerName = appointment.getCustomerName();
 
-            Optional<ButtonType> result = App.dialog(Alert.AlertType.CONFIRMATION, "Delete Appointment: " +
-                            customerName, "Confirm Delete - Appointment with " + appointment.getUserName(),
+            Optional<ButtonType> result = App.dialog(Alert.AlertType.CONFIRMATION, "Delete Appointment",
+                    "Confirm Delete - Appointment with " + appointment.getUserName(),
                     "Are you sure you want to delete the appointment for " + customerName + "?\n\n");
 
             if (result.isPresent() && result.get() == ButtonType.OK) {
@@ -268,7 +257,7 @@ public class Main implements Initializable {
     ///////////////////////////// Customer tab
 
     public void clickNewCustomerBtn(ActionEvent actionEvent) {
-        loadCustomerScreen(null, "Customer Scheduling - New Customer",
+        loadCustomerScreen(null, "New Customer",
                 "Cannot load new customer window");
     }
 
@@ -279,29 +268,29 @@ public class Main implements Initializable {
             App.dialog(Alert.AlertType.INFORMATION, "Select Customer", "No customer selected",
                     "You must select a customer to edit");
         } else {
-            loadCustomerScreen(customer,"Customer Scheduling - Edit Customer",
+            loadCustomerScreen(customer,"Edit Customer",
                     "Cannot load edit appointment window");
         }
     }
 
     public void clickDeleteCustomerBtn(ActionEvent actionEvent){
-        int selectedIndex = appointmentTableView.getSelectionModel().getSelectedIndex();
+        int selectedIndex = customerTableView.getSelectionModel().getSelectedIndex();
 
         if(selectedIndex == -1){
-            App.dialog(Alert.AlertType.INFORMATION, "Select Appointment", "No appointment selected",
-                    "You must select an appointment to delete");
+            App.dialog(Alert.AlertType.INFORMATION, "Select Customer", "No customer selected",
+                    "You must select an customer to delete");
         }
         else {
-            Appointment appointment = appointmentTableView.getSelectionModel().getSelectedItem();
-            String customerName = appointment.getCustomerName();
+            Customer customer = customerTableView.getSelectionModel().getSelectedItem();
+            String customerName = customer.getCustomerName();
 
-            Optional<ButtonType> result = App.dialog(Alert.AlertType.CONFIRMATION, "Delete Appointment: " +
-                            customerName, "Confirm Delete - Appointment with " + appointment.getUserName(),
-                    "Are you sure you want to delete the appointment for " + customerName + "?\n\n");
+            Optional<ButtonType> result = App.dialog(Alert.AlertType.CONFIRMATION, "Delete Customer",
+                    "Confirm Delete - Customer: " + customer.getCustomerName(),
+                    "Are you sure you want to delete " + customerName + "?\n\n");
 
             if (result.isPresent() && result.get() == ButtonType.OK) {
-                AppointmentMysqlDao.deleteAppointment(appointment.getAppointmentId());
-                Scheduler.removeAppointment(appointment);
+                CustomerMysqlDao.deleteCustomer(customer.getCustomerId());
+                Scheduler.removeCustomer(customer);
             }
         }
     }
@@ -318,15 +307,47 @@ public class Main implements Initializable {
             newWindow.setResizable(false);
             newWindow.setScene(new Scene(theParent));
 
-            //controller.initScreenLabel(screenLabel);
-            //controller.setCustomer(customer, this);
-            //controller.initializeFieldData();
+            controller.initScreenLabel(customer.getCustomerName());
+            controller.setCustomer(customer, this);
+            controller.initializeFieldData();
             newWindow.show();
         } catch (Exception e){
             System.out.println(exceptionMsg);
             e.printStackTrace();
         }
     }
+
+    ///////////////// Main controller initialize helpers
+
+    private void setupTableViewRowClickHandlers(){
+
+        // lambda expression for making a row factory that allows for a mouseClick event handler for each row shown
+        // upon double-clicking a row the appointment edit screen will be opened.
+        appointmentTableView.setRowFactory( tv -> {
+            TableRow<Appointment> appointmentRow = new TableRow<>();
+            appointmentRow.setOnMouseClicked(event -> {
+                if (event.getClickCount() == 2 && (! appointmentRow.isEmpty()) ) {
+                    Appointment appointment = appointmentRow.getItem();
+                    loadAppointmentScreen(appointment, "Edit Appointment", "Could not load edit");
+                }
+            });
+            return appointmentRow ;
+        });
+
+        // lambda expression for making a row factory that allows for a mouseClick event handler for each row shown
+        // upon double-clicking a row the customer edit screen will be opened.
+        customerTableView.setRowFactory( tv -> {
+            TableRow<Customer> customerRow = new TableRow<>();
+            customerRow.setOnMouseClicked(event -> {
+                if (event.getClickCount() == 2 && (! customerRow.isEmpty()) ) {
+                    Customer customer = customerRow.getItem();
+                    loadCustomerScreen(customer, "Edit Customer", "Could not load edit");
+                }
+            });
+            return customerRow ;
+        });
+
+    }// end setupTableViewRowClickHandlers
 
 
 }// end Main
