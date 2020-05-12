@@ -108,12 +108,13 @@ public class Customers implements Initializable {
             selectedCustomer.setPhone(phone);
 
             index = CustomerMysqlDao.updateCustomer(selectedCustomer);
-            //Scheduler.setAppointment(selectedAppointmentIndex, selectedAppointment);
+            Scheduler.setCustomer(selectedCustomerIndex, selectedCustomer);// essentially refresh tableView
         }
 
         if(index > 0) {
             App.closeThisWindow(actionEvent);
-            mainController.checkWeekCheckBox(new ActionEvent());
+            // will deprecate in favor of Scheduler.setCustomer for this case as opposed to appointment tableView
+            //mainController.refreshCustomerTableView();
         }
     }
 

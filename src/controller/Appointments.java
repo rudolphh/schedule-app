@@ -106,7 +106,7 @@ public class Appointments implements Initializable {
 
         // extract from fields
         User user = userCombo.getSelectionModel().getSelectedItem();
-        int userId = 0;
+        int userId;
         try {
             userId = user.getId();
         } catch (NullPointerException e){
@@ -117,7 +117,7 @@ public class Appointments implements Initializable {
         String userName = user.getUserName();
 
         Customer customer = customerCombo.getSelectionModel().getSelectedItem();
-        int customerId = 0;
+        int customerId;
 
         try {
             customerId = customer.getCustomerId();
@@ -165,7 +165,7 @@ public class Appointments implements Initializable {
             return;
         }
 
-        int index = 0;
+        int index;
         if(selectedAppointment == null){
             selectedAppointment = new Appointment(0, customerId, userId, type, userName, customerName,
                                                     start, end);
@@ -185,6 +185,7 @@ public class Appointments implements Initializable {
 
         if(index > 0) {
             App.closeThisWindow(actionEvent);
+            // since the calendar tableView is more complex we can't just use Scheduler.setAppointment for updating
             mainController.checkWeekCheckBox(new ActionEvent());
         }
     }

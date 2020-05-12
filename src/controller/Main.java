@@ -137,18 +137,18 @@ public class Main implements Initializable {
     @FXML
     private void selectMonthCombo(ActionEvent event) {
         weekCheckBox.setSelected(false);
-        showMonthlyAppointments();
+        refreshMonthlyAppointmentsTableView();
         resetWeekCombo(0);
     }
 
     @FXML
     private void selectWeekCombo(ActionEvent actionEvent){
         if(weekCheckBox.isSelected())
-            showWeeklyAppointments();
+            refreshWeeklyAppointmentsTableView();
     }
 
     ///////////// show methods
-    private void showWeeklyAppointments(){
+    private void refreshWeeklyAppointmentsTableView(){
         int monthStart = monthCombo.getSelectionModel().getSelectedIndex() + 1;
         int currentWeek = weekCombo.getSelectionModel().getSelectedIndex() + 1;
         int dateStart = currentWeek * 7 - 6;
@@ -158,7 +158,7 @@ public class Main implements Initializable {
         appointmentTableView.setItems(Scheduler.getAllAppointments());
     }
 
-    private void showMonthlyAppointments(){
+    private void refreshMonthlyAppointmentsTableView(){
         int monthStart = monthCombo.getSelectionModel().getSelectedIndex() + 1;
         appointmentTableView.getItems().clear();
         AppointmentMysqlDao.findAllAppointments(monthStart);
@@ -184,10 +184,10 @@ public class Main implements Initializable {
         // checkbox has been checked or unchecked
         if (weekCheckBox.isSelected()) {
             weekCombo.setDisable(false);
-            showWeeklyAppointments();
+            refreshWeeklyAppointmentsTableView();
         } else {
             weekCombo.setDisable(true);
-            showMonthlyAppointments();
+            refreshMonthlyAppointmentsTableView();
         }
     }
 
@@ -255,6 +255,12 @@ public class Main implements Initializable {
     }
 
     ///////////////////////////// Customer tab
+
+    public void refreshCustomerTableView() {
+        customerTableView.getItems().clear();
+        CustomerMysqlDao.findAllCustomers();
+        customerTableView.setItems(Scheduler.getAllCustomers());
+    }
 
     public void clickNewCustomerBtn(ActionEvent actionEvent) {
         loadCustomerScreen(null, "New Customer",
