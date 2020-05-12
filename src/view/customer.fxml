@@ -39,7 +39,7 @@
                                         <Insets left="40.0" />
                                     </HBox.margin>
                                 </Label>
-                                <TextField fx:id="customerNameTextField" promptText="customer name" />
+                                <TextField fx:id="nameTextField" promptText="customer name" />
                             </children>
                      <padding>
                         <Insets bottom="10.0" top="10.0" />
@@ -58,6 +58,19 @@
                         <Insets bottom="10.0" top="10.0" />
                      </padding>
                         </HBox>
+                  <HBox alignment="CENTER">
+                     <children>
+                        <Label minWidth="100.0" text="Address 2">
+                           <HBox.margin>
+                              <Insets left="40.0" />
+                           </HBox.margin>
+                        </Label>
+                        <TextField fx:id="address2TextField" promptText="address 2" />
+                     </children>
+                     <padding>
+                        <Insets bottom="10.0" top="10.0" />
+                     </padding>
+                  </HBox>
                         <HBox alignment="CENTER">
                             <children>
                                 <Label minWidth="100.0" text="City">

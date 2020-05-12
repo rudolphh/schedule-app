@@ -53,7 +53,7 @@ public class Scheduler {
     }
 
     // used if we implement a search
-    public static ObservableList<Customer> lookupProduct(String customerName){
+    public static ObservableList<Customer> lookupCustomer(String customerName){
         ObservableList<Customer> result = FXCollections.observableArrayList();
         for(Customer c : allCustomers){
             if(c.getCustomerName().equals(customerName)){

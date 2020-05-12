@@ -307,7 +307,8 @@ public class Main implements Initializable {
             newWindow.setResizable(false);
             newWindow.setScene(new Scene(theParent));
 
-            controller.initScreenLabel(customer.getCustomerName());
+            if (customer != null)
+                controller.initScreenLabel(customer.getCustomerName());
             controller.setCustomer(customer, this);
             controller.initializeFieldData();
             newWindow.show();
