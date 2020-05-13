@@ -159,6 +159,7 @@ public class Appointments implements Initializable {
         // if diffStart negative, start time is before business hour start
         // if diffEnd is negative, end time is after business hour end
         if(diffStart < 0 || diffEnd < 0){
+            // Business hours are between 08:00 and 17:00 (8AM to 5PM)
             App.dialog(Alert.AlertType.INFORMATION, "Not Between Business Hours",
                     "Start and end time must be between business hours 8AM to 5PM",
                     "You must enter start and end times between business hours");

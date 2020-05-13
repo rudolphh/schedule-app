@@ -113,8 +113,6 @@ public class Customers implements Initializable {
 
         if(index > 0) {
             App.closeThisWindow(actionEvent);
-            // will deprecate in favor of Scheduler.setCustomer for this case as opposed to appointment tableView
-            //mainController.refreshCustomerTableView();
         }
     }
 

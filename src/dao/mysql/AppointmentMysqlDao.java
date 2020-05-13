@@ -11,33 +11,16 @@ import java.sql.*;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 
 public class AppointmentMysqlDao {
 
     private static final LocalDate currentDate = LocalDate.now();
 
     ///////////////////////// Public methods
-    public static void findAllAppointments(int monthStart){
-        findAllAppointments(monthStart, 0);
-    }
 
-    public static void findAllAppointments(int monthStart, int dayStart){
-        String startTime = makeDBStartDateString(monthStart, dayStart);
-        String endTime = makeDBEndDateString(monthStart, dayStart);
-
-        String sql = "Select " +
-                "a.appointmentId, a.customerId, a.userId, u.userName, c.customerName, a.type, a.start, a.end " +
-                "from appointment a " +
-                "inner join customer c on a.customerId = c.customerId " +
-                "inner join user u on a.userId = u.userId " +
-                "where a.start >= ? and a.end < ? " +
-                "order by a.start asc";
-
+    private static void addResultsToScheduler(ResultSet resultSet){
         try {
-            PreparedStatement preparedStatement = DBConnection.startConnection().prepareStatement(sql);
-            preparedStatement.setString(1, startTime);
-            preparedStatement.setString(2, endTime);
-            ResultSet resultSet = preparedStatement.executeQuery();
 
             while(resultSet.next()){
                 int appointmentId = resultSet.getInt("appointmentId");
@@ -57,11 +40,55 @@ public class AppointmentMysqlDao {
         }
     }
 
+    public static void findAllAppointments(){
+        String sql = "Select " +
+                "a.appointmentId, a.customerId, a.userId, u.userName, c.customerName, a.type, a.start, a.end " +
+                "from appointment a " +
+                "inner join customer c on a.customerId = c.customerId " +
+                "inner join user u on a.userId = u.userId;";
+
+        try {
+            PreparedStatement preparedStatement = DBConnection.startConnection().prepareStatement(sql);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            addResultsToScheduler(resultSet);
+        } catch (SQLException e){
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public static void findAllAppointments(int monthStart){
+        findAllAppointments(monthStart, 0);
+    }
+
+    public static void findAllAppointments(int monthStart, int dayStart){
+        String startTime = makeDBStartDateString(monthStart, dayStart);
+        String endTime = makeDBEndDateString(monthStart, dayStart);
+
+        String sql = "Select " +
+                "a.appointmentId, a.customerId, a.userId, u.userName, c.customerName, a.type, a.start, a.end " +
+                "from appointment a " +
+                "inner join customer c on a.customerId = c.customerId " +
+                "inner join user u on a.userId = u.userId " +
+                "where a.start >= ? and a.end < ? ;";
+
+        try {
+            PreparedStatement preparedStatement = DBConnection.startConnection().prepareStatement(sql);
+            preparedStatement.setString(1, startTime);
+            preparedStatement.setString(2, endTime);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            addResultsToScheduler(resultSet);
+        } catch (SQLException e){
+            System.out.println(e.getMessage());
+        }
+
+    }
+
     public static int createAppointment(Appointment appointment){
         String sql = "INSERT INTO appointment (customerId, userId, title, description, location, contact, type, " +
                 "url, start, end, createDate, createdBy, lastUpdate, lastUpdateBy) " +
                 "VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        ResultSet rs = null;
 
         try{
             PreparedStatement preparedStatement = DBConnection.startConnection().prepareStatement(sql,
@@ -82,7 +109,7 @@ public class AppointmentMysqlDao {
             preparedStatement.setString(14, appointment.getUserName());
 
             preparedStatement.executeUpdate();
-            rs = preparedStatement.getGeneratedKeys();
+            ResultSet rs = preparedStatement.getGeneratedKeys();
             if(rs != null && rs.next()){
                 return rs.getInt(1);
             } else return 0;
@@ -146,7 +173,13 @@ public class AppointmentMysqlDao {
     private static String makeDBStartDateString(int monthStart, int dayStart){
         final int defaultDay = dayStart;
         dayStart = defaultDay == 0 ? 1 : defaultDay;
-        String startTime = makeDateString(currentDate.getYear(), monthStart, dayStart);
+
+        String startTime;
+        if (monthStart == 13){
+            startTime = makeDateString(currentDate.getYear()+1, 1, dayStart);
+        } else {
+            startTime = makeDateString(currentDate.getYear(), monthStart, dayStart);
+        }
 
         // convert the appointment times we're looking for (in our time zone) to UTC time within the database
         LocalDateTime starting = TimeChanger.ldtFromString(startTime, "yyyy-MM-dd HH:mm:ss");
@@ -156,13 +189,19 @@ public class AppointmentMysqlDao {
     /*
         if dayStart is zero we're querying appointments for the entire month,
         otherwise dayStart can only ever be 1, 8, 15, 22, or 29.
-        At 29, or (22 for Feb) we query from dayStart to the beginning of the next month
+        At 29, or (22 for Feb) we query from dayStart to the end of the current month
     */
     private static String makeDBEndDateString (int monthStart, int dayStart) {
         boolean nextMonthEnd = (dayStart == 0 || (dayStart == 22 && monthStart == 2) || dayStart == 29);
         int monthEnd = nextMonthEnd ? monthStart+1 : monthStart;
         int dayEnd = nextMonthEnd ? 1 : dayStart+7;
-        String endTime = makeDateString(currentDate.getYear(), monthEnd, dayEnd);
+
+        String endTime;
+        if(monthEnd == 13) {
+            endTime = makeDateString(currentDate.getYear()+1, 1, 1);
+        } else {
+            endTime = makeDateString(currentDate.getYear(), monthEnd, dayEnd);
+        }
 
         // convert the appointment times we're looking for (in our time zone) to UTC time within the database
         LocalDateTime ending = TimeChanger.ldtFromString(endTime, "yyyy-MM-dd HH:mm:ss");
