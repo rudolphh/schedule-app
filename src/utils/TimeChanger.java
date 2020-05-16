@@ -12,11 +12,13 @@ public class TimeChanger {
     private static final ZoneId utc = ZoneId.of("UTC");
     private static final ZoneId local = ZoneId.systemDefault();
 
+    // take a String, and according to the DateTime format given, convert to LocalDateTime
     public static LocalDateTime ldtFromString(String ldtStr, String pattern){
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
         return LocalDateTime.parse(ldtStr, formatter);
     }
 
+    // convert Timestamp in UTC from DB to LocalDateTime for use in the program
     public static LocalDateTime fromUTC(Timestamp timestamp){
         // convert to local date time without zone information
         LocalDateTime localDateTime = timestamp.toLocalDateTime();
@@ -30,6 +32,7 @@ public class TimeChanger {
         return localZoned.toLocalDateTime();// return the local time
     }
 
+    // convert LocalDateTime to UTC Timestamp for DB
     public static Timestamp toUTC(LocalDateTime localDateTime){
 
         ZonedDateTime localZoned = localDateTime.atZone(local);// attach local time zone information

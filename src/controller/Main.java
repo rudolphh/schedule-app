@@ -145,6 +145,7 @@ public class Main implements Initializable {
         resetWeekCombo();
 
         if(monthCombo.getSelectionModel().getSelectedItem().equals("ALL")){
+            appointmentTableView.getItems().clear();
             AppointmentMysqlDao.findAllAppointments();
             weekCheckBox.setDisable(true);
         } else {
@@ -167,7 +168,7 @@ public class Main implements Initializable {
 
         appointmentTableView.getItems().clear();
         AppointmentMysqlDao.findAllAppointments(monthStart, dateStart);// update appointments
-        appointmentTableView.setItems(Scheduler.getAllAppointments());
+        //appointmentTableView.setItems(Scheduler.getAllAppointments()); not needed, being set by scheduler
     }
 
     private void refreshMonthlyAppointmentsTableView(){
@@ -176,7 +177,7 @@ public class Main implements Initializable {
 
         appointmentTableView.getItems().clear();
         AppointmentMysqlDao.findAllAppointments(monthStart);
-        appointmentTableView.setItems(Scheduler.getAllAppointments());
+        //appointmentTableView.setItems(Scheduler.getAllAppointments()); not needed, being set by scheduler
     }
 
     ///////////////////////////

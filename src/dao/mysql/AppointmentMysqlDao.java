@@ -45,7 +45,8 @@ public class AppointmentMysqlDao {
                 "a.appointmentId, a.customerId, a.userId, u.userName, c.customerName, a.type, a.start, a.end " +
                 "from appointment a " +
                 "inner join customer c on a.customerId = c.customerId " +
-                "inner join user u on a.userId = u.userId;";
+                "inner join user u on a.userId = u.userId " +
+                "order by a.start;";
 
         try {
             PreparedStatement preparedStatement = DBConnection.startConnection().prepareStatement(sql);
@@ -70,7 +71,8 @@ public class AppointmentMysqlDao {
                 "from appointment a " +
                 "inner join customer c on a.customerId = c.customerId " +
                 "inner join user u on a.userId = u.userId " +
-                "where a.start >= ? and a.end < ? ;";
+                "where a.start >= ? and a.end < ? " +
+                "order by a.start;";
 
         try {
             PreparedStatement preparedStatement = DBConnection.startConnection().prepareStatement(sql);

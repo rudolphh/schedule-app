@@ -90,12 +90,18 @@ public class CustomerMysqlDao {
 
         Connection conn = DBConnection.startConnection();
         try {
-            PreparedStatement selectCountry = conn.prepareStatement(selectSql);
-            selectCountry.setString(1, customer.getCountry().toLowerCase());
-            ResultSet selectCountryResultSet = selectCountry.executeQuery();
-            if (selectCountryResultSet.next()) {
+            PreparedStatement selectStatement = conn.prepareStatement(selectSql);
+
+            if(columnLabel.equals("country"))
+                selectStatement.setString(1, customer.getCountry().toLowerCase());
+            else if (columnLabel.equals("city"))
+                selectStatement.setString(1, customer.getCity().toLowerCase());
+
+            ResultSet selectStatementResultSet = selectStatement.executeQuery();
+
+            if (selectStatementResultSet.next()) {
                 try {
-                    id = selectCountryResultSet.getInt(columnLabel+"Id");
+                    id = selectStatementResultSet.getInt(columnLabel+"Id");
                 } catch (SQLException e){
                     System.out.println(e.getMessage());
                 }
@@ -128,11 +134,9 @@ public class CustomerMysqlDao {
         Timestamp lastUpdate = TimeChanger.toUTC(LocalDateTime.now());
         String lastUpdatedBy = Scheduler.getLoggedUser().getUserName();
 
-        String selectCountrySql = "SELECT countryId from country " +
-                "WHERE LCASE(country) = ?;";
+        String selectCountrySql = "SELECT countryId from country WHERE LCASE(country) = ?;";
 
-        String selectCitySql = "SELECT cityId from city " +
-                "WHERE LCASE(city) = ?;";
+        String selectCitySql = "SELECT cityId from city WHERE LCASE(city) = ?;";
 
         countryId = insertOrExists(selectCountrySql, customer, "country", countryId);
         cityId = insertOrExists(selectCitySql, customer, "city", cityId);
@@ -144,7 +148,7 @@ public class CustomerMysqlDao {
             citySql = "INSERT INTO city VALUES ( DEFAULT, ?, GREATEST(? , LAST_INSERT_ID()), ?, ?, ?, ?);";
 
         String addressSql = "INSERT INTO address " +
-                "VALUES ( DEFAULT, ?, ?, GREATEST( ?, LAST_INSERT_ID()), ?, ?, ?, ?, ?, ?);";
+                    "VALUES ( DEFAULT, ?, ?, GREATEST( ?, LAST_INSERT_ID()), ?, ?, ?, ?, ?, ?);";
 
         String customerSql = "INSERT INTO customer " +
                 "VALUES ( DEFAULT, ?, GREATEST( ?, LAST_INSERT_ID()), ?, ?, ?, ?, ? );";

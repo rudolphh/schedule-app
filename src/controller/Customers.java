@@ -5,16 +5,16 @@ import dao.mysql.CustomerMysqlDao;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import model.Appointment;
 import model.Customer;
 import model.Scheduler;
 
 import java.net.URL;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class Customers implements Initializable {
@@ -59,44 +59,87 @@ public class Customers implements Initializable {
     }
 
     // checks if a field is empty, if not returns the field data otherwise Alert and return;
-    private String fieldEmpty(String fieldName, TextField textField){
+    private String fieldEmpty(TextField textField, String fieldName) throws RuntimeException{
+
         String field = textField.getText();
-        if(field.isEmpty()){
-            App.dialog(Alert.AlertType.INFORMATION, "Customer " + fieldName, "No customer " + fieldName,
-                    "The customer needs a(n) " + fieldName + ".");
-            return "";
-        } else return field;
+        if (field.isEmpty()) throw new RuntimeException(fieldName + " field is empty");
+        else return field;
     }
 
-    public void clickSaveCustomerBtn(ActionEvent actionEvent) throws SQLException {
+    private Optional<ButtonType> fieldEmptyDialog(String fieldName){
+        return App.dialog(Alert.AlertType.INFORMATION, "Customer " + fieldName, "No customer " + fieldName,
+                "The customer needs a(n) " + fieldName + ".");
+    }
+
+    private String validateField(TextField textField, String fieldName){
+
+        try {
+            return fieldEmpty(textField, fieldName);
+        } catch (RuntimeException e){
+            System.out.println(e.getMessage());
+            return fieldName;
+        }
+    }
+
+    public void clickSaveCustomerBtn(ActionEvent actionEvent) {
 
         // extract the fields
-        String name = fieldEmpty("name", nameTextField);
-        if(name.isEmpty()) return;
+        String name = validateField(nameTextField, "name");
+        if(name.equals("name")) {
+            fieldEmptyDialog("name");
+            nameTextField.requestFocus();
+            return;
+        }
 
-        String address = fieldEmpty("address", addressTextField);
-        if(address.isEmpty()) return;
+        String address = validateField(addressTextField, "address");
+        if(address.equals("address")) {
+            fieldEmptyDialog("address");
+            addressTextField.requestFocus();
+            return;
+        }
 
-        String address2 = address2TextField.getText();
+        String address2 = address2TextField.getText();// no need to validate it can be empty
 
-        String city = fieldEmpty("city", cityTextField);
-        if(city.isEmpty()) return;
+        String city = validateField(cityTextField, "city");
+        if(city.equals("city")) {
+            fieldEmptyDialog("city");
+            cityTextField.requestFocus();
+            return;
+        }
 
-        String country = fieldEmpty("country", countryTextField);
-        if(country.isEmpty()) return;
+        String country = validateField(countryTextField, "country");
+        if(country.equals("country")) {
+            fieldEmptyDialog("country");
+            countryTextField.requestFocus();
+            return;
+        }
 
-        String postal = fieldEmpty("postal", postalTextField);
-        if(postal.isEmpty()) return;
+        String postal = validateField(postalTextField, "postal");
+        if(postal.equals("postal")) {
+            fieldEmptyDialog("postal");
+            postalTextField.requestFocus();
+            return;
+        }
 
-        String phone = fieldEmpty("phone", phoneTextField);
-        if(phone.isEmpty()) return;
+        String phone = validateField(phoneTextField, "phone");
+        if(phone.equals("phone")) {
+            fieldEmptyDialog("phone");
+            phoneTextField.requestFocus();
+            return;
+        }
 
-        int index;
+
+        int index = 0;
         if(selectedCustomer == null){
             selectedCustomer = new Customer(0, 0, 0, 0, name, address, address2,
                     city, country, postal, phone, 1);
-            index = CustomerMysqlDao.createCustomer(selectedCustomer);
-            //Scheduler.addAppointment(selectedAppointment);
+            try {
+                index = CustomerMysqlDao.createCustomer(selectedCustomer);
+                Scheduler.addCustomer(selectedCustomer);
+            } catch (SQLException e){
+                e.printStackTrace();
+                System.out.println(e.getMessage());
+            }
         } else {
             int selectedCustomerIndex = Scheduler.getAllCustomers().indexOf(selectedCustomer);
             selectedCustomer.setCustomerName(name);
@@ -107,8 +150,13 @@ public class Customers implements Initializable {
             selectedCustomer.setPostalCode(postal);
             selectedCustomer.setPhone(phone);
 
-            index = CustomerMysqlDao.updateCustomer(selectedCustomer);
-            Scheduler.setCustomer(selectedCustomerIndex, selectedCustomer);// essentially refresh tableView
+            try {
+                index = CustomerMysqlDao.updateCustomer(selectedCustomer);
+                Scheduler.setCustomer(selectedCustomerIndex, selectedCustomer);// essentially refresh tableView
+            } catch (SQLException e){
+                e.printStackTrace();
+                System.out.println(e.getMessage());
+            }
         }
 
         if(index > 0) {
@@ -117,6 +165,12 @@ public class Customers implements Initializable {
     }
 
     public void clickCancelCustomerBtn(ActionEvent actionEvent) {
+        Optional<ButtonType> result = App.dialog(Alert.AlertType.CONFIRMATION,
+                "Cancel Add/Update Customer", "Confirm cancel",
+                "Are you sure you want to cancel?\n\n");
+
+        if (result.isPresent() && result.get() == ButtonType.OK)
+            App.closeThisWindow(actionEvent);
     }
 
     ///////////////////////// Controller methods
@@ -144,4 +198,4 @@ public class Customers implements Initializable {
         }
     }
 
-}// end Customers controller
+} // end Customers controller
