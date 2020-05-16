@@ -166,6 +166,16 @@ public class Appointments implements Initializable {
             return;
         }
 
+        try {
+            AppointmentMysqlDao.findOverlappingAppointment(user, start, end);
+        } catch (RuntimeException e){
+            System.out.println(e.getMessage());
+            App.dialog(Alert.AlertType.INFORMATION, "Overlapping Appointment Times",
+                    "The appointment being scheduled overlaps another set appointment",
+                    "An appointment is already scheduled during this time.");
+            return;
+        }
+
         int index;
         if(selectedAppointment == null){
             selectedAppointment = new Appointment(0, customerId, userId, type, userName, customerName,
@@ -187,7 +197,7 @@ public class Appointments implements Initializable {
         if(index > 0) {
             App.closeThisWindow(actionEvent);
             // since the calendar tableView is more complex we can't just use Scheduler.setAppointment for updating
-            mainController.checkWeekCheckBox(new ActionEvent());
+            mainController.checkWeekCheckBox(new ActionEvent());// hacky, change in future
         }
     }
 

@@ -4,6 +4,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import model.Appointment;
 import model.Scheduler;
+import model.User;
 import utils.DBConnection;
 import utils.TimeChanger;
 
@@ -19,27 +20,7 @@ public class AppointmentMysqlDao {
 
     ///////////////////////// Public methods
 
-    private static void addResultsToScheduler(ResultSet resultSet){
-        try {
-
-            while(resultSet.next()){
-                int appointmentId = resultSet.getInt("appointmentId");
-                int customerId = resultSet.getInt("customerId");
-                int userId = resultSet.getInt("userId");
-                String type = resultSet.getString("type");
-                String userName = resultSet.getString("userName");
-                String customerName = resultSet.getString("customerName");
-                Timestamp start = resultSet.getTimestamp("start");
-                Timestamp end = resultSet.getTimestamp("end");
-
-                Scheduler.addAppointment(new Appointment(appointmentId, customerId, userId, type, userName, customerName,
-                        TimeChanger.fromUTC(start), TimeChanger.fromUTC(end)));
-            }
-        } catch (SQLException e){
-            System.out.println(e.getMessage());
-        }
-    }
-
+    //////////////// Read
     public static void findAllAppointments(){
         String sql = "Select " +
                 "a.appointmentId, a.customerId, a.userId, u.userName, c.customerName, a.type, a.start, a.end " +
@@ -87,6 +68,30 @@ public class AppointmentMysqlDao {
 
     }
 
+    public static void findOverlappingAppointment(User user, LocalDateTime start, LocalDateTime end){
+
+        String sql = "SELECT * FROM appointment " +
+                "WHERE userId = ? " +
+                "AND ( ? >= start AND ? <= end );";
+
+        try {
+            PreparedStatement preparedStatement = DBConnection.startConnection().prepareStatement(sql);
+            preparedStatement.setInt(1, user.getId());
+            preparedStatement.setTimestamp(2, TimeChanger.toUTC(end));
+            preparedStatement.setTimestamp(3, TimeChanger.toUTC(start));
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if(resultSet != null && resultSet.next()){
+                throw new RuntimeException("Scheduling appointment time overlapping another appointment time for user");
+            }
+        } catch (SQLException e){
+            e.printStackTrace();
+            System.out.println(e.getMessage());
+        }
+
+    }
+
+    ////////////  Create
     public static int createAppointment(Appointment appointment){
         String sql = "INSERT INTO appointment (customerId, userId, title, description, location, contact, type, " +
                 "url, start, end, createDate, createdBy, lastUpdate, lastUpdateBy) " +
@@ -123,6 +128,7 @@ public class AppointmentMysqlDao {
         }
     }
 
+    /////////////// Update
     public static int updateAppointment(Appointment appointment){
         int index = appointment.getAppointmentId();
         String sql = "UPDATE appointment " +
@@ -150,6 +156,7 @@ public class AppointmentMysqlDao {
         return index;
     }
 
+    //////////// Delete
     public static boolean deleteAppointment(int appointmentId){
         String sql = "DELETE from appointment where appointmentId = ?";
 
@@ -166,6 +173,27 @@ public class AppointmentMysqlDao {
     }
 
     //////////////////////// Private helper methods
+
+    private static void addResultsToScheduler(ResultSet resultSet){
+        try {
+
+            while(resultSet.next()){
+                int appointmentId = resultSet.getInt("appointmentId");
+                int customerId = resultSet.getInt("customerId");
+                int userId = resultSet.getInt("userId");
+                String type = resultSet.getString("type");
+                String userName = resultSet.getString("userName");
+                String customerName = resultSet.getString("customerName");
+                Timestamp start = resultSet.getTimestamp("start");
+                Timestamp end = resultSet.getTimestamp("end");
+
+                Scheduler.addAppointment(new Appointment(appointmentId, customerId, userId, type, userName, customerName,
+                        TimeChanger.fromUTC(start), TimeChanger.fromUTC(end)));
+            }
+        } catch (SQLException e){
+            System.out.println(e.getMessage());
+        }
+    }
 
     private static String makeDateString(int year, int month, int day){
         DecimalFormat formatter = new DecimalFormat("00");

@@ -4,6 +4,7 @@ import dao.mysql.AppointmentMysqlDao;
 import dao.mysql.CustomerMysqlDao;
 import dao.mysql.UserMysqlDao;
 import javafx.beans.property.ReadOnlyStringWrapper;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -112,6 +113,7 @@ public class Main implements Initializable {
 
         customerPhoneCol.setCellValueFactory(new PropertyValueFactory<>("phone"));
 
+        /////////////  set table views
         appointmentTableView.setItems(Scheduler.getAllAppointments());
 
         setupTableViewRowClickHandlers();// set up the row mouse click handlers for both table views
@@ -119,6 +121,8 @@ public class Main implements Initializable {
         appointmentTableView.setPlaceholder(new Label("No appointments during this time"));
         customerTableView.setItems(Scheduler.getAllCustomers());
         customerTableView.setPlaceholder(new Label("Currently no customers"));
+
+        // alert if appointment within 15 min of logging in.
 
     }// end initialize
 
@@ -176,7 +180,8 @@ public class Main implements Initializable {
         int monthStart = monthCombo.getSelectionModel().getSelectedIndex();
 
         appointmentTableView.getItems().clear();
-        AppointmentMysqlDao.findAllAppointments(monthStart);
+        if(monthStart == 0) AppointmentMysqlDao.findAllAppointments();
+        else AppointmentMysqlDao.findAllAppointments(monthStart);
         //appointmentTableView.setItems(Scheduler.getAllAppointments()); not needed, being set by scheduler
     }
 
