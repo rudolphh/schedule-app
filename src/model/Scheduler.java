@@ -7,6 +7,7 @@ public class Scheduler {
     private static final ObservableList<Appointment> allAppointments = FXCollections.observableArrayList();
     private static final ObservableList<Customer> allCustomers = FXCollections.observableArrayList();
     private static final ObservableList<User> allUsers = FXCollections.observableArrayList();
+    private static final ObservableList<Appointment> reportAppointments = FXCollections.observableArrayList();
     private static User loggedUser = null;
 
     ///////////////////////// methods

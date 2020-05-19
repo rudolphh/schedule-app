@@ -96,7 +96,7 @@ public class AppointmentMysqlDao {
 
     }
 
-    public static int appointmentWithinFifteenMin(User user){
+    public static int findAppointmentWithinFifteenMin(User user){
 
         LocalDateTime localDateTime = LocalDateTime.now();
         LocalDateTime fifteenMinutesLater = localDateTime.plusMinutes(15);
@@ -123,6 +123,30 @@ public class AppointmentMysqlDao {
 
         return 0;
     }
+
+    public static int findAppointmentTypes(int monthStart){
+        String startTime = makeDBStartDateString(monthStart, 0);
+        String endTime = makeDBEndDateString(monthStart, 0);
+
+        String sql = "Select COUNT(DISTINCT type) " +
+                "from appointment " +
+                "where start >= ? and end < ? ";
+
+        try {
+            PreparedStatement preparedStatement = DBConnection.startConnection().prepareStatement(sql);
+            preparedStatement.setString(1, startTime);
+            preparedStatement.setString(2, endTime);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if(resultSet != null && resultSet.next()) return resultSet.getInt(1);
+
+        } catch (SQLException e){
+            System.out.println(e.getMessage());
+            return 0;
+        }
+        return 0;
+    }
+
 
     ////////////  Create
     public static int createAppointment(Appointment appointment){

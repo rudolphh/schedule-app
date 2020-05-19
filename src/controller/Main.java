@@ -20,6 +20,7 @@ import model.User;
 
 import java.net.URL;
 import java.time.LocalDate;
+import java.time.Month;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
@@ -27,15 +28,6 @@ import java.util.ResourceBundle;
 
 
 public class Main implements Initializable {
-
-    @FXML
-    private ComboBox<String> reportsCombo;
-
-    @FXML
-    private Separator reportSubSelectionSeparator;
-
-    @FXML
-    private ComboBox<User> reportUserCombo;
 
     @FXML
     private ComboBox<String> monthCombo;
@@ -79,7 +71,17 @@ public class Main implements Initializable {
     //////////// Report TableView
 
     @FXML
+    private ComboBox<String> reportsCombo;
+
+    @FXML
+    private Separator reportSubSelectionSeparator;
+
+    @FXML
+    private ComboBox<User> reportUserCombo;
+
+    @FXML
     private TableView<Appointment> reportTableView;
+
 
     //////////// Current date value
     private static final LocalDate currentDate = LocalDate.now();
@@ -117,6 +119,7 @@ public class Main implements Initializable {
         consultantCol.setCellValueFactory(new PropertyValueFactory<>("userName"));
         customerCol.setCellValueFactory(new PropertyValueFactory<>("customerName"));
 
+
         ////////// customer table view columns
         customerNameCol.setCellValueFactory(new PropertyValueFactory<>("customerName"));
 
@@ -126,6 +129,14 @@ public class Main implements Initializable {
                         cellData.getValue().getPostalCode() + " " + cellData.getValue().getCountry()));
 
         customerPhoneCol.setCellValueFactory(new PropertyValueFactory<>("phone"));
+
+
+        //////// report table view columns
+
+//        TableColumn<Appointment, String> reportTypeCol = new TableColumn<>("Type");
+//        TableColumn<Appointment, int> reportTypeCountCol = new TableColumn<>("")
+//        customerPhoneCol.setCellValueFactory(new PropertyValueFactory<>("phone"));
+
 
         /////////////  set table views
         appointmentTableView.setItems(Scheduler.getAllAppointments());
@@ -137,7 +148,7 @@ public class Main implements Initializable {
         customerTableView.setPlaceholder(new Label("Currently no customers"));
 
         // alert if appointment within 15 min of logging in.
-        int appointmentNearId = AppointmentMysqlDao.appointmentWithinFifteenMin(Scheduler.getLoggedUser());
+        int appointmentNearId = AppointmentMysqlDao.findAppointmentWithinFifteenMin(Scheduler.getLoggedUser());
         if( appointmentNearId > 0){
             Optional<ButtonType> result = App.dialog(Alert.AlertType.INFORMATION, "Scheduled Appointment Alert",
                     "Scheduled appointment start time near",
@@ -157,11 +168,6 @@ public class Main implements Initializable {
 
     //////////////////////////////////
 
-    private void initializeReportsCombo(){
-        reportsCombo.getItems().addAll("Select Report", "Appointment Types", "Consultant Schedules");
-        reportsCombo.setValue("Select Report");
-    }
-
     private void initializeMonthCombo(){
         monthCombo.getItems().addAll("ALL", "January", "February", "March", "April", "May", "June",
                 "July",  "August", "September", "October", "November", "December");
@@ -175,35 +181,6 @@ public class Main implements Initializable {
         weekCheckBox.setDisable(true);
         monthCombo.setValue("ALL");// and use it to set initial value of month combo (can use currentMonth)
         monthCombo.setVisibleRowCount(6);
-    }
-
-
-    private void hideSelectUser(){
-        reportSubSelectionSeparator.setVisible(false);
-        reportUserCombo.setVisible(false);
-    }
-
-    private void showSelectUser(){
-        reportSubSelectionSeparator.setVisible(true);
-        reportUserCombo.setVisible(true);
-    }
-
-    @FXML
-    private void selectReportsCombo(){
-
-        String reportSelection = reportsCombo.getSelectionModel().getSelectedItem();
-        if(reportSelection.equals("Consultant Schedules")){
-            // make subselection separator and combo for selecting user visible
-            showSelectUser();
-            reportUserCombo.setItems(Scheduler.getAllUsers());
-        } else if (reportSelection.equals("Appointment Types")){
-            hideSelectUser();
-
-        } else {
-            hideSelectUser();
-            reportTableView.getItems().clear();
-            reportTableView.getColumns().clear();
-        }
     }
 
     @FXML
@@ -280,6 +257,7 @@ public class Main implements Initializable {
             refreshMonthlyAppointmentsTableView();
         }
     }
+
 
     //////////////////////////////// Appointment tab
 
@@ -407,6 +385,61 @@ public class Main implements Initializable {
             e.printStackTrace();
         }
     }
+
+
+    ////////////////  Reports tab
+
+    private void initializeReportsCombo(){
+        reportsCombo.getItems().addAll("Select Report", "Appointment Types", "Consultant Schedules");
+        reportsCombo.setValue("Select Report");
+    }
+
+    private void hideSelectUser(){
+        reportSubSelectionSeparator.setVisible(false);
+        reportUserCombo.setVisible(false);
+    }
+
+    private void showSelectUser(){
+        reportSubSelectionSeparator.setVisible(true);
+        reportUserCombo.setVisible(true);
+    }
+
+    @FXML void selectReportsTab(){
+        reportsCombo.setValue("Select Report");
+    }
+
+    @FXML
+    private void selectReportsCombo(){
+
+        String reportSelection = reportsCombo.getSelectionModel().getSelectedItem();
+
+        Month month = currentDate.getMonth();
+
+        String currentMonth = month.toString();// returns all uppercase name of month
+        // leave first letter capitalized, lowercase the rest
+        currentMonth = currentMonth.charAt(0) + currentMonth.substring(1).toLowerCase();
+
+        int monthStart = month.getValue();
+
+        if(reportSelection.equals("Consultant Schedules")){
+            // make subselection separator and combo for selecting user visible
+            showSelectUser();
+            reportUserCombo.setItems(Scheduler.getAllUsers());
+
+        } else if (reportSelection.equals("Appointment Types")){
+            hideSelectUser();
+            int appointmentTypes = AppointmentMysqlDao.findAppointmentTypes(monthStart);
+            App.dialog(Alert.AlertType.INFORMATION, "Appointment Types by Month",
+                    "Appointment types for the month of " + currentMonth,
+                    "There are " + appointmentTypes + " different types of appointments this month.");
+
+        } else {
+            hideSelectUser();
+            reportTableView.getItems().clear();
+            reportTableView.getColumns().clear();
+        }
+    }
+
 
     ///////////////// Main controller initialize helpers
 
