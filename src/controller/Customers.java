@@ -1,19 +1,17 @@
 package controller;
 
-import dao.mysql.AppointmentMysqlDao;
 import dao.mysql.CustomerMysqlDao;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import model.Appointment;
+
 import model.Customer;
 import model.Scheduler;
 
 import java.net.URL;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Map;
+
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -66,8 +64,8 @@ public class Customers implements Initializable {
         else return field;
     }
 
-    private Optional<ButtonType> fieldEmptyDialog(String fieldName){
-        return App.dialog(Alert.AlertType.INFORMATION, "Customer " + fieldName, "No customer " + fieldName,
+    private void fieldEmptyDialog(String fieldName){
+        App.dialog(Alert.AlertType.INFORMATION, "Customer " + fieldName, "No customer " + fieldName,
                 "The customer needs a(n) " + fieldName + ".");
     }
 

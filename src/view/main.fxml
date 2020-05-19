@@ -25,7 +25,7 @@
                                                           nodeOrientation="LEFT_TO_RIGHT" onAction="#selectMonthCombo"/>
                                                 <Separator orientation="VERTICAL"/>
                                                 <CheckBox fx:id="weekCheckBox" mnemonicParsing="false"
-                                                          onAction="#checkWeekCheckBox" text="Week of"/>
+                                                          onAction="#confirmAppointmentTableViewTypeAndRefresh" text="Week of"/>
                                                 <ComboBox fx:id="weekCombo" disable="true" maxHeight="85.0"
                                                           minWidth="85.0" onAction="#selectWeekCombo"/>
                                                 <Region HBox.hgrow="ALWAYS"/>

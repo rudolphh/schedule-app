@@ -1,7 +1,5 @@
 package dao.mysql;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import model.Appointment;
 import model.Scheduler;
 import model.User;
@@ -12,7 +10,6 @@ import java.sql.*;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.YearMonth;
 
 public class AppointmentMysqlDao {
 
@@ -81,6 +78,7 @@ public class AppointmentMysqlDao {
             PreparedStatement preparedStatement = DBConnection.startConnection().prepareStatement(sql);
             preparedStatement.setInt(1, user.getId());
 
+            // if we're updating the current appointment then we need to excluded it as an overlap
             if(appointment != null) appointmentId = appointment.getAppointmentId();
             preparedStatement.setInt(2, appointmentId);
 
@@ -128,9 +126,8 @@ public class AppointmentMysqlDao {
 
     ////////////  Create
     public static int createAppointment(Appointment appointment){
-        String sql = "INSERT INTO appointment (customerId, userId, title, description, location, contact, type, " +
-                "url, start, end, createDate, createdBy, lastUpdate, lastUpdateBy) " +
-                "VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO appointment " +
+                "VALUES ( DEFAULT, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try{
             PreparedStatement preparedStatement = DBConnection.startConnection().prepareStatement(sql,
@@ -192,7 +189,7 @@ public class AppointmentMysqlDao {
     }
 
     //////////// Delete
-    public static boolean deleteAppointment(int appointmentId){
+    public static void deleteAppointment(int appointmentId){
         String sql = "DELETE from appointment where appointmentId = ?";
 
         try{
@@ -204,7 +201,6 @@ public class AppointmentMysqlDao {
             e.printStackTrace();
             System.out.println(e.getMessage());
         }
-        return false;
     }
 
     //////////////////////// Private helper methods

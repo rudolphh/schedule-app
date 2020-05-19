@@ -2,7 +2,7 @@ package dao.mysql;
 
 import model.Customer;
 import model.Scheduler;
-import model.User;
+
 import utils.DBConnection;
 import utils.TimeChanger;
 

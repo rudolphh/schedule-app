@@ -181,9 +181,7 @@ public class Appointments implements Initializable {
             selectedAppointment = new Appointment(0, customerId, userId, type, userName, customerName,
                                                     start, end);
             index = AppointmentMysqlDao.createAppointment(selectedAppointment);
-            //Scheduler.addAppointment(selectedAppointment);
         } else {
-            int selectedAppointmentIndex = Scheduler.getAllAppointments().indexOf(selectedAppointment);
             selectedAppointment.setUserId(userId);
             selectedAppointment.setUserName(userName);
             selectedAppointment.setStart(start);
@@ -191,13 +189,11 @@ public class Appointments implements Initializable {
             selectedAppointment.setType(type);
 
             index = AppointmentMysqlDao.updateAppointment(selectedAppointment);
-            //Scheduler.setAppointment(selectedAppointmentIndex, selectedAppointment);
         }
 
         if(index > 0) {
             App.closeThisWindow(actionEvent);
-            // since the calendar tableView is more complex we can't just use Scheduler.setAppointment for updating
-            mainController.checkWeekCheckBox(new ActionEvent());// hacky, change in future
+            mainController.confirmAppointmentTableViewTypeAndRefresh();
         }
     }
 

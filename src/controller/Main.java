@@ -4,8 +4,6 @@ import dao.mysql.AppointmentMysqlDao;
 import dao.mysql.CustomerMysqlDao;
 import dao.mysql.UserMysqlDao;
 import javafx.beans.property.ReadOnlyStringWrapper;
-import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -90,7 +88,8 @@ public class Main implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
-        int currentWeek = ((currentDate.getDayOfMonth() - 1)/7) + 1;
+        //
+        //int currentWeek = ((currentDate.getDayOfMonth() - 1)/7) + 1;
 
         // populate and set default selection of combo boxes
         initializeReportsCombo();
@@ -142,7 +141,7 @@ public class Main implements Initializable {
         if( appointmentNearId > 0){
             Optional<ButtonType> result = App.dialog(Alert.AlertType.INFORMATION, "Scheduled Appointment Alert",
                     "Scheduled appointment start time near",
-                    "You have an appointment scheduled within the next 15 minutes");
+                    "You have an ongoing appointment now or within 15 minutes");
 
             if (result.isPresent() && result.get() == ButtonType.OK) {
                 int index = 0;
@@ -190,7 +189,7 @@ public class Main implements Initializable {
     }
 
     @FXML
-    private void selectReportsCombo(ActionEvent event){
+    private void selectReportsCombo(){
 
         String reportSelection = reportsCombo.getSelectionModel().getSelectedItem();
         if(reportSelection.equals("Consultant Schedules")){
@@ -208,7 +207,7 @@ public class Main implements Initializable {
     }
 
     @FXML
-    private void selectMonthCombo(ActionEvent event) {
+    private void selectMonthCombo() {
         weekCheckBox.setSelected(false);
         resetWeekCombo();
 
@@ -218,12 +217,12 @@ public class Main implements Initializable {
             weekCheckBox.setDisable(true);
         } else {
             weekCheckBox.setDisable(false);
-            checkWeekCheckBox(new ActionEvent());
+            confirmAppointmentTableViewTypeAndRefresh();
         }
     }
 
     @FXML
-    private void selectWeekCombo(ActionEvent actionEvent){
+    private void selectWeekCombo(){
         if(weekCheckBox.isSelected())
             refreshWeeklyAppointmentsTableView();
     }
@@ -269,25 +268,27 @@ public class Main implements Initializable {
         }
     }
 
-    public void checkWeekCheckBox(ActionEvent actionEvent) {
-        // checkbox has been checked or unchecked
+    public void confirmAppointmentTableViewTypeAndRefresh() {
+        // see of week view is selected and refresh accordingly
         if (weekCheckBox.isSelected()) {
             weekCombo.setDisable(false);
+            // if we want week view, refresh appointments table view for weekly appointments
             refreshWeeklyAppointmentsTableView();
         } else {
             weekCombo.setDisable(true);
+            // else refresh appointments table view for monthly appointments
             refreshMonthlyAppointmentsTableView();
         }
     }
 
     //////////////////////////////// Appointment tab
 
-    public void clickNewAppointmentBtn(ActionEvent actionEvent) {
+    public void clickNewAppointmentBtn() {
         loadAppointmentScreen(null, "Customer Scheduling - New Appointment",
                 "Cannot load new appointment window");
     }
 
-    public void clickEditAppointmentBtn(ActionEvent actionEvent){
+    public void clickEditAppointmentBtn(){
         Appointment theAppointment = appointmentTableView.getSelectionModel().getSelectedItem();
 
         if(theAppointment == null){
@@ -299,7 +300,7 @@ public class Main implements Initializable {
         }
     }
 
-    public void clickDeleteAppointmentBtn(ActionEvent actionEvent){
+    public void clickDeleteAppointmentBtn(){
         int selectedIndex = appointmentTableView.getSelectionModel().getSelectedIndex();
 
         if(selectedIndex == -1){
@@ -345,12 +346,12 @@ public class Main implements Initializable {
 
     ///////////////////////////// Customer tab
 
-    public void clickNewCustomerBtn(ActionEvent actionEvent) {
+    public void clickNewCustomerBtn() {
         loadCustomerScreen(null, "New Customer",
                 "Cannot load new customer window");
     }
 
-    public void clickEditCustomerBtn(ActionEvent actionEvent){
+    public void clickEditCustomerBtn(){
         Customer customer = customerTableView.getSelectionModel().getSelectedItem();
 
         if(customer == null){
@@ -362,7 +363,7 @@ public class Main implements Initializable {
         }
     }
 
-    public void clickDeleteCustomerBtn(ActionEvent actionEvent){
+    public void clickDeleteCustomerBtn(){
         int selectedIndex = customerTableView.getSelectionModel().getSelectedIndex();
 
         if(selectedIndex == -1){
