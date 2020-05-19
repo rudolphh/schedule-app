@@ -18,6 +18,7 @@ import javafx.stage.Stage;
 import model.Appointment;
 import model.Customer;
 import model.Scheduler;
+import model.User;
 
 import java.net.URL;
 import java.time.LocalDate;
@@ -28,6 +29,15 @@ import java.util.ResourceBundle;
 
 
 public class Main implements Initializable {
+
+    @FXML
+    private ComboBox<String> reportsCombo;
+
+    @FXML
+    private Separator reportSubSelectionSeparator;
+
+    @FXML
+    private ComboBox<User> reportUserCombo;
 
     @FXML
     private ComboBox<String> monthCombo;
@@ -68,6 +78,10 @@ public class Main implements Initializable {
     @FXML
     private TableColumn<Customer, String> customerPhoneCol;
 
+    //////////// Report TableView
+
+    @FXML
+    private TableView<Appointment> reportTableView;
 
     //////////// Current date value
     private static final LocalDate currentDate = LocalDate.now();
@@ -79,6 +93,7 @@ public class Main implements Initializable {
         int currentWeek = ((currentDate.getDayOfMonth() - 1)/7) + 1;
 
         // populate and set default selection of combo boxes
+        initializeReportsCombo();
         initializeMonthCombo();
         resetWeekCombo();
 
@@ -123,10 +138,30 @@ public class Main implements Initializable {
         customerTableView.setPlaceholder(new Label("Currently no customers"));
 
         // alert if appointment within 15 min of logging in.
+        int appointmentNearId = AppointmentMysqlDao.appointmentWithinFifteenMin(Scheduler.getLoggedUser());
+        if( appointmentNearId > 0){
+            Optional<ButtonType> result = App.dialog(Alert.AlertType.INFORMATION, "Scheduled Appointment Alert",
+                    "Scheduled appointment start time near",
+                    "You have an appointment scheduled within the next 15 minutes");
 
+            if (result.isPresent() && result.get() == ButtonType.OK) {
+                int index = 0;
+                for (Appointment appointment : appointmentTableView.getItems()) {
+                    if (appointment.getAppointmentId() == appointmentNearId) {
+                        appointmentTableView.getSelectionModel().select(index);
+                    }
+                    index++;
+                }
+            }
+        }
     }// end initialize
 
     //////////////////////////////////
+
+    private void initializeReportsCombo(){
+        reportsCombo.getItems().addAll("Select Report", "Appointment Types", "Consultant Schedules");
+        reportsCombo.setValue("Select Report");
+    }
 
     private void initializeMonthCombo(){
         monthCombo.getItems().addAll("ALL", "January", "February", "March", "April", "May", "June",
@@ -141,6 +176,35 @@ public class Main implements Initializable {
         weekCheckBox.setDisable(true);
         monthCombo.setValue("ALL");// and use it to set initial value of month combo (can use currentMonth)
         monthCombo.setVisibleRowCount(6);
+    }
+
+
+    private void hideSelectUser(){
+        reportSubSelectionSeparator.setVisible(false);
+        reportUserCombo.setVisible(false);
+    }
+
+    private void showSelectUser(){
+        reportSubSelectionSeparator.setVisible(true);
+        reportUserCombo.setVisible(true);
+    }
+
+    @FXML
+    private void selectReportsCombo(ActionEvent event){
+
+        String reportSelection = reportsCombo.getSelectionModel().getSelectedItem();
+        if(reportSelection.equals("Consultant Schedules")){
+            // make subselection separator and combo for selecting user visible
+            showSelectUser();
+            reportUserCombo.setItems(Scheduler.getAllUsers());
+        } else if (reportSelection.equals("Appointment Types")){
+            hideSelectUser();
+
+        } else {
+            hideSelectUser();
+            reportTableView.getItems().clear();
+            reportTableView.getColumns().clear();
+        }
     }
 
     @FXML

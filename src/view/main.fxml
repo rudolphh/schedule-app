@@ -4,7 +4,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane minHeight="600.0" minWidth="800.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1"
+<AnchorPane minHeight="600.0" minWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="controller.Main">
     <children>
         <TabPane layoutX="14.0" layoutY="45.0" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE"
@@ -21,12 +21,13 @@
                                         <HBox alignment="CENTER_LEFT" spacing="10.0" HBox.hgrow="ALWAYS">
                                             <children>
                                                 <Label text="Month"/>
-                                                <ComboBox fx:id="monthCombo" nodeOrientation="LEFT_TO_RIGHT"
-                                                          onAction="#selectMonthCombo"/>
+                                                <ComboBox fx:id="monthCombo" maxWidth="102.0" minWidth="102.0"
+                                                          nodeOrientation="LEFT_TO_RIGHT" onAction="#selectMonthCombo"/>
                                                 <Separator orientation="VERTICAL"/>
                                                 <CheckBox fx:id="weekCheckBox" mnemonicParsing="false"
                                                           onAction="#checkWeekCheckBox" text="Week of"/>
-                                                <ComboBox fx:id="weekCombo" disable="true" onAction="#selectWeekCombo"/>
+                                                <ComboBox fx:id="weekCombo" disable="true" maxHeight="85.0"
+                                                          minWidth="85.0" onAction="#selectWeekCombo"/>
                                                 <Region HBox.hgrow="ALWAYS"/>
                                                 <Button fx:id="newAppointmentBtn" minWidth="150.0"
                                                         mnemonicParsing="false" onAction="#clickNewAppointmentBtn"
@@ -45,18 +46,18 @@
                                            AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
                                            AnchorPane.topAnchor="45.0">
                                     <columns>
-                                        <TableColumn fx:id="dateCol" maxWidth="1200.0" prefWidth="89.0"
+                                        <TableColumn fx:id="dateCol" maxWidth="300.0" minWidth="100.0" prefWidth="100.0"
                                                      style="-fx-alignment: center;" text="Date"/>
-                                        <TableColumn fx:id="startCol" maxWidth="1000.0" prefWidth="53.0"
-                                                     style="-fx-alignment: center;" text="Start"/>
-                                        <TableColumn fx:id="endCol" maxWidth="1000.0" prefWidth="207.0"
+                                        <TableColumn fx:id="startCol" maxWidth="300.0" minWidth="100.0"
+                                                     prefWidth="100.0" style="-fx-alignment: center;" text="Start"/>
+                                        <TableColumn fx:id="endCol" maxWidth="300.0" minWidth="100.0" prefWidth="100.0"
                                                      style="-fx-alignment: center;" text="End"/>
-                                        <TableColumn fx:id="typeCol" prefWidth="75.0" style="-fx-alignment: center;"
+                                        <TableColumn fx:id="typeCol" maxWidth="600.0" minWidth="250.0" prefWidth="250.0"
                                                      text="Type"/>
-                                        <TableColumn fx:id="consultantCol" maxWidth="1600.0" prefWidth="75.0"
-                                                     style="-fx-alignment: center;" text="Consultant"/>
-                                        <TableColumn fx:id="customerCol" maxWidth="1600.0" prefWidth="75.0"
-                                                     style="-fx-alignment: center;" text="Customer"/>
+                                        <TableColumn fx:id="consultantCol" maxWidth="600.0" minWidth="200.0"
+                                                     prefWidth="200.0" text="Consultant"/>
+                                        <TableColumn fx:id="customerCol" maxWidth="600.0" minWidth="200.0"
+                                                     prefWidth="200.0" text="Customer"/>
                                     </columns>
                                     <columnResizePolicy>
                                         <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
@@ -97,12 +98,12 @@
                                            AnchorPane.bottomAnchor="35.0" AnchorPane.leftAnchor="0.0"
                                            AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="45.0">
                                     <columns>
-                                        <TableColumn fx:id="customerNameCol" maxWidth="3000.0" prefWidth="75.0"
-                                                     style="-fx-alignment: center;" text="Name"/>
-                                        <TableColumn fx:id="customerAddressCol" prefWidth="75.0"
-                                                     style="-fx-alignment: center;" text="Address"/>
-                                        <TableColumn fx:id="customerPhoneCol" maxWidth="1500.0" prefWidth="75.0"
-                                                     style="-fx-alignment: center;" text="Phone"/>
+                                        <TableColumn fx:id="customerNameCol" maxWidth="450.0" minWidth="150.0"
+                                                     prefWidth="150.0" style="-fx-alignment: center;" text="Name"/>
+                                        <TableColumn fx:id="customerAddressCol" maxWidth="600.0" minWidth="200.0"
+                                                     prefWidth="200.0" style="-fx-alignment: center;" text="Address"/>
+                                        <TableColumn fx:id="customerPhoneCol" maxWidth="450.0" minWidth="150.0"
+                                                     prefWidth="150.0" style="-fx-alignment: center;" text="Phone"/>
                                     </columns>
                                     <columnResizePolicy>
                                         <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
@@ -121,6 +122,44 @@
                                         <Insets right="10.0"/>
                                     </padding>
                                 </HBox>
+                            </children>
+                        </AnchorPane>
+                    </content>
+                </Tab>
+                <Tab text="    Reports    ">
+                    <content>
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                            <children>
+                                <HBox alignment="CENTER_LEFT" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+                                      AnchorPane.topAnchor="0.0">
+                                    <children>
+                                        <HBox alignment="CENTER_LEFT" spacing="10.0" HBox.hgrow="ALWAYS">
+                                            <children>
+                                                <Label text="Generate"/>
+                                                <ComboBox fx:id="reportsCombo" maxWidth="150.0" minWidth="150.0"
+                                                          nodeOrientation="LEFT_TO_RIGHT"
+                                                          onAction="#selectReportsCombo"/>
+                                                <Separator fx:id="reportSubSelectionSeparator" orientation="VERTICAL"
+                                                           visible="false"/>
+                                                <ComboBox fx:id="reportUserCombo" promptText="User" visible="false"
+                                                          visibleRowCount="6"/>
+                                            </children>
+                                            <HBox.margin>
+                                                <Insets left="15.0"/>
+                                            </HBox.margin>
+                                        </HBox>
+                                    </children>
+                                    <padding>
+                                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+                                    </padding>
+                                </HBox>
+                                <TableView fx:id="reportTableView" layoutY="35.0" AnchorPane.bottomAnchor="35.0"
+                                           AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+                                           AnchorPane.topAnchor="45.0">
+                                    <columnResizePolicy>
+                                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+                                    </columnResizePolicy>
+                                </TableView>
                             </children>
                         </AnchorPane>
                     </content>

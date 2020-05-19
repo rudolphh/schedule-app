@@ -68,17 +68,24 @@ public class AppointmentMysqlDao {
 
     }
 
-    public static void findOverlappingAppointment(User user, LocalDateTime start, LocalDateTime end){
+    public static void findOverlappingAppointment(User user, Appointment appointment,
+                                                  LocalDateTime start, LocalDateTime end){
 
         String sql = "SELECT * FROM appointment " +
-                "WHERE userId = ? " +
+                "WHERE userId = ? AND appointmentId != ? " +
                 "AND ( ? >= start AND ? <= end );";
 
         try {
+            int appointmentId = 0;
+
             PreparedStatement preparedStatement = DBConnection.startConnection().prepareStatement(sql);
             preparedStatement.setInt(1, user.getId());
-            preparedStatement.setTimestamp(2, TimeChanger.toUTC(end));
-            preparedStatement.setTimestamp(3, TimeChanger.toUTC(start));
+
+            if(appointment != null) appointmentId = appointment.getAppointmentId();
+            preparedStatement.setInt(2, appointmentId);
+
+            preparedStatement.setTimestamp(3, TimeChanger.toUTC(end));
+            preparedStatement.setTimestamp(4, TimeChanger.toUTC(start));
             ResultSet resultSet = preparedStatement.executeQuery();
 
             if(resultSet != null && resultSet.next()){
@@ -89,6 +96,34 @@ public class AppointmentMysqlDao {
             System.out.println(e.getMessage());
         }
 
+    }
+
+    public static int appointmentWithinFifteenMin(User user){
+
+        LocalDateTime localDateTime = LocalDateTime.now();
+        LocalDateTime fifteenMinutesLater = localDateTime.plusMinutes(15);
+
+        String sql = "SELECT * FROM appointment " +
+                "WHERE userId = ? " +
+                "AND ( ? >= start AND ? <= end );";
+
+        try {
+            PreparedStatement preparedStatement = DBConnection.startConnection().prepareStatement(sql);
+            preparedStatement.setInt(1, user.getId());
+            preparedStatement.setTimestamp(2, TimeChanger.toUTC(fifteenMinutesLater));
+            preparedStatement.setTimestamp(3, TimeChanger.toUTC(localDateTime));
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if(resultSet != null && resultSet.next()){
+                return resultSet.getInt("appointmentId");
+            }
+        } catch (SQLException e){
+            e.printStackTrace();
+            System.out.println(e.getMessage());
+        }
+
+
+        return 0;
     }
 
     ////////////  Create

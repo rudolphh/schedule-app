@@ -167,7 +167,7 @@ public class Appointments implements Initializable {
         }
 
         try {
-            AppointmentMysqlDao.findOverlappingAppointment(user, start, end);
+            AppointmentMysqlDao.findOverlappingAppointment(user, selectedAppointment, start, end);
         } catch (RuntimeException e){
             System.out.println(e.getMessage());
             App.dialog(Alert.AlertType.INFORMATION, "Overlapping Appointment Times",
