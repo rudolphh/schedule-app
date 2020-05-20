@@ -33,7 +33,7 @@ public class Scheduler {
     }
 
     // return all appointments made with a user
-    public static ObservableList<Appointment> lookupAppointment(String userName){
+    public static ObservableList<Appointment> lookupAppointments(String userName){
 
         ObservableList<Appointment> result = FXCollections.observableArrayList();
         for(Appointment a : allAppointments){

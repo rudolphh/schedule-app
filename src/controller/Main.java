@@ -44,17 +44,17 @@ public class Main implements Initializable {
     private TableView<Appointment> appointmentTableView;
 
     @FXML
-    private TableColumn<Appointment, String> dateCol;
+    private TableColumn<Appointment, String> appointmentDateCol;
     @FXML
-    private TableColumn<Appointment, String> startCol;
+    private TableColumn<Appointment, String> appointmentStartCol;
     @FXML
-    private TableColumn<Appointment, String> endCol;
+    private TableColumn<Appointment, String> appointmentEndCol;
     @FXML
-    private TableColumn<Appointment, String> typeCol;
+    private TableColumn<Appointment, String> appointmentTypeCol;
     @FXML
-    private TableColumn<Appointment, String> consultantCol;
+    private TableColumn<Appointment, String> appointmentConsultantCol;
     @FXML
-    private TableColumn<Appointment, String> customerCol;
+    private TableColumn<Appointment, String> appointmentCustomerCol;
 
 
     //////////// Customer TableView
@@ -82,6 +82,19 @@ public class Main implements Initializable {
     @FXML
     private TableView<Appointment> reportTableView;
 
+    @FXML
+    private TableColumn<Appointment, String> reportDateCol;
+    @FXML
+    private TableColumn<Appointment, String> reportStartCol;
+    @FXML
+    private TableColumn<Appointment, String> reportEndCol;
+    @FXML
+    private TableColumn<Appointment, String> reportTypeCol;
+    @FXML
+    private TableColumn<Appointment, String> reportConsultantCol;
+    @FXML
+    private TableColumn<Appointment, String> reportCustomerCol;
+
 
     //////////// Current date value
     private static final LocalDate currentDate = LocalDate.now();
@@ -105,20 +118,8 @@ public class Main implements Initializable {
 
         /////////// appointment table view columns
 
-        // formatting date, start, and end times
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("hh:mm a");
-
-        dateCol.setCellValueFactory(cellData ->
-                new ReadOnlyStringWrapper(cellData.getValue().getStart().format(dateFormatter)));
-        startCol.setCellValueFactory(cellData ->
-                new ReadOnlyStringWrapper(cellData.getValue().getStart().format(timeFormatter)));
-        endCol.setCellValueFactory(cellData ->
-                new ReadOnlyStringWrapper(cellData.getValue().getEnd().format(timeFormatter)));
-        typeCol.setCellValueFactory(new PropertyValueFactory<>("type"));
-        consultantCol.setCellValueFactory(new PropertyValueFactory<>("userName"));
-        customerCol.setCellValueFactory(new PropertyValueFactory<>("customerName"));
-
+        setupAppointmentTableViewColumns(appointmentDateCol, appointmentStartCol, appointmentEndCol, appointmentTypeCol,
+                appointmentConsultantCol, appointmentCustomerCol);
 
         ////////// customer table view columns
         customerNameCol.setCellValueFactory(new PropertyValueFactory<>("customerName"));
@@ -133,10 +134,8 @@ public class Main implements Initializable {
 
         //////// report table view columns
 
-//        TableColumn<Appointment, String> reportTypeCol = new TableColumn<>("Type");
-//        TableColumn<Appointment, int> reportTypeCountCol = new TableColumn<>("")
-//        customerPhoneCol.setCellValueFactory(new PropertyValueFactory<>("phone"));
-
+        setupAppointmentTableViewColumns(reportDateCol, reportStartCol, reportEndCol, reportTypeCol,
+                reportConsultantCol, reportCustomerCol);
 
         /////////////  set table views
         appointmentTableView.setItems(Scheduler.getAllAppointments());
@@ -146,6 +145,8 @@ public class Main implements Initializable {
         appointmentTableView.setPlaceholder(new Label("No appointments during this time"));
         customerTableView.setItems(Scheduler.getAllCustomers());
         customerTableView.setPlaceholder(new Label("Currently no customers"));
+
+        // Alert
 
         // alert if appointment within 15 min of logging in.
         int appointmentNearId = AppointmentMysqlDao.findAppointmentWithinFifteenMin(Scheduler.getLoggedUser());
@@ -168,6 +169,30 @@ public class Main implements Initializable {
 
     //////////////////////////////////
 
+    private void setupAppointmentTableViewColumns(TableColumn<Appointment, String> dateCol,
+                                                  TableColumn<Appointment, String> startCol,
+                                                  TableColumn<Appointment, String> endCol,
+                                                  TableColumn<Appointment, String> typeCol,
+                                                  TableColumn<Appointment, String> consultantCol,
+                                                  TableColumn<Appointment, String> customerCol){
+
+        // formatting date, start, and end times
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("hh:mm a");
+
+        dateCol.setCellValueFactory(cellData ->
+                new ReadOnlyStringWrapper(cellData.getValue().getStart().format(dateFormatter)));
+        startCol.setCellValueFactory(cellData ->
+                new ReadOnlyStringWrapper(cellData.getValue().getStart().format(timeFormatter)));
+        endCol.setCellValueFactory(cellData ->
+                new ReadOnlyStringWrapper(cellData.getValue().getEnd().format(timeFormatter)));
+        typeCol.setCellValueFactory(new PropertyValueFactory<>("type"));
+        consultantCol.setCellValueFactory(new PropertyValueFactory<>("userName"));
+        customerCol.setCellValueFactory(new PropertyValueFactory<>("customerName"));
+    }
+
+
+    ////////////////
     private void initializeMonthCombo(){
         monthCombo.getItems().addAll("ALL", "January", "February", "March", "April", "May", "June",
                 "July",  "August", "September", "October", "November", "December");
@@ -390,13 +415,15 @@ public class Main implements Initializable {
     ////////////////  Reports tab
 
     private void initializeReportsCombo(){
-        reportsCombo.getItems().addAll("Select Report", "Appointment Types", "Consultant Schedules");
+        reportsCombo.getItems().addAll("Select Report", "All Appointments For", "Types of Appointments");
         reportsCombo.setValue("Select Report");
     }
 
     private void hideSelectUser(){
         reportSubSelectionSeparator.setVisible(false);
         reportUserCombo.setVisible(false);
+        reportTableView.getItems().clear();
+        reportUserCombo.getSelectionModel().clearSelection();
     }
 
     private void showSelectUser(){
@@ -421,22 +448,29 @@ public class Main implements Initializable {
 
         int monthStart = month.getValue();
 
-        if(reportSelection.equals("Consultant Schedules")){
+        if(reportSelection.equals("All Appointments For")){
             // make subselection separator and combo for selecting user visible
             showSelectUser();
             reportUserCombo.setItems(Scheduler.getAllUsers());
 
-        } else if (reportSelection.equals("Appointment Types")){
+        } else if (reportSelection.equals("Types of Appointments")){
             hideSelectUser();
+
             int appointmentTypes = AppointmentMysqlDao.findAppointmentTypes(monthStart);
             App.dialog(Alert.AlertType.INFORMATION, "Appointment Types by Month",
                     "Appointment types for the month of " + currentMonth,
                     "There are " + appointmentTypes + " different types of appointments this month.");
 
-        } else {
+        } else { // for Select Report (default prompt)
             hideSelectUser();
-            reportTableView.getItems().clear();
-            reportTableView.getColumns().clear();
+        }
+    }
+
+    @FXML
+    private void selectUserCombo(){
+        if(reportUserCombo.isVisible()) {
+            User user = reportUserCombo.getSelectionModel().getSelectedItem();
+            reportTableView.setItems(Scheduler.lookupAppointments(user.getUserName()));
         }
     }
 
