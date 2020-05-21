@@ -139,7 +139,7 @@ public class Customers implements Initializable {
                 System.out.println(e.getMessage());
             }
         } else {
-            int selectedCustomerIndex = Scheduler.getAllCustomers().indexOf(selectedCustomer);
+            int selectedCustomerIndex = Scheduler.getCustomers().indexOf(selectedCustomer);
             selectedCustomer.setCustomerName(name);
             selectedCustomer.setAddress(address);
             selectedCustomer.setAddress2(address2);

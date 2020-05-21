@@ -4,9 +4,9 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 public class Scheduler {
-    private static final ObservableList<Appointment> allAppointments = FXCollections.observableArrayList();
-    private static final ObservableList<Customer> allCustomers = FXCollections.observableArrayList();
-    private static final ObservableList<User> allUsers = FXCollections.observableArrayList();
+    private static final ObservableList<Appointment> appointments = FXCollections.observableArrayList();
+    private static final ObservableList<Customer> customers = FXCollections.observableArrayList();
+    private static final ObservableList<User> users = FXCollections.observableArrayList();
     private static final ObservableList<Appointment> reportAppointments = FXCollections.observableArrayList();
     private static User loggedUser = null;
 
@@ -14,17 +14,17 @@ public class Scheduler {
 
     ////////////// create
     public static void addAppointment(Appointment appointment){
-        allAppointments.add(appointment);
+        appointments.add(appointment);
     }
     public static void addCustomer(Customer customer){
-        allCustomers.add(customer);
+        customers.add(customer);
     }
-    public static void addUser(User user) { allUsers.add(user); }
+    public static void addUser(User user) { users.add(user); }
     public static void setLoggedUser(User user) { loggedUser = user; }
 
-    ////////////// read
+    ////////////// only use for searches in the given list
     public static Appointment lookupAppointment(int appointmentId){
-        for(Appointment a : allAppointments){
+        for(Appointment a : appointments){
             if(a.getAppointmentId() == appointmentId){
                 return a;
             }
@@ -32,11 +32,11 @@ public class Scheduler {
         return null;
     }
 
-    // return all appointments made with a user
+    // return all appointments made with a user within the content of the current list
     public static ObservableList<Appointment> lookupAppointments(String userName){
 
         ObservableList<Appointment> result = FXCollections.observableArrayList();
-        for(Appointment a : allAppointments){
+        for(Appointment a : appointments){
             if(a.getUserName().equals(userName)){
                 result.add(a);
             }
@@ -45,7 +45,7 @@ public class Scheduler {
     }
 
     public static Customer lookupCustomer(int customerId){
-        for(Customer c : allCustomers){
+        for(Customer c : customers){
             if(c.getCustomerId() == customerId){
                 return c;
             }
@@ -53,10 +53,9 @@ public class Scheduler {
         return null;
     }
 
-    // used if we implement a search
     public static ObservableList<Customer> lookupCustomer(String customerName){
         ObservableList<Customer> result = FXCollections.observableArrayList();
-        for(Customer c : allCustomers){
+        for(Customer c : customers){
             if(c.getCustomerName().equals(customerName)){
                 result.add(c);
             }
@@ -64,28 +63,29 @@ public class Scheduler {
         return result;
     }
 
-    public static ObservableList<Appointment> getAllAppointments(){ return allAppointments; }
-    public static ObservableList<Customer> getAllCustomers(){ return allCustomers; }
-    public static ObservableList<User> getAllUsers(){ return allUsers; }
+    public static ObservableList<Appointment> getAppointments(){ return appointments; }
+    public static ObservableList<Customer> getCustomers(){ return customers; }
+    public static ObservableList<User> getUsers(){ return users; }
+    public static ObservableList<Appointment> getReportAppointments(){ return reportAppointments; }
     public static User getLoggedUser() { return loggedUser; }
 
     ////////////////// update
     public static void setAppointment(int index, Appointment selectedAppointment){
-        allAppointments.set(index, selectedAppointment);
+        appointments.set(index, selectedAppointment);
     }
 
     public static void setCustomer(int index, Customer selectedCustomer){
-        allCustomers.set(index, selectedCustomer);
+        customers.set(index, selectedCustomer);
     }
 
     ///////////////// delete
     public static boolean removeAppointment(Appointment selectedAppointment) {
-        allAppointments.remove(selectedAppointment);
+        appointments.remove(selectedAppointment);
         return true;
     }
 
     public static boolean removeCustomer(Customer selectedCustomer){
-        allCustomers.remove(selectedCustomer);
+        customers.remove(selectedCustomer);
         return true;
     }
 }

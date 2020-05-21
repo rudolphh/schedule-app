@@ -1,5 +1,6 @@
 package dao.mysql;
 
+import javafx.collections.ObservableList;
 import model.Appointment;
 import model.Scheduler;
 import model.User;
@@ -7,7 +8,6 @@ import utils.DBConnection;
 import utils.TimeChanger;
 
 import java.sql.*;
-import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -18,19 +18,26 @@ public class AppointmentMysqlDao {
     ///////////////////////// Public methods
 
     //////////////// Read
-    public static void findAllAppointments(){
+    public static void findAllAppointments(User user){
         String sql = "Select " +
                 "a.appointmentId, a.customerId, a.userId, u.userName, c.customerName, a.type, a.start, a.end " +
                 "from appointment a " +
                 "inner join customer c on a.customerId = c.customerId " +
-                "inner join user u on a.userId = u.userId " +
-                "order by a.start;";
+                "inner join user u on a.userId = u.userId ";
+
+        if(user != null)
+            sql += "where a.userId = ? ";
+
+        sql += "order by a.start;";
 
         try {
             PreparedStatement preparedStatement = DBConnection.startConnection().prepareStatement(sql);
+            if (user != null) preparedStatement.setInt(1, user.getId());
             ResultSet resultSet = preparedStatement.executeQuery();
 
-            addResultsToScheduler(resultSet);
+            if( user == null)
+                addResultsToList(resultSet, Scheduler.getAppointments());
+            else addResultsToList(resultSet, Scheduler.getReportAppointments());
         } catch (SQLException e){
             System.out.println(e.getMessage());
         }
@@ -41,8 +48,8 @@ public class AppointmentMysqlDao {
     }
 
     public static void findAllAppointments(int monthStart, int dayStart){
-        String startTime = makeDBStartDateString(monthStart, dayStart);
-        String endTime = makeDBEndDateString(monthStart, dayStart);
+        Timestamp startTime = makeUTCStartDateTimestamp(monthStart, dayStart);
+        Timestamp endTime = makeUTCEndDateTimestamp(monthStart, dayStart);
 
         String sql = "Select " +
                 "a.appointmentId, a.customerId, a.userId, u.userName, c.customerName, a.type, a.start, a.end " +
@@ -54,11 +61,11 @@ public class AppointmentMysqlDao {
 
         try {
             PreparedStatement preparedStatement = DBConnection.startConnection().prepareStatement(sql);
-            preparedStatement.setString(1, startTime);
-            preparedStatement.setString(2, endTime);
+            preparedStatement.setTimestamp(1, startTime);
+            preparedStatement.setTimestamp(2, endTime);
             ResultSet resultSet = preparedStatement.executeQuery();
 
-            addResultsToScheduler(resultSet);
+            addResultsToList(resultSet, Scheduler.getAppointments() );
         } catch (SQLException e){
             System.out.println(e.getMessage());
         }
@@ -125,8 +132,8 @@ public class AppointmentMysqlDao {
     }
 
     public static int findAppointmentTypes(int monthStart){
-        String startTime = makeDBStartDateString(monthStart, 0);
-        String endTime = makeDBEndDateString(monthStart, 0);
+        Timestamp startTime = makeUTCStartDateTimestamp(monthStart, 0);
+        Timestamp endTime = makeUTCEndDateTimestamp(monthStart, 0);
 
         String sql = "Select COUNT(DISTINCT type) " +
                 "from appointment " +
@@ -134,8 +141,8 @@ public class AppointmentMysqlDao {
 
         try {
             PreparedStatement preparedStatement = DBConnection.startConnection().prepareStatement(sql);
-            preparedStatement.setString(1, startTime);
-            preparedStatement.setString(2, endTime);
+            preparedStatement.setTimestamp(1, startTime);
+            preparedStatement.setTimestamp(2, endTime);
             ResultSet resultSet = preparedStatement.executeQuery();
 
             if(resultSet != null && resultSet.next()) return resultSet.getInt(1);
@@ -229,7 +236,7 @@ public class AppointmentMysqlDao {
 
     //////////////////////// Private helper methods
 
-    private static void addResultsToScheduler(ResultSet resultSet){
+    private static void addResultsToList(ResultSet resultSet, ObservableList<Appointment> appointmentList){
         try {
 
             while(resultSet.next()){
@@ -242,7 +249,7 @@ public class AppointmentMysqlDao {
                 Timestamp start = resultSet.getTimestamp("start");
                 Timestamp end = resultSet.getTimestamp("end");
 
-                Scheduler.addAppointment(new Appointment(appointmentId, customerId, userId, type, userName, customerName,
+                appointmentList.add(new Appointment(appointmentId, customerId, userId, type, userName, customerName,
                         TimeChanger.fromUTC(start), TimeChanger.fromUTC(end)));
             }
         } catch (SQLException e){
@@ -250,47 +257,45 @@ public class AppointmentMysqlDao {
         }
     }
 
-    private static String makeDateString(int year, int month, int day){
-        DecimalFormat formatter = new DecimalFormat("00");
-        return year + "-" + formatter.format(month) + "-" + formatter.format(day) + " 00:00:00";
-    }
-
-    private static String makeDBStartDateString(int monthStart, int dayStart){
-        final int defaultDay = dayStart;
-        dayStart = defaultDay == 0 ? 1 : defaultDay;
-
-        String startTime;
-        if (monthStart == 13){
-            startTime = makeDateString(currentDate.getYear()+1, 1, dayStart);
-        } else {
-            startTime = makeDateString(currentDate.getYear(), monthStart, dayStart);
-        }
-
-        // convert the appointment times we're looking for (in our time zone) to UTC time within the database
-        LocalDateTime starting = TimeChanger.ldtFromString(startTime, "yyyy-MM-dd HH:mm:ss");
-        return TimeChanger.toUTC(starting).toString();
-    }
+    ////////// For working with queries of time
 
     /*
-        if dayStart is zero we're querying appointments for the entire month,
-        otherwise dayStart can only ever be 1, 8, 15, 22, or 29.
-        At 29, or (22 for Feb) we query from dayStart to the end of the current month
+        if dayStart equals 0, a Timestamp will be returned for the beginning of the month
+        else a Timestamp from the beginning of the day given as dayStart.
+     */
+    private static Timestamp makeUTCStartDateTimestamp(int monthStart, int dayStart){
+
+        int startingDay = dayStart == 0 ? 1 : dayStart;
+
+        String startTime = TimeChanger.makeDateString(currentDate.getYear(), monthStart, startingDay);
+
+        // convert the appointment times we're looking for (in our time zone) to UTC time within the database
+        LocalDateTime startDate = TimeChanger.ldtFromString(startTime, "yyyy-MM-dd HH:mm:ss");
+        return TimeChanger.toUTC(startDate);
+    }
+
+    /* -- Used for producing an end Timestamp for querying an entire month or particular week.
+        if dayStart equals 0, 22nd of Feb (unless leap year), or 29th,
+        a UTC Timestamp will be returned as the beginning of the next month
+        otherwise a UTC Timestamp will be returned as the end date of the week
+        (e.g. dayStart = 1, endDate will be for the 8th of the current month, dayStart = 8, endDate 15th, etc.
     */
-    private static String makeDBEndDateString (int monthStart, int dayStart) {
-        boolean nextMonthEnd = (dayStart == 0 || (dayStart == 22 && monthStart == 2) || dayStart == 29);
+    private static Timestamp makeUTCEndDateTimestamp(int monthStart, int dayStart) {
+        int year = currentDate.getYear();
+        boolean nextMonthEnd = dayStart == 0 || (dayStart == 22 && monthStart == 2 && (year%4 != 0)) || dayStart == 29;
         int monthEnd = nextMonthEnd ? monthStart+1 : monthStart;
         int dayEnd = nextMonthEnd ? 1 : dayStart+7;
 
         String endTime;
         if(monthEnd == 13) {
-            endTime = makeDateString(currentDate.getYear()+1, 1, 1);
+            endTime = TimeChanger.makeDateString(currentDate.getYear()+1, 1, 1);
         } else {
-            endTime = makeDateString(currentDate.getYear(), monthEnd, dayEnd);
+            endTime = TimeChanger.makeDateString(currentDate.getYear(), monthEnd, dayEnd);
         }
 
         // convert the appointment times we're looking for (in our time zone) to UTC time within the database
-        LocalDateTime ending = TimeChanger.ldtFromString(endTime, "yyyy-MM-dd HH:mm:ss");
-        return TimeChanger.toUTC(ending).toString();
+        LocalDateTime endDate = TimeChanger.ldtFromString(endTime, "yyyy-MM-dd HH:mm:ss");
+        return TimeChanger.toUTC(endDate);
     }
 
 }// end AppointmentMysqlDao

@@ -7,7 +7,9 @@ import utils.DBConnection;
 import utils.TimeChanger;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.Optional;
 
 public class CustomerMysqlDao {
@@ -52,6 +54,8 @@ public class CustomerMysqlDao {
 
     //////////////////////////////  PUBLIC methods
 
+    /////////// Read
+
     public static void findAllCustomers(){
         String sql = selectCustomersQuery();
 
@@ -85,6 +89,47 @@ public class CustomerMysqlDao {
         }
         return Optional.ofNullable(searchedCustomer);
     }
+
+    public static int findNewCustomers(LocalDate localDate){
+
+        int year = localDate.getYear();
+        int month = localDate.getMonth().getValue();
+        int day = 1;
+        String ldtStringEnd;
+
+        String ldtStringStart = TimeChanger.makeDateString(year, month, 1);
+
+        if(month == 12) {
+            ldtStringEnd = TimeChanger.makeDateString(year + 1, 1, 1);
+        } else {
+            ldtStringEnd = TimeChanger.makeDateString(year, month + 1, 1);
+        }
+
+        // convert to LocalDateTime and then UTC for comparison with DB times
+        LocalDateTime ldtStart = TimeChanger.ldtFromString(ldtStringStart, "yyyy-MM-dd HH:mm:ss");
+        LocalDateTime ldtEnd = TimeChanger.ldtFromString(ldtStringEnd, "yyyy-MM-dd HH:mm:ss");
+
+        String sql = "Select COUNT(customerId) " +
+                "from customer " +
+                "where createDate >= ? AND createDate < ? ";
+
+        try {
+            PreparedStatement preparedStatement = DBConnection.startConnection().prepareStatement(sql);
+            preparedStatement.setTimestamp(1, TimeChanger.toUTC(ldtStart));
+            preparedStatement.setTimestamp(2, TimeChanger.toUTC(ldtEnd));
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if(resultSet != null && resultSet.next()) return resultSet.getInt(1);
+
+        } catch (SQLException e){
+            System.out.println(e.getMessage());
+            return 0;
+        }
+
+        return 0;
+    }
+
+    /////// Create
 
     private static int insertOrExists(String selectSql, Customer customer, String columnLabel, int id){
 
@@ -227,6 +272,8 @@ public class CustomerMysqlDao {
 
     }// end createCustomer
 
+    ///////// Update
+
     public static int updateCustomer(Customer customer) throws SQLException {
 
         int index = customer.getCustomerId();
@@ -311,6 +358,9 @@ public class CustomerMysqlDao {
         return index;
 
     }// end updateCustomer
+
+
+    //////////// Delete
 
     public static void deleteCustomer(int customerId){
         String sql = "DELETE from customer where customerId = ?";

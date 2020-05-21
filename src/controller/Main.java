@@ -112,7 +112,7 @@ public class Main implements Initializable {
         resetWeekCombo();
 
         // initialize the scheduler with all the data
-        AppointmentMysqlDao.findAllAppointments();
+        AppointmentMysqlDao.findAllAppointments(null);
         CustomerMysqlDao.findAllCustomers();
         UserMysqlDao.findAllUsers();
 
@@ -137,14 +137,16 @@ public class Main implements Initializable {
         setupAppointmentTableViewColumns(reportDateCol, reportStartCol, reportEndCol, reportTypeCol,
                 reportConsultantCol, reportCustomerCol);
 
-        /////////////  set table views
-        appointmentTableView.setItems(Scheduler.getAllAppointments());
+        /////////////  set table views to their respective ObservableList
+        appointmentTableView.setItems(Scheduler.getAppointments());
 
         setupTableViewRowClickHandlers();// set up the row mouse click handlers for both table views
 
         appointmentTableView.setPlaceholder(new Label("No appointments during this time"));
-        customerTableView.setItems(Scheduler.getAllCustomers());
+        customerTableView.setItems(Scheduler.getCustomers());
         customerTableView.setPlaceholder(new Label("Currently no customers"));
+
+        reportTableView.setItems(Scheduler.getReportAppointments());
 
         // Alert
 
@@ -180,6 +182,7 @@ public class Main implements Initializable {
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("hh:mm a");
 
+        // lambda expression for formatting cell data to a nicer looking format for users
         dateCol.setCellValueFactory(cellData ->
                 new ReadOnlyStringWrapper(cellData.getValue().getStart().format(dateFormatter)));
         startCol.setCellValueFactory(cellData ->
@@ -215,7 +218,7 @@ public class Main implements Initializable {
 
         if(monthCombo.getSelectionModel().getSelectedItem().equals("ALL")){
             appointmentTableView.getItems().clear();
-            AppointmentMysqlDao.findAllAppointments();
+            AppointmentMysqlDao.findAllAppointments(null);
             weekCheckBox.setDisable(true);
         } else {
             weekCheckBox.setDisable(false);
@@ -237,7 +240,6 @@ public class Main implements Initializable {
 
         appointmentTableView.getItems().clear();
         AppointmentMysqlDao.findAllAppointments(monthStart, dateStart);// update appointments
-        //appointmentTableView.setItems(Scheduler.getAllAppointments()); not needed, being set by scheduler
     }
 
     private void refreshMonthlyAppointmentsTableView(){
@@ -245,9 +247,8 @@ public class Main implements Initializable {
         int monthStart = monthCombo.getSelectionModel().getSelectedIndex();
 
         appointmentTableView.getItems().clear();
-        if(monthStart == 0) AppointmentMysqlDao.findAllAppointments();
-        else AppointmentMysqlDao.findAllAppointments(monthStart);
-        //appointmentTableView.setItems(Scheduler.getAllAppointments()); not needed, being set by scheduler
+        if(monthStart == 0) AppointmentMysqlDao.findAllAppointments(null);// we want all appointments
+        else AppointmentMysqlDao.findAllAppointments(monthStart);// else give the chosen month
     }
 
     ///////////////////////////
@@ -415,7 +416,8 @@ public class Main implements Initializable {
     ////////////////  Reports tab
 
     private void initializeReportsCombo(){
-        reportsCombo.getItems().addAll("Select Report", "All Appointments For", "Types of Appointments");
+        reportsCombo.getItems().addAll("Select Report", "All Appointments For", "Types of Appointments",
+                "New Customers This Month");
         reportsCombo.setValue("Select Report");
     }
 
@@ -448,29 +450,43 @@ public class Main implements Initializable {
 
         int monthStart = month.getValue();
 
-        if(reportSelection.equals("All Appointments For")){
-            // make subselection separator and combo for selecting user visible
-            showSelectUser();
-            reportUserCombo.setItems(Scheduler.getAllUsers());
+        switch (reportSelection) {
+            case "All Appointments For":
+                // make subselection separator and combo for selecting user visible
+                showSelectUser();
+                reportUserCombo.setItems(Scheduler.getUsers());
 
-        } else if (reportSelection.equals("Types of Appointments")){
-            hideSelectUser();
+                break;
+            case "Types of Appointments":
+                hideSelectUser();
 
-            int appointmentTypes = AppointmentMysqlDao.findAppointmentTypes(monthStart);
-            App.dialog(Alert.AlertType.INFORMATION, "Appointment Types by Month",
-                    "Appointment types for the month of " + currentMonth,
-                    "There are " + appointmentTypes + " different types of appointments this month.");
+                int appointmentTypes = AppointmentMysqlDao.findAppointmentTypes(monthStart);
+                App.dialog(Alert.AlertType.INFORMATION, "Appointment Types by Month",
+                        "Appointment types for the month of " + currentMonth,
+                        "There are " + appointmentTypes + " different types of appointments this month.");
 
-        } else { // for Select Report (default prompt)
-            hideSelectUser();
+                break;
+            case "New Customers This Month":
+
+                int newCustomersThisMonth = CustomerMysqlDao.findNewCustomers(currentDate);
+
+                App.dialog(Alert.AlertType.INFORMATION, "New Customers This Month",
+                        "The number of new customers for the month of " + currentMonth,
+                        "There are " + newCustomersThisMonth + " new customers this month.");
+
+                break;
+            default:  // for Select Report (default prompt)
+                hideSelectUser();
+                break;
         }
     }
 
     @FXML
     private void selectUserCombo(){
         if(reportUserCombo.isVisible()) {
+            reportTableView.getItems().clear();
             User user = reportUserCombo.getSelectionModel().getSelectedItem();
-            reportTableView.setItems(Scheduler.lookupAppointments(user.getUserName()));
+            AppointmentMysqlDao.findAllAppointments(user);
         }
     }
 
