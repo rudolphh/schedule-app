@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
 
 public class NumberTextField extends TextField
 {
-    private static Pattern integerPattern = Pattern.compile("[0-9]*");
+    private static final Pattern integerPattern = Pattern.compile("[0-9]*");
     private String timeFieldType = "hour";// default attribute
 
     public String getTimeFieldType() {

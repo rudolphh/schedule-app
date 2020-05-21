@@ -9,7 +9,6 @@ import utils.TimeChanger;
 import java.sql.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.Month;
 import java.util.Optional;
 
 public class CustomerMysqlDao {
@@ -94,10 +93,9 @@ public class CustomerMysqlDao {
 
         int year = localDate.getYear();
         int month = localDate.getMonth().getValue();
-        int day = 1;
-        String ldtStringEnd;
 
         String ldtStringStart = TimeChanger.makeDateString(year, month, 1);
+        String ldtStringEnd;
 
         if(month == 12) {
             ldtStringEnd = TimeChanger.makeDateString(year + 1, 1, 1);
@@ -161,8 +159,6 @@ public class CustomerMysqlDao {
     }
 
     public static int createCustomer(Customer customer) throws SQLException {
-
-        int index = customer.getCustomerId();
 
         Connection conn = DBConnection.startConnection();
         PreparedStatement insertCountry = null;

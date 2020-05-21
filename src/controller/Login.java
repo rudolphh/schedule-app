@@ -2,7 +2,6 @@ package controller;
 
 
 import dao.file.UserFileDao;
-import dao.mysql.CustomerMysqlDao;
 import dao.mysql.UserMysqlDao;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -13,7 +12,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 
-import model.Customer;
 import model.Scheduler;
 import model.User;
 
@@ -60,19 +58,14 @@ public class Login implements Initializable {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("../view/main.fxml"));
             Parent theParent = loader.load();
-            Main controller = loader.getController();
 
             Stage newWindow = new Stage();
-            //newWindow.initModality(Modality.APPLICATION_MODAL);
+
             newWindow.setTitle("Customer Scheduling - Main");
             newWindow.setMinHeight(500);
             newWindow.setMinWidth(996);
-            //newWindow.setResizable(false);
-            newWindow.setScene(new Scene(theParent));
 
-            //controller.initScreenLabel(screenLabel);
-            //controller.setProduct(theProduct);
-            //controller.initializeFieldData();
+            newWindow.setScene(new Scene(theParent));
             newWindow.show();
         } catch (Exception e){
             System.out.println(e.getMessage());

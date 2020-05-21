@@ -1,7 +1,5 @@
 package dao.mysql;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import model.Scheduler;
 import model.User;
 import utils.DBConnection;
