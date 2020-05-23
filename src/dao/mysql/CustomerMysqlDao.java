@@ -129,9 +129,10 @@ public class CustomerMysqlDao {
 
     /////// Create
 
-    private static int insertOrExists(String selectSql, Customer customer, String columnLabel, int id){
+    private static int insertOrExists(String selectSql, Customer customer, String columnLabel){
 
         Connection conn = DBConnection.startConnection();
+        int id = 0;
         try {
             PreparedStatement selectStatement = conn.prepareStatement(selectSql);
 
@@ -148,8 +149,6 @@ public class CustomerMysqlDao {
                 } catch (SQLException e){
                     System.out.println(e.getMessage());
                 }
-            } else {
-                id = 0;
             }
         } catch (SQLException e){
             e.printStackTrace();
@@ -158,7 +157,7 @@ public class CustomerMysqlDao {
         return id;
     }
 
-    public static int createCustomer(Customer customer) throws SQLException {
+    public static Customer createCustomer(Customer customer) throws SQLException {
 
         Connection conn = DBConnection.startConnection();
         PreparedStatement insertCountry = null;
@@ -169,18 +168,14 @@ public class CustomerMysqlDao {
         String countrySql = "";
         String citySql = "";
 
-        int countryId = 0;
-        int cityId = 0;
-
         Timestamp lastUpdate = TimeChanger.toUTC(LocalDateTime.now());
         String lastUpdatedBy = Scheduler.getLoggedUser().getUserName();
 
         String selectCountrySql = "SELECT countryId from country WHERE LCASE(country) = ?;";
+        int countryId = insertOrExists(selectCountrySql, customer, "country");
 
         String selectCitySql = "SELECT cityId from city WHERE LCASE(city) = ?;";
-
-        countryId = insertOrExists(selectCountrySql, customer, "country", countryId);
-        cityId = insertOrExists(selectCitySql, customer, "city", cityId);
+        int cityId = insertOrExists(selectCitySql, customer, "city");
 
         if(countryId == 0)
             countrySql = "INSERT INTO country VALUES ( DEFAULT, ?, ?, ?, ?, ?);";
@@ -201,7 +196,7 @@ public class CustomerMysqlDao {
 
             // country prepared statement
             if(countryId == 0) {
-                insertCountry = conn.prepareStatement(countrySql);
+                insertCountry = conn.prepareStatement(countrySql, Statement.RETURN_GENERATED_KEYS);
                 insertCountry.setString(1, customer.getCountry());
                 insertCountry.setTimestamp(2, lastUpdate);
                 insertCountry.setString(3, lastUpdatedBy);
@@ -212,7 +207,7 @@ public class CustomerMysqlDao {
 
             // city prepared statement
             if(cityId == 0) {
-                insertCity = conn.prepareStatement(citySql);
+                insertCity = conn.prepareStatement(citySql, Statement.RETURN_GENERATED_KEYS);
                 insertCity.setString(1, customer.getCity());
                 insertCity.setInt(2, countryId);
                 insertCity.setTimestamp(3, lastUpdate);
@@ -223,7 +218,7 @@ public class CustomerMysqlDao {
             }
 
             // address prepared statement
-            insertAddress = conn.prepareStatement(addressSql);
+            insertAddress = conn.prepareStatement(addressSql, Statement.RETURN_GENERATED_KEYS);
             insertAddress.setString(1, customer.getAddress());
             insertAddress.setString(2, customer.getAddress2());
             insertAddress.setInt(3, cityId);
@@ -250,13 +245,31 @@ public class CustomerMysqlDao {
 
             ResultSet rs = insertCustomer.getGeneratedKeys();
             if(rs != null && rs.next()){
-                return rs.getInt(1);// success!
-            } else return 0;// fail
+                customer.setCustomerId(rs.getInt(1));// success!
+            }
+
+            rs = insertAddress.getGeneratedKeys();
+            if(rs != null && rs.next()){
+                customer.setAddressId(rs.getInt(1));// success!
+            }
+
+            if(cityId == 0) {
+                rs = insertCity.getGeneratedKeys();
+                if (rs != null && rs.next()) {
+                    customer.setCityId(rs.getInt(1));// success!
+                }
+            }
+
+            if(countryId == 0) {
+                rs = insertCountry.getGeneratedKeys();
+                if (rs != null && rs.next()) {
+                    customer.setCountryId(rs.getInt(1));// success!
+                }
+            }
 
         } catch (SQLException e) {
             e.printStackTrace();
             System.out.println(e.getMessage());
-            return 0;// fail
         } finally {
             if(insertCustomer != null) insertCustomer.close();
             if(insertAddress != null) insertAddress.close();
@@ -266,13 +279,15 @@ public class CustomerMysqlDao {
             conn.setAutoCommit(true);
         }
 
+        return customer;
+
     }// end createCustomer
 
     ///////// Update
 
     public static int updateCustomer(Customer customer) throws SQLException {
 
-        int index = customer.getCustomerId();
+        int customerId = customer.getCustomerId();
 
         PreparedStatement updateCustomer = null;
         PreparedStatement updateAddress = null;
@@ -351,7 +366,7 @@ public class CustomerMysqlDao {
 
             conn.setAutoCommit(true);
         }
-        return index;
+        return customerId;
 
     }// end updateCustomer
 

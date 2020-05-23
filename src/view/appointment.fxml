@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
+<?import javafx.collections.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import utils.*?>
 <?import java.lang.String?>
 <?import javafx.collections.FXCollections?>
 <?import javafx.geometry.Insets?>
@@ -85,7 +92,7 @@
                                         <Insets left="50.0"/>
                                     </HBox.margin>
                                 </Label>
-                                <NumberTextField fx:id="startHourNumberTextField" alignment="CENTER" maxWidth="35.0"
+                                <NumberTextField fx:id="startHourNumberTextField" alignment="CENTER" maxWidth="70.0"
                                                  promptText="hh" timeFieldType="hour">
                                 </NumberTextField>
                                 <Label text=":">
@@ -93,7 +100,7 @@
                                         <Insets/>
                                     </HBox.margin>
                                 </Label>
-                                <NumberTextField fx:id="startMinNumberTextField" maxWidth="35.0" promptText="mm"
+                                <NumberTextField fx:id="startMinNumberTextField" maxWidth="70.0" promptText="mm"
                                                  timeFieldType="min">
                                 </NumberTextField>
                                 <ComboBox fx:id="startPeriodCombo" prefWidth="64.0">
@@ -120,11 +127,11 @@
                                         <Insets left="50.0"/>
                                     </HBox.margin>
                                 </Label>
-                                <NumberTextField fx:id="endHourNumberTextField" alignment="CENTER" maxWidth="35.0"
+                                <NumberTextField fx:id="endHourNumberTextField" alignment="CENTER" maxWidth="70.0"
                                                  promptText="hh" timeFieldType="hour">
                                 </NumberTextField>
                                 <Label text=":"/>
-                                <NumberTextField fx:id="endMinNumberTextField" maxWidth="35.0" promptText="mm"
+                                <NumberTextField fx:id="endMinNumberTextField" maxWidth="70.0" promptText="mm"
                                                  timeFieldType="min">
                                 </NumberTextField>
                                 <ComboBox fx:id="endPeriodCombo" prefWidth="64.0" promptText="AM">
