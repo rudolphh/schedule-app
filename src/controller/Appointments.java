@@ -220,10 +220,9 @@ public class Appointments implements Initializable {
         DateTimeFormatter period = DateTimeFormatter.ofPattern("a");// get AM or PM
 
         userCombo.setItems(Scheduler.getUsers());
+        customerCombo.setItems(Scheduler.getCustomers());
 
         if(selectedAppointment == null) { // then we are making a new appointment
-
-            customerCombo.setItems(Scheduler.getCustomers());
 
             LocalDateTime localDateTime = LocalDateTime.now();
 
@@ -246,12 +245,10 @@ public class Appointments implements Initializable {
                     userCombo.setValue(user);
             });
 
-            Scheduler.getCustomers().forEach(customer -> {
-                if(selectedAppointment.getCustomerName().equals(customer.getCustomerName()))
-                    customerCombo.getItems().add(customer);
-                    customerCombo.getSelectionModel().selectFirst();
-                    customerCombo.setDisable(true);
-                    customerCombo.setStyle("-fx-opacity: 1;");
+            customerCombo.getItems().forEach(customer -> {
+                if(customer.getCustomerName().equals(selectedAppointment.getCustomerName())){
+                    customerCombo.setValue(customer);
+                }
             });
 
             LocalDateTime start = selectedAppointment.getStart();
