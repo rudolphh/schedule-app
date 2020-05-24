@@ -373,18 +373,24 @@ public class CustomerMysqlDao {
 
     //////////// Delete
 
-    public static void deleteCustomer(int customerId){
-        String sql = "DELETE from customer where customerId = ?";
+    public static int deleteCustomer(int customerId){
+        String sql = "DELETE c " +
+                "FROM customer as c " +
+                "LEFT JOIN appointment as a " +
+                "on c.customerId = a.customerId " +
+                "WHERE a.customerId IS NULL " +
+                "AND c.customerId = ?";
 
         try{
             PreparedStatement preparedStatement = DBConnection.startConnection().prepareStatement(sql);
             preparedStatement.setInt(1, customerId);
-            preparedStatement.executeUpdate();
+            return preparedStatement.executeUpdate();
 
         } catch (SQLException e) {
             e.printStackTrace();
             System.out.println(e.getMessage());
         }
+        return -1;
 
     }// end deleteCustomer
 

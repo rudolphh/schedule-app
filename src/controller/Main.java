@@ -383,8 +383,16 @@ public class Main implements Initializable {
                     "Are you sure you want to delete " + customerName + "?\n\n");
 
             if (result.isPresent() && result.get() == ButtonType.OK) {
-                CustomerMysqlDao.deleteCustomer(customer.getCustomerId());
-                Scheduler.removeCustomer(customer);
+                int rowsAffected = CustomerMysqlDao.deleteCustomer(customer.getCustomerId());
+                // if rowsAffected == -1 then a SQLException was thrown already
+                if(rowsAffected == 0){ // the customer cannot be deleted with scheduled appointments
+                    App.dialog(Alert.AlertType.INFORMATION, "Customer Cannot Be Deleted",
+                            "Customer has scheduled appointments",
+                            "A customer with scheduled appointments cannot be deleted.");
+                } else if (rowsAffected == 1){
+                    Scheduler.removeCustomer(customer);
+                }
+
             }
         }
     }
