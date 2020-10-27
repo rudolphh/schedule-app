@@ -1,5 +1,6 @@
 package controller;
 
+import app.App;
 import dao.mysql.AppointmentMysqlDao;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;

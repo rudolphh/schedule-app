@@ -1,4 +1,4 @@
-package controller;
+package app;
 
 import javafx.application.Application;
 import javafx.event.ActionEvent;
@@ -45,7 +45,7 @@ public class App extends Application {
 
 
     // Helpers
-    static Optional<ButtonType> dialog(Alert.AlertType alertType, String title, String header, String content){
+    public static Optional<ButtonType> dialog(Alert.AlertType alertType, String title, String header, String content){
         Alert alert = new Alert(alertType);
         alert.initModality(Modality.APPLICATION_MODAL);
         alert.setTitle(title);
@@ -55,12 +55,12 @@ public class App extends Application {
         return alert.showAndWait();
     }
 
-    static void closeThisWindow(ActionEvent actionEvent){
+    public static void closeThisWindow(ActionEvent actionEvent){
         Stage window = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
         window.close();
     }
 
-    static ResourceBundle getResourceBundle(){
+    public static ResourceBundle getResourceBundle(){
 
         Locale loc = Locale.getDefault();// 1. Check for current locale
 
