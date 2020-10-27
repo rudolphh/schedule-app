@@ -476,6 +476,7 @@ public class Main implements Initializable {
 
                 break;
             case "New Customers This Month":
+                hideSelectUser();
 
                 int newCustomersThisMonth = CustomerMysqlDao.findNewCustomers(currentDate);
 
