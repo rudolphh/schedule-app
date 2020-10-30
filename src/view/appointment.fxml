@@ -7,196 +7,172 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 <?import utils.*?>
-<?import java.lang.String?>
-<?import javafx.collections.FXCollections?>
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ComboBox?>
-<?import javafx.scene.control.DatePicker?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
-<?import utils.NumberTextField?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-            xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="controller.Appointments">
-    <children>
 
-        <VBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
-              AnchorPane.topAnchor="0.0">
-            <children>
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.Appointments">
+    
+
+        <VBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            
 
                 <HBox alignment="CENTER_LEFT" minHeight="60.0">
-                    <children>
+                    
 
-                        <Label fx:id="appointmentScreenLabel" maxWidth="170.0" text="Appointment with"
-                               HBox.hgrow="ALWAYS">
+                        <Label fx:id="appointmentScreenLabel" maxWidth="170.0" text="Appointment with" HBox.hgrow="ALWAYS">
                             <padding>
-                                <Insets bottom="20.0" left="20.0" top="20.0"/>
+                                <Insets bottom="20.0" left="20.0" top="20.0" />
                             </padding>
                             <font>
-                                <Font name="System Bold Italic" size="16.0"/>
+                                <Font name="System Bold Italic" size="16.0" />
                             </font>
                         </Label>
                         <HBox alignment="CENTER_LEFT" spacing="5.0" HBox.hgrow="ALWAYS">
-                            <children>
-                                <ComboBox fx:id="userCombo" prefWidth="150.0" promptText="choose a consultant"/>
-                            </children>
+                            
+                                <ComboBox fx:id="userCombo" prefWidth="150.0" promptText="choose a consultant" />
+                            
                             <HBox.margin>
-                                <Insets left="5.0"/>
+                                <Insets left="5.0" />
                             </HBox.margin>
                         </HBox>
-                    </children>
+                    
 
                 </HBox>
                 <VBox>
-                    <children>
+                    
                         <HBox alignment="CENTER_LEFT" spacing="5.0">
-                            <children>
+                            
                                 <Label minWidth="120.0" text="Customer">
                                     <HBox.margin>
-                                        <Insets left="50.0"/>
+                                        <Insets left="50.0" />
                                     </HBox.margin>
                                 </Label>
-                                <ComboBox fx:id="customerCombo" prefWidth="150.0" promptText="choose a customer"/>
-                            </children>
+                                <ComboBox fx:id="customerCombo" prefWidth="150.0" promptText="choose a customer" />
+                            
                             <padding>
-                                <Insets bottom="10.0" right="10.0" top="10.0"/>
+                                <Insets bottom="10.0" right="10.0" top="10.0" />
                             </padding>
                         </HBox>
 
                         <HBox alignment="CENTER_LEFT" spacing="5.0" VBox.vgrow="ALWAYS">
-                            <children>
+                            
 
                                 <Label minWidth="120.0" text="Date">
                                     <HBox.margin>
-                                        <Insets left="50.0"/>
+                                        <Insets left="50.0" />
                                     </HBox.margin>
                                 </Label>
-                                <DatePicker fx:id="datePicker" promptText="date of appointment"/>
-                            </children>
+                                <DatePicker fx:id="datePicker" maxWidth="150.0" promptText="date of appointment" />
+                            
 
                             <padding>
-                                <Insets bottom="10.0" right="10.0" top="10.0"/>
+                                <Insets bottom="10.0" right="10.0" top="10.0" />
                             </padding>
                         </HBox>
                         <HBox alignment="CENTER_LEFT" spacing="5.0" VBox.vgrow="ALWAYS">
-                            <children>
+                            
 
                                 <Label minWidth="120.0" text="Start Time">
                                     <HBox.margin>
-                                        <Insets left="50.0"/>
+                                        <Insets left="50.0" />
                                     </HBox.margin>
                                 </Label>
-                                <NumberTextField fx:id="startHourNumberTextField" alignment="CENTER" maxWidth="70.0"
-                                                 promptText="hh" timeFieldType="hour">
+                                <NumberTextField fx:id="startHourNumberTextField" alignment="CENTER" maxWidth="35.0" promptText="hh" timeFieldType="hour">
                                 </NumberTextField>
                                 <Label text=":">
                                     <HBox.margin>
-                                        <Insets/>
+                                        <Insets />
                                     </HBox.margin>
                                 </Label>
-                                <NumberTextField fx:id="startMinNumberTextField" maxWidth="70.0" promptText="mm"
-                                                 timeFieldType="min">
+                                <NumberTextField fx:id="startMinNumberTextField" maxWidth="35.0" promptText="mm" timeFieldType="min">
                                 </NumberTextField>
-                                <ComboBox fx:id="startPeriodCombo" prefWidth="64.0">
+                                <ComboBox fx:id="startPeriodCombo" prefWidth="63.0">
                                     <items>
                                         <FXCollections fx:factory="observableArrayList">
-                                            <String fx:value="AM"/>
-                                            <String fx:value="PM"/>
+                                            <String fx:value="AM" />
+                                            <String fx:value="PM" />
                                         </FXCollections>
                                     </items>
                                     <value>
-                                        <String fx:value="AM"/>
+                                        <String fx:value="AM" />
                                     </value>
                                 </ComboBox>
-                            </children>
+                            
 
                             <padding>
-                                <Insets bottom="10.0" right="10.0" top="10.0"/>
+                                <Insets bottom="10.0" right="10.0" top="10.0" />
                             </padding>
                         </HBox>
                         <HBox alignment="CENTER_LEFT" spacing="5.0">
-                            <children>
+                            
                                 <Label minWidth="120.0" text="End Time">
                                     <HBox.margin>
-                                        <Insets left="50.0"/>
+                                        <Insets left="50.0" />
                                     </HBox.margin>
                                 </Label>
-                                <NumberTextField fx:id="endHourNumberTextField" alignment="CENTER" maxWidth="70.0"
-                                                 promptText="hh" timeFieldType="hour">
+                                <NumberTextField fx:id="endHourNumberTextField" alignment="CENTER" maxWidth="35.0" promptText="hh" timeFieldType="hour">
                                 </NumberTextField>
-                                <Label text=":"/>
-                                <NumberTextField fx:id="endMinNumberTextField" maxWidth="70.0" promptText="mm"
-                                                 timeFieldType="min">
+                                <Label text=":" />
+                                <NumberTextField fx:id="endMinNumberTextField" maxWidth="35.0" promptText="mm" timeFieldType="min">
                                 </NumberTextField>
-                                <ComboBox fx:id="endPeriodCombo" prefWidth="64.0" promptText="AM">
+                                <ComboBox fx:id="endPeriodCombo" prefWidth="63.0" promptText="AM">
                                     <items>
                                         <FXCollections fx:factory="observableArrayList">
-                                            <String fx:value="AM"/>
-                                            <String fx:value="PM"/>
+                                            <String fx:value="AM" />
+                                            <String fx:value="PM" />
                                         </FXCollections>
                                     </items>
                                     <value>
-                                        <String fx:value="AM"/>
+                                        <String fx:value="AM" />
                                     </value>
                                 </ComboBox>
-                            </children>
+                            
                             <padding>
-                                <Insets bottom="10.0" right="10.0" top="10.0"/>
+                                <Insets bottom="10.0" right="10.0" top="10.0" />
                             </padding>
                         </HBox>
                         <HBox alignment="CENTER_LEFT" spacing="5.0" VBox.vgrow="ALWAYS">
-                            <children>
+                            
 
                                 <Label minWidth="120.0" text="Type">
                                     <HBox.margin>
-                                        <Insets left="50.0"/>
+                                        <Insets left="50.0" />
                                     </HBox.margin>
                                 </Label>
-                                <TextField fx:id="typeTextField" promptText="type of appointment"/>
-                            </children>
+                                <TextField fx:id="typeTextField" promptText="type of appointment" />
+                            
 
                             <padding>
-                                <Insets bottom="10.0" right="10.0" top="10.0"/>
+                                <Insets bottom="10.0" right="10.0" top="10.0" />
                             </padding>
                         </HBox>
-                    </children>
+                    
 
                 </VBox>
                 <HBox alignment="CENTER" spacing="20.0">
-                    <children>
+                    
 
-                        <Button fx:id="appointmentSaveBtn" minWidth="100.0" mnemonicParsing="false"
-                                onAction="#clickSaveAppointment" style="-fx-background-color: black;" text="Save"
-                                textFill="WHITE">
+                        <Button fx:id="appointmentSaveBtn" minWidth="100.0" mnemonicParsing="false" onAction="#clickSaveAppointment" style="-fx-background-color: black;" text="Save" textFill="WHITE">
                             <font>
-                                <Font name="System Bold" size="13.0"/>
+                                <Font name="System Bold" size="13.0" />
                             </font>
                         </Button>
-                        <Button fx:id="appointmentCancelBtn" minWidth="100.0" mnemonicParsing="false"
-                                onAction="#clickCancelAppointment" style="-fx-background-color: black;" text="Cancel"
-                                textFill="WHITE">
+                        <Button fx:id="appointmentCancelBtn" minWidth="100.0" mnemonicParsing="false" onAction="#clickCancelAppointment" style="-fx-background-color: black;" text="Cancel" textFill="WHITE">
                             <font>
-                                <Font name="System Bold" size="13.0"/>
+                                <Font name="System Bold" size="13.0" />
                             </font>
                         </Button>
-                    </children>
+                    
 
                     <padding>
-                        <Insets bottom="30.0" top="40.0"/>
+                        <Insets bottom="30.0" top="40.0" />
                     </padding>
                 </HBox>
-            </children>
+            
 
         </VBox>
-    </children>
+    
     <padding>
-        <Insets bottom="40.0" left="30.0" right="40.0" top="40.0"/>
+        <Insets bottom="40.0" left="30.0" right="40.0" top="40.0" />
     </padding>
 
 </AnchorPane>

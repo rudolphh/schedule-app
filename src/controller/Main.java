@@ -104,75 +104,46 @@ public class Main implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
-        //
-        //int currentWeek = ((currentDate.getDayOfMonth() - 1)/7) + 1;
+        // initialize the scheduler with all data for users, customers, and appointments
+        Scheduler.initialize();
 
         // populate and set default selection of combo boxes
         initializeReportsCombo();
         initializeMonthCombo();
         resetWeekCombo();
 
-        // initialize the scheduler with all the data
-        AppointmentMysqlDao.findAllAppointments(null);
-        CustomerMysqlDao.findAllCustomers();
-        UserMysqlDao.findAllUsers();
+        // initialize appointment, customer, and report table view columns
 
-        /////////// appointment table view columns
+        initializeApptColumns(appointmentDateCol, appointmentStartCol, appointmentEndCol,
+                appointmentTypeCol, appointmentConsultantCol, appointmentCustomerCol);
 
-        setupAppointmentTableViewColumns(appointmentDateCol, appointmentStartCol, appointmentEndCol, appointmentTypeCol,
-                appointmentConsultantCol, appointmentCustomerCol);
+        initializeCustomerColumns();
 
-        ////////// customer table view columns
-        customerNameCol.setCellValueFactory(new PropertyValueFactory<>("customerName"));
-
-        // lambda expression for combining the customer fields to make the address column values
-        customerAddressCol.setCellValueFactory(cellData -> new ReadOnlyStringWrapper(
-                cellData.getValue().getAddress() + " " + cellData.getValue().getCity() + " " +
-                        cellData.getValue().getPostalCode() + " " + cellData.getValue().getCountry()));
-
-        customerPhoneCol.setCellValueFactory(new PropertyValueFactory<>("phone"));
+        initializeApptColumns(reportDateCol, reportStartCol, reportEndCol,
+                reportTypeCol, reportConsultantCol, reportCustomerCol);
 
 
-        //////// report table view columns
-
-        setupAppointmentTableViewColumns(reportDateCol, reportStartCol, reportEndCol, reportTypeCol,
-                reportConsultantCol, reportCustomerCol);
-
-        /////////////  set table views to their respective ObservableList
+        //  set table views to their respective ObservableList
         appointmentTableView.setItems(Scheduler.getAppointments());
-
-        setupTableViewRowClickHandlers();// set up the row mouse click handlers for both table views
-
         appointmentTableView.setPlaceholder(new Label("No appointments during this time"));
+
         customerTableView.setItems(Scheduler.getCustomers());
         customerTableView.setPlaceholder(new Label("Currently no customers"));
 
         reportTableView.setItems(Scheduler.getReportAppointments());
+        customerTableView.setPlaceholder(new Label("No report data"));
 
-        // Alert
+        // set up the row mouse click handlers for both table views
+        setupTableViewRowClickHandlers();
 
         // alert if appointment within 15 min of logging in.
-        int appointmentNearId = AppointmentMysqlDao.findAppointmentWithinFifteenMin(Scheduler.getLoggedUser());
-        if( appointmentNearId > 0){
-            Optional<ButtonType> result = App.dialog(Alert.AlertType.INFORMATION, "Scheduled Appointment Alert",
-                    "Scheduled appointment start time near",
-                    "You have an ongoing appointment now or within 15 minutes");
+        appointmentSoonAlert();
 
-            if (result.isPresent() && result.get() == ButtonType.OK) {
-                int index = 0;
-                for (Appointment appointment : appointmentTableView.getItems()) {
-                    if (appointment.getAppointmentId() == appointmentNearId) {
-                        appointmentTableView.getSelectionModel().select(index);
-                    }
-                    index++;
-                }
-            }
-        }
     }// end initialize
 
     //////////////////////////////////
 
-    private void setupAppointmentTableViewColumns(TableColumn<Appointment, String> dateCol,
+    private void initializeApptColumns(TableColumn<Appointment, String> dateCol,
                                                   TableColumn<Appointment, String> startCol,
                                                   TableColumn<Appointment, String> endCol,
                                                   TableColumn<Appointment, String> typeCol,
@@ -193,6 +164,37 @@ public class Main implements Initializable {
         typeCol.setCellValueFactory(new PropertyValueFactory<>("type"));
         consultantCol.setCellValueFactory(new PropertyValueFactory<>("userName"));
         customerCol.setCellValueFactory(new PropertyValueFactory<>("customerName"));
+    }
+
+    private void initializeCustomerColumns(){
+        customerNameCol.setCellValueFactory(new PropertyValueFactory<>("customerName"));
+
+        // lambda expression for combining the customer fields to make the address column values
+        customerAddressCol.setCellValueFactory(cellData -> new ReadOnlyStringWrapper(
+                cellData.getValue().getAddress() + " " + cellData.getValue().getCity() + " " +
+                        cellData.getValue().getPostalCode() + " " + cellData.getValue().getCountry()));
+
+        customerPhoneCol.setCellValueFactory(new PropertyValueFactory<>("phone"));
+    }
+
+    private void appointmentSoonAlert(){
+        // alert if appointment within 15 min of logging in.
+        int appointmentNearId = AppointmentMysqlDao.findAppointmentWithinFifteenMin(Scheduler.getLoggedUser());
+        if( appointmentNearId > 0){
+            Optional<ButtonType> result = App.dialog(Alert.AlertType.INFORMATION, "Scheduled Appointment Alert",
+                    "Scheduled appointment start time near",
+                    "You have an ongoing appointment now or within 15 minutes");
+
+            if (result.isPresent() && result.get() == ButtonType.OK) {
+                int index = 0;
+                for (Appointment appointment : appointmentTableView.getItems()) {
+                    if (appointment.getAppointmentId() == appointmentNearId) {
+                        appointmentTableView.getSelectionModel().select(index);
+                    }
+                    index++;
+                }
+            }
+        }
     }
 
 

@@ -129,7 +129,8 @@ public class Customers implements Initializable {
 
 
         int customerId = 0;
-        if(selectedCustomer == null){
+        if(selectedCustomer == null){// we have a new customer
+
             selectedCustomer = new Customer(0, 0, 0, 0, name, address, address2,
                     city, country, postal, phone, 1);
             try {
@@ -138,12 +139,13 @@ public class Customers implements Initializable {
                 if(customerId > 0)
                     Scheduler.addCustomer(createdCustomer);
                 else throw new SQLException("No new customer was created - Customers.java");
-                
+
             } catch (SQLException e){
                 e.printStackTrace();
                 System.out.println(e.getMessage());
             }
-        } else {
+        } else {// we're modifying an existing customer
+
             int selectedCustomerIndex = Scheduler.getCustomers().indexOf(selectedCustomer);
             selectedCustomer.setCustomerName(name);
             selectedCustomer.setAddress(address);

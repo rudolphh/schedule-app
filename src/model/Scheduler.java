@@ -1,9 +1,13 @@
 package model;
 
+import dao.mysql.AppointmentMysqlDao;
+import dao.mysql.CustomerMysqlDao;
+import dao.mysql.UserMysqlDao;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 public class Scheduler {
+
     private static final ObservableList<Appointment> appointments = FXCollections.observableArrayList();
     private static final ObservableList<Customer> customers = FXCollections.observableArrayList();
     private static final ObservableList<User> users = FXCollections.observableArrayList();
@@ -11,6 +15,11 @@ public class Scheduler {
     private static User loggedUser = null;
 
     ///////////////////////// methods
+    public static void initialize(){
+        AppointmentMysqlDao.findAllAppointments(null);
+        CustomerMysqlDao.findAllCustomers();
+        UserMysqlDao.findAllUsers();
+    }
 
     ////////////// create
     public static void addAppointment(Appointment appointment){
