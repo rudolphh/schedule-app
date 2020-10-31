@@ -3,7 +3,6 @@ package controller;
 import app.App;
 import dao.mysql.AppointmentMysqlDao;
 import dao.mysql.CustomerMysqlDao;
-import dao.mysql.UserMysqlDao;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -131,7 +130,7 @@ public class Main implements Initializable {
         customerTableView.setPlaceholder(new Label("Currently no customers"));
 
         reportTableView.setItems(Scheduler.getReportAppointments());
-        customerTableView.setPlaceholder(new Label("No report data"));
+        reportTableView.setPlaceholder(new Label("No report data"));
 
         // set up the row mouse click handlers for both table views
         setupTableViewRowClickHandlers();
@@ -181,9 +180,9 @@ public class Main implements Initializable {
         // alert if appointment within 15 min of logging in.
         int appointmentNearId = AppointmentMysqlDao.findAppointmentWithinFifteenMin(Scheduler.getLoggedUser());
         if( appointmentNearId > 0){
-            Optional<ButtonType> result = App.dialog(Alert.AlertType.INFORMATION, "Scheduled Appointment Alert",
-                    "Scheduled appointment start time near",
-                    "You have an ongoing appointment now or within 15 minutes");
+            Optional<ButtonType> result = App.dialog(Alert.AlertType.INFORMATION, "Scheduled Meeting Alert",
+                    "Scheduled meeting start time near",
+                    "You have an ongoing meeting now or within 15 minutes");
 
             if (result.isPresent() && result.get() == ButtonType.OK) {
                 int index = 0;
@@ -291,19 +290,19 @@ public class Main implements Initializable {
     //////////////////////////////// Appointment tab
 
     public void clickNewAppointmentBtn() {
-        loadAppointmentScreen(null, "Customer Scheduling - New Appointment",
-                "Cannot load new appointment window");
+        loadAppointmentScreen(null, "Client Scheduling - New Meeting",
+                "Cannot load new meeting window");
     }
 
     public void clickEditAppointmentBtn(){
         Appointment theAppointment = appointmentTableView.getSelectionModel().getSelectedItem();
 
         if(theAppointment == null){
-            App.dialog(Alert.AlertType.INFORMATION, "Select Appointment", "No appointment selected",
-                    "You must select an appointment to edit");
+            App.dialog(Alert.AlertType.INFORMATION, "Select Meeting", "No Meeting selected",
+                    "You must select a meeting to edit");
         } else {
-            loadAppointmentScreen(theAppointment,"Customer Scheduling - Edit Appointment",
-                    "Cannot load edit appointment window");
+            loadAppointmentScreen(theAppointment,"Client Scheduling - Edit Meeting",
+                    "Cannot load edit meeting window");
         }
     }
 
@@ -311,16 +310,16 @@ public class Main implements Initializable {
         int selectedIndex = appointmentTableView.getSelectionModel().getSelectedIndex();
 
         if(selectedIndex == -1){
-            App.dialog(Alert.AlertType.INFORMATION, "Select Appointment", "No appointment selected",
-                    "You must select an appointment to delete");
+            App.dialog(Alert.AlertType.INFORMATION, "Select Meeting", "No meeting selected",
+                    "You must select a meeting to delete");
         }
         else {
             Appointment appointment = appointmentTableView.getSelectionModel().getSelectedItem();
             String customerName = appointment.getCustomerName();
 
-            Optional<ButtonType> result = App.dialog(Alert.AlertType.CONFIRMATION, "Delete Appointment",
-                    "Confirm Delete - Appointment with " + appointment.getUserName(),
-                    "Are you sure you want to delete the appointment for " + customerName + "?\n\n");
+            Optional<ButtonType> result = App.dialog(Alert.AlertType.CONFIRMATION, "Delete Meeting",
+                    "Confirm Delete - Meeting with " + appointment.getUserName(),
+                    "Are you sure you want to delete the meeting with " + customerName + "?\n\n");
 
             if (result.isPresent() && result.get() == ButtonType.OK) {
                 AppointmentMysqlDao.deleteAppointment(appointment.getAppointmentId());
@@ -354,19 +353,19 @@ public class Main implements Initializable {
     ///////////////////////////// Customer tab
 
     public void clickNewCustomerBtn() {
-        loadCustomerScreen(null, "New Customer",
-                "Cannot load new customer window");
+        loadCustomerScreen(null, "New Client",
+                "Cannot load new client window");
     }
 
     public void clickEditCustomerBtn(){
         Customer customer = customerTableView.getSelectionModel().getSelectedItem();
 
         if(customer == null){
-            App.dialog(Alert.AlertType.INFORMATION, "Select Customer", "No customer selected",
-                    "You must select a customer to edit");
+            App.dialog(Alert.AlertType.INFORMATION, "Select Client", "No client selected",
+                    "You must select a client to edit");
         } else {
-            loadCustomerScreen(customer,"Edit Customer",
-                    "Cannot load edit appointment window");
+            loadCustomerScreen(customer,"Edit Client",
+                    "Cannot load edit meeting window");
         }
     }
 
@@ -374,24 +373,24 @@ public class Main implements Initializable {
         int selectedIndex = customerTableView.getSelectionModel().getSelectedIndex();
 
         if(selectedIndex == -1){
-            App.dialog(Alert.AlertType.INFORMATION, "Select Customer", "No customer selected",
-                    "You must select an customer to delete");
+            App.dialog(Alert.AlertType.INFORMATION, "Select Client", "No client selected",
+                    "You must select a client to delete");
         }
         else {
             Customer customer = customerTableView.getSelectionModel().getSelectedItem();
             String customerName = customer.getCustomerName();
 
-            Optional<ButtonType> result = App.dialog(Alert.AlertType.CONFIRMATION, "Delete Customer",
-                    "Confirm Delete - Customer: " + customer.getCustomerName(),
+            Optional<ButtonType> result = App.dialog(Alert.AlertType.CONFIRMATION, "Delete Client",
+                    "Confirm Delete - Client: " + customer.getCustomerName(),
                     "Are you sure you want to delete " + customerName + "?\n\n");
 
             if (result.isPresent() && result.get() == ButtonType.OK) {
                 int rowsAffected = CustomerMysqlDao.deleteCustomer(customer.getCustomerId());
                 // if rowsAffected == -1 then a SQLException was thrown already
                 if(rowsAffected == 0){ // the customer cannot be deleted with scheduled appointments
-                    App.dialog(Alert.AlertType.INFORMATION, "Customer Cannot Be Deleted",
-                            "Customer has scheduled appointments",
-                            "A customer with scheduled appointments cannot be deleted.");
+                    App.dialog(Alert.AlertType.INFORMATION, "Client Cannot Be Deleted",
+                            "Client has scheduled meeting(s)",
+                            "A client with scheduled meeting(s) cannot be deleted.");
                 } else if (rowsAffected == 1){
                     Scheduler.removeCustomer(customer);
                 }
@@ -427,8 +426,8 @@ public class Main implements Initializable {
     ////////////////  Reports tab
 
     private void initializeReportsCombo(){
-        reportsCombo.getItems().addAll("Select Report", "All Appointments For", "Types of Appointments",
-                "New Customers This Month");
+        reportsCombo.getItems().addAll("Select Report", "All Meetings For", "Types of Meetings",
+                "New Clients This Month");
         reportsCombo.setValue("Select Report");
     }
 
@@ -462,29 +461,29 @@ public class Main implements Initializable {
         int monthStart = month.getValue();
 
         switch (reportSelection) {
-            case "All Appointments For":
+            case "All Meetings For":
                 // make subselection separator and combo for selecting user visible
                 showSelectUser();
                 reportUserCombo.setItems(Scheduler.getUsers());
 
                 break;
-            case "Types of Appointments":
+            case "Types of Meetings":
                 hideSelectUser();
 
                 int appointmentTypes = AppointmentMysqlDao.findAppointmentTypes(monthStart);
-                App.dialog(Alert.AlertType.INFORMATION, "Appointment Types by Month",
-                        "Appointment types for the month of " + currentMonth,
-                        "There are " + appointmentTypes + " different types of appointments this month.");
+                App.dialog(Alert.AlertType.INFORMATION, "Meeting Types by Month",
+                        "Meeting types for the month of " + currentMonth,
+                        "There are " + appointmentTypes + " different types of meetings this month.");
 
                 break;
-            case "New Customers This Month":
+            case "New Clients This Month":
                 hideSelectUser();
 
                 int newCustomersThisMonth = CustomerMysqlDao.findNewCustomers(currentDate);
 
-                App.dialog(Alert.AlertType.INFORMATION, "New Customers This Month",
-                        "The number of new customers for the month of " + currentMonth,
-                        "There are " + newCustomersThisMonth + " new customers this month.");
+                App.dialog(Alert.AlertType.INFORMATION, "New Clients This Month",
+                        "The number of new clients for the month of " + currentMonth,
+                        "There are " + newCustomersThisMonth + " new clients this month.");
 
                 break;
             default:  // for Select Report (default prompt)
@@ -514,7 +513,7 @@ public class Main implements Initializable {
             appointmentRow.setOnMouseClicked(event -> {
                 if (event.getClickCount() == 2 && (! appointmentRow.isEmpty()) ) {
                     Appointment appointment = appointmentRow.getItem();
-                    loadAppointmentScreen(appointment, "Edit Appointment", "Could not load edit");
+                    loadAppointmentScreen(appointment, "Edit Meeting", "Could not load edit");
                 }
             });
             return appointmentRow ;
@@ -527,7 +526,7 @@ public class Main implements Initializable {
             customerRow.setOnMouseClicked(event -> {
                 if (event.getClickCount() == 2 && (! customerRow.isEmpty()) ) {
                     Customer customer = customerRow.getItem();
-                    loadCustomerScreen(customer, "Edit Customer", "Could not load edit");
+                    loadCustomerScreen(customer, "Edit Client", "Could not load edit");
                 }
             });
             return customerRow ;

@@ -1,27 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-            xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.Customers">
-    <children>
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
+            minWidth="-Infinity" xmlns="http://javafx.com/javafx" fx:controller="controller.Customers">
+    
 
         <VBox alignment="CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-            <children>
+            
 
                 <HBox alignment="CENTER" minHeight="60.0">
-                    <children>
+                    
 
-                        <Label fx:id="customerScreenLabel" alignment="CENTER" text="New Customer" HBox.hgrow="ALWAYS">
+                        <Label fx:id="customerScreenLabel" alignment="CENTER" text="New Client" HBox.hgrow="ALWAYS">
                             <font>
                                 <Font name="System Bold Italic" size="16.0" />
                             </font>
                         </Label>
-                    </children>
+                    
                <VBox.margin>
                   <Insets />
                </VBox.margin>
@@ -31,107 +30,107 @@
 
                 </HBox>
                 <VBox alignment="CENTER">
-                    <children>
+                    
                         <HBox alignment="CENTER" VBox.vgrow="ALWAYS">
-                            <children>
+                            
 
                                 <Label minWidth="100.0" text="Name">
                                     <HBox.margin>
                                         <Insets left="40.0" />
                                     </HBox.margin>
                                 </Label>
-                                <TextField fx:id="nameTextField" promptText="customer name" />
-                            </children>
+                                <TextField fx:id="nameTextField" promptText="client name" />
+                            
                      <padding>
                         <Insets bottom="10.0" top="10.0" />
                      </padding>
                         </HBox>
                         <HBox alignment="CENTER">
-                            <children>
+                            
                                 <Label minWidth="100.0" text="Address">
                                     <HBox.margin>
                                         <Insets left="40.0" />
                                     </HBox.margin>
                                 </Label>
                                 <TextField fx:id="addressTextField" promptText="address" />
-                            </children>
+                            
                      <padding>
                         <Insets bottom="10.0" top="10.0" />
                      </padding>
                         </HBox>
                   <HBox alignment="CENTER">
-                     <children>
+                     
                         <Label minWidth="100.0" text="Address 2">
                            <HBox.margin>
                               <Insets left="40.0" />
                            </HBox.margin>
                         </Label>
                         <TextField fx:id="address2TextField" promptText="address 2" />
-                     </children>
+                     
                      <padding>
                         <Insets bottom="10.0" top="10.0" />
                      </padding>
                   </HBox>
                         <HBox alignment="CENTER">
-                            <children>
+                            
                                 <Label minWidth="100.0" text="City">
                                     <HBox.margin>
                                         <Insets left="40.0" />
                                     </HBox.margin>
                                 </Label>
                                 <TextField fx:id="cityTextField" promptText="city" />
-                            </children>
+                            
                      <padding>
                         <Insets bottom="10.0" top="10.0" />
                      </padding>
                         </HBox>
                         <HBox alignment="CENTER">
-                            <children>
+                            
                                 <Label minWidth="100.0" text="Country">
                                     <HBox.margin>
                                         <Insets left="40.0" />
                                     </HBox.margin>
                                 </Label>
                                 <TextField fx:id="countryTextField" promptText="country" />
-                            </children>
+                            
                      <padding>
                         <Insets bottom="10.0" top="10.0" />
                      </padding>
                         </HBox>
                         <HBox alignment="CENTER">
-                            <children>
+                            
                                 <Label minWidth="100.0" text="Postal">
                                     <HBox.margin>
                                         <Insets left="40.0" />
                                     </HBox.margin>
                                 </Label>
                                 <TextField fx:id="postalTextField" promptText="postal code" />
-                            </children>
+                            
                      <padding>
                         <Insets bottom="10.0" top="10.0" />
                      </padding>
                         </HBox>
                         <HBox alignment="CENTER">
-                            <children>
+                            
                                 <Label minWidth="100.0" text="Phone">
                                     <HBox.margin>
                                         <Insets left="40.0" />
                                     </HBox.margin>
                                 </Label>
                                 <TextField fx:id="phoneTextField" promptText="telephone number" />
-                            </children>
+                            
                      <padding>
                         <Insets bottom="10.0" top="10.0" />
                      </padding>
                         </HBox>
-                    </children>
+                    
                <padding>
                   <Insets right="20.0" />
                </padding>
 
                 </VBox>
                 <HBox alignment="CENTER" spacing="20.0">
-                    <children>
+                    
 
                         <Button fx:id="customerSaveBtn" minWidth="100.0" mnemonicParsing="false" onAction="#clickSaveCustomerBtn" style="-fx-background-color: black;" text="Save" textFill="WHITE">
                             <font>
@@ -143,16 +142,16 @@
                                 <Font name="System Bold" size="13.0" />
                             </font>
                         </Button>
-                    </children>
+                    
 
                     <padding>
                         <Insets bottom="30.0" top="45.0" />
                     </padding>
                 </HBox>
-            </children>
+            
 
         </VBox>
-    </children>
+    
     <padding>
         <Insets bottom="40.0" left="30.0" right="40.0" top="40.0" />
     </padding>

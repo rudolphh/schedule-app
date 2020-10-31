@@ -66,8 +66,8 @@ public class Customers implements Initializable {
     }
 
     private void fieldEmptyDialog(String fieldName){
-        App.dialog(Alert.AlertType.INFORMATION, "Customer " + fieldName, "No customer " + fieldName,
-                "The customer needs a(n) " + fieldName + ".");
+        App.dialog(Alert.AlertType.INFORMATION, "Client " + fieldName, "No client " + fieldName,
+                "The client needs a(n) " + fieldName + ".");
     }
 
     private String validateField(TextField textField, String fieldName){
@@ -138,7 +138,7 @@ public class Customers implements Initializable {
                 customerId = createdCustomer.getCustomerId();
                 if(customerId > 0)
                     Scheduler.addCustomer(createdCustomer);
-                else throw new SQLException("No new customer was created - Customers.java");
+                else throw new SQLException("No new client was created - Customers.java");
 
             } catch (SQLException e){
                 e.printStackTrace();
@@ -171,7 +171,7 @@ public class Customers implements Initializable {
 
     public void clickCancelCustomerBtn(ActionEvent actionEvent) {
         Optional<ButtonType> result = App.dialog(Alert.AlertType.CONFIRMATION,
-                "Cancel Add/Update Customer", "Confirm cancel",
+                "Cancel Add/Update Client", "Confirm cancel",
                 "Are you sure you want to cancel?\n\n");
 
         if (result.isPresent() && result.get() == ButtonType.OK)
@@ -181,7 +181,7 @@ public class Customers implements Initializable {
     ///////////////////////// Controller methods
 
     void initScreenLabel(String screenLabel){
-        customerScreenLabel.setText("Customer: \t" + screenLabel);
+        customerScreenLabel.setText("Client: " + screenLabel);
     }
 
     void setCustomer(Customer customer, Main mainController) {
