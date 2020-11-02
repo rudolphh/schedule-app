@@ -72,6 +72,42 @@ public class AppointmentMysqlDao {
 
     }
 
+    public static void findAllAppointmentsByType(String type){
+
+        // split the search string
+        String[] parts = type.split(" ");
+
+        StringBuilder sql = new StringBuilder("SELECT " +
+                "a.appointmentId, a.customerId, a.userId, u.userName, c.customerName, a.type, a.start, a.end " +
+                "FROM appointment a " +
+                "INNER JOIN customer c ON a.customerId = c.customerId " +
+                "INNER JOIN user u ON a.userId = u.userId " +
+                "where ");
+
+        for(int i = 0; i < parts.length; i++){
+            if(i > 0)
+                sql.append("AND ");
+
+            sql.append("concat_ws(' ', a.type, u.userName, c.customerName) LIKE ? ");
+        }
+
+        sql.append("ORDER BY a.start;");
+
+        try {
+            PreparedStatement preparedStatement = DBConnection.startConnection().prepareStatement(sql.toString());
+
+            for (int i = 0; i < parts.length; i++){
+                preparedStatement.setString(i+1, "%"+parts[i]+"%");
+            }
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            addResultsToList(resultSet, Scheduler.getReportAppointments() );
+        } catch (SQLException e){
+            System.out.println(e.getMessage());
+        }
+
+    }
+
     public static void findOverlappingAppointment(User user, Appointment appointment,
                                                   LocalDateTime start, LocalDateTime end){
 

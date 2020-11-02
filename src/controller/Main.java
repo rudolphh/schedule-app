@@ -4,6 +4,7 @@ import app.App;
 import dao.mysql.AppointmentMysqlDao;
 import dao.mysql.CustomerMysqlDao;
 import javafx.beans.property.ReadOnlyStringWrapper;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -11,6 +12,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.KeyCode;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.Appointment;
@@ -80,6 +82,9 @@ public class Main implements Initializable {
     private ComboBox<User> reportUserCombo;
 
     @FXML
+    private TextField searchTypeTextField;
+
+    @FXML
     private TableView<Appointment> reportTableView;
 
     @FXML
@@ -137,6 +142,13 @@ public class Main implements Initializable {
 
         // alert if appointment within 15 min of logging in.
         appointmentSoonAlert();
+
+        // set up search textField handlers (enter key)
+        searchTypeTextField.setOnKeyPressed(keyEvent -> {
+            if (keyEvent.getCode() == KeyCode.ENTER)  {
+                clickSearchType(new ActionEvent());
+            }
+        });
 
     }// end initialize
 
@@ -534,5 +546,15 @@ public class Main implements Initializable {
 
     }// end setupTableViewRowClickHandlers
 
+
+    // Search by type of meeting (appointment)
+    // onAction for the search button in reports
+    public void clickSearchType(ActionEvent actionEvent) {
+
+        hideSelectUser();// reset other reporting mechanisms
+
+        String searchVal = searchTypeTextField.getText();
+        AppointmentMysqlDao.findAllAppointmentsByType(searchVal);
+    }
 
 }// end Main
