@@ -1,8 +1,8 @@
 package dao.mysql;
 
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import model.Appointment;
-import model.Scheduler;
 import model.User;
 import utils.DBConnection;
 import utils.TimeChanger;
@@ -18,7 +18,10 @@ public class AppointmentMysqlDao {
     ///////////////////////// Public methods
 
     //////////////// Read
-    public static void findAllAppointments(User user){
+    public static ObservableList<Appointment> findAllAppointments(User user){
+
+        ResultSet resultSet = null;
+
         String sql = "Select " +
                 "a.appointmentId, a.customerId, a.userId, u.userName, c.customerName, a.type, a.start, a.end " +
                 "from appointment a " +
@@ -33,23 +36,26 @@ public class AppointmentMysqlDao {
         try {
             PreparedStatement preparedStatement = DBConnection.startConnection().prepareStatement(sql);
             if (user != null) preparedStatement.setInt(1, user.getId());
-            ResultSet resultSet = preparedStatement.executeQuery();
+            resultSet = preparedStatement.executeQuery();
 
-            if( user == null)
-                addResultsToList(resultSet, Scheduler.getAppointments());
-            else addResultsToList(resultSet, Scheduler.getReportAppointments());
         } catch (SQLException e){
             System.out.println(e.getMessage());
         }
+
+        assert resultSet != null;
+        return resultsToList(resultSet);
     }
 
-    public static void findAllAppointments(int monthStart){
-        findAllAppointments(monthStart, 0);
+    public static ObservableList<Appointment> findAllAppointments(int monthStart){
+        return findAllAppointments(monthStart, 0);
     }
 
-    public static void findAllAppointments(int monthStart, int dayStart){
+    public static ObservableList<Appointment> findAllAppointments(int monthStart, int dayStart){
+
         Timestamp startTime = makeUTCStartDateTimestamp(monthStart, dayStart);
         Timestamp endTime = makeUTCEndDateTimestamp(monthStart, dayStart);
+
+        ResultSet resultSet = null;
 
         String sql = "Select " +
                 "a.appointmentId, a.customerId, a.userId, u.userName, c.customerName, a.type, a.start, a.end " +
@@ -63,19 +69,22 @@ public class AppointmentMysqlDao {
             PreparedStatement preparedStatement = DBConnection.startConnection().prepareStatement(sql);
             preparedStatement.setTimestamp(1, startTime);
             preparedStatement.setTimestamp(2, endTime);
-            ResultSet resultSet = preparedStatement.executeQuery();
+            resultSet = preparedStatement.executeQuery();
 
-            addResultsToList(resultSet, Scheduler.getAppointments() );
         } catch (SQLException e){
             System.out.println(e.getMessage());
         }
 
+        assert resultSet != null;
+        return resultsToList(resultSet);
     }
 
-    public static void findAllAppointmentsByType(String type){
+    public static ObservableList<Appointment> findAllAppointmentsByType(String type){
 
         // split the search string
         String[] parts = type.split(" ");
+
+        ResultSet resultSet = null;
 
         StringBuilder sql = new StringBuilder("SELECT " +
                 "a.appointmentId, a.customerId, a.userId, u.userName, c.customerName, a.type, a.start, a.end " +
@@ -99,13 +108,14 @@ public class AppointmentMysqlDao {
             for (int i = 0; i < parts.length; i++){
                 preparedStatement.setString(i+1, "%"+parts[i]+"%");
             }
-            ResultSet resultSet = preparedStatement.executeQuery();
+            resultSet = preparedStatement.executeQuery();
 
-            addResultsToList(resultSet, Scheduler.getReportAppointments() );
         } catch (SQLException e){
             System.out.println(e.getMessage());
         }
 
+        assert resultSet != null;
+        return resultsToList(resultSet);
     }
 
     public static void findOverlappingAppointment(User user, Appointment appointment,
@@ -272,7 +282,10 @@ public class AppointmentMysqlDao {
 
     //////////////////////// Private helper methods
 
-    private static void addResultsToList(ResultSet resultSet, ObservableList<Appointment> appointmentList){
+    private static ObservableList<Appointment> resultsToList(ResultSet resultSet){
+
+        ObservableList<Appointment> appointmentList = FXCollections.observableArrayList();
+
         try {
 
             while(resultSet.next()){
@@ -291,6 +304,7 @@ public class AppointmentMysqlDao {
         } catch (SQLException e){
             System.out.println(e.getMessage());
         }
+        return appointmentList;
     }
 
     ////////// For working with queries of time

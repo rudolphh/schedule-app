@@ -1,7 +1,6 @@
 package controller;
 
 import app.App;
-import dao.mysql.AppointmentMysqlDao;
 import dao.mysql.CustomerMysqlDao;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.event.ActionEvent;
@@ -17,7 +16,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.Appointment;
 import model.Customer;
-import model.Scheduler;
+import app.SchedulerRepository;
 import model.User;
 
 import java.net.URL;
@@ -109,7 +108,7 @@ public class Main implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
 
         // initialize the scheduler with all data for users, customers, and appointments
-        Scheduler.initialize();
+        SchedulerRepository.initialize();
 
         // populate and set default selection of combo boxes
         initializeReportsCombo();
@@ -128,13 +127,13 @@ public class Main implements Initializable {
 
 
         //  set table views to their respective ObservableList
-        appointmentTableView.setItems(Scheduler.getAppointments());
+        appointmentTableView.setItems(SchedulerRepository.getAppointments());
         appointmentTableView.setPlaceholder(new Label("No appointments during this time"));
 
-        customerTableView.setItems(Scheduler.getCustomers());
+        customerTableView.setItems(SchedulerRepository.getCustomers());
         customerTableView.setPlaceholder(new Label("Currently no customers"));
 
-        reportTableView.setItems(Scheduler.getReportAppointments());
+        reportTableView.setItems(SchedulerRepository.getReportAppointments());
         reportTableView.setPlaceholder(new Label("No report data"));
 
         // set up the row mouse click handlers for both table views
@@ -191,7 +190,7 @@ public class Main implements Initializable {
     // alert if there is an appointment scheduled within 15 min of logging in.
     private void appointmentSoonAlert(){
 
-        int appointmentNearId = Scheduler.appointmentWithinFifteenMin();
+        int appointmentNearId = SchedulerRepository.appointmentWithinFifteenMin();
 
         if( appointmentNearId > 0){
             Optional<ButtonType> result = App.dialog(Alert.AlertType.INFORMATION, "Scheduled Meeting Alert",
@@ -234,7 +233,7 @@ public class Main implements Initializable {
 
         if(monthCombo.getSelectionModel().getSelectedItem().equals("ALL")){
             appointmentTableView.getItems().clear();
-            Scheduler.findAllAppointments(null);
+            SchedulerRepository.findAllAppointments(null);
             weekCheckBox.setDisable(true);
         } else {
             weekCheckBox.setDisable(false);
@@ -255,7 +254,7 @@ public class Main implements Initializable {
         int dateStart = currentWeek * 7 - 6;
 
         appointmentTableView.getItems().clear();
-        Scheduler.findAllAppointments(monthStart, dateStart);// update appointments
+        SchedulerRepository.findAllAppointments(monthStart, dateStart);// update appointments
     }
 
     private void refreshMonthlyAppointmentsTableView(){
@@ -263,8 +262,8 @@ public class Main implements Initializable {
         int monthStart = monthCombo.getSelectionModel().getSelectedIndex();
 
         appointmentTableView.getItems().clear();
-        if(monthStart == 0) Scheduler.findAllAppointments(null);// we want all appointments
-        else Scheduler.findAllAppointments(monthStart);// else give the chosen month
+        if(monthStart == 0) SchedulerRepository.findAllAppointments(null);// we want all appointments
+        else SchedulerRepository.findAllAppointments(monthStart);// else give the chosen month
     }
 
     ///////////////////////////
@@ -336,7 +335,7 @@ public class Main implements Initializable {
                     "Are you sure you want to delete the meeting with " + customerName + "?\n\n");
 
             if (result.isPresent() && result.get() == ButtonType.OK) {
-                Scheduler.removeAppointment(appointment);
+                SchedulerRepository.removeAppointment(appointment);
             }
         }
     }
@@ -405,7 +404,7 @@ public class Main implements Initializable {
                             "Client has scheduled meeting(s)",
                             "A client with scheduled meeting(s) cannot be deleted.");
                 } else if (rowsAffected == 1){
-                    Scheduler.removeCustomer(customer);
+                    SchedulerRepository.removeCustomer(customer);
                 }
 
             }
@@ -477,13 +476,13 @@ public class Main implements Initializable {
             case "All Meetings For":
                 // make subselection separator and combo for selecting user visible
                 showSelectUser();
-                reportUserCombo.setItems(Scheduler.getUsers());
+                reportUserCombo.setItems(SchedulerRepository.getUsers());
 
                 break;
             case "Types of Meetings":
                 hideSelectUser();
 
-                int appointmentTypes = Scheduler.findAppointmentTypes(monthStart);
+                int appointmentTypes = SchedulerRepository.findAppointmentTypes(monthStart);
                 App.dialog(Alert.AlertType.INFORMATION, "Meeting Types by Month",
                         "Meeting types for the month of " + currentMonth,
                         "There are " + appointmentTypes + " different types of meetings this month.");
@@ -492,7 +491,7 @@ public class Main implements Initializable {
             case "New Clients This Month":
                 hideSelectUser();
 
-                int newCustomersThisMonth = Scheduler.findNewCustomers(currentDate);
+                int newCustomersThisMonth = SchedulerRepository.findNewCustomers(currentDate);
 
                 App.dialog(Alert.AlertType.INFORMATION, "New Clients This Month",
                         "The number of new clients for the month of " + currentMonth,
@@ -510,7 +509,7 @@ public class Main implements Initializable {
         if(reportUserCombo.isVisible()) {
             reportTableView.getItems().clear();
             User user = reportUserCombo.getSelectionModel().getSelectedItem();
-            Scheduler.findAllAppointments(user);
+            SchedulerRepository.findAllAppointments(user);
         }
     }
 
@@ -555,7 +554,7 @@ public class Main implements Initializable {
         hideSelectUser();// reset other reporting mechanisms
 
         String searchVal = searchTypeTextField.getText();
-        Scheduler.findAllAppointmentsByType(searchVal);
+        SchedulerRepository.findAllAppointmentsByType(searchVal);
     }
 
 }// end Main

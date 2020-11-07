@@ -1,14 +1,19 @@
-package model;
+package app;
 
 import dao.mysql.AppointmentMysqlDao;
 import dao.mysql.CustomerMysqlDao;
 import dao.mysql.UserMysqlDao;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import model.Appointment;
+import model.Customer;
+import model.User;
 
+import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
-public class Scheduler {
+public class SchedulerRepository {
 
     private static final ObservableList<Appointment> appointments = FXCollections.observableArrayList();
     private static final ObservableList<Customer> customers = FXCollections.observableArrayList();
@@ -18,19 +23,38 @@ public class Scheduler {
 
     ///////////////////////// methods
     public static void initialize(){
-        AppointmentMysqlDao.findAllAppointments(null);
-        CustomerMysqlDao.findAllCustomers();
-        UserMysqlDao.findAllUsers();
+        findAllAppointments(null);
+        customers.addAll(CustomerMysqlDao.findAllCustomers());
+        users.addAll(UserMysqlDao.findAllUsers());
     }
 
     ////////////// create
-    public static void addAppointment(Appointment appointment){
+    public static int createAppointment(Appointment appointment){
+        int index = AppointmentMysqlDao.createAppointment(appointment);
         appointments.add(appointment);
+        return index;
     }
-    public static void addCustomer(Customer customer){
-        customers.add(customer);
+
+    public static int createCustomer(Customer customer){
+
+        int customerId = 0;
+
+        try {
+            Customer createdCustomer = CustomerMysqlDao.createCustomer(customer, loggedUser.getUserName());
+            customerId = createdCustomer.getCustomerId();
+
+            if (customerId > 0)
+                customers.add(createdCustomer);
+            else throw new SQLException("No new client was created - Customers.java");
+
+        } catch (SQLException e){
+            e.printStackTrace();
+            System.out.println(e.getMessage());
+        }
+
+        return customerId;
     }
-    public static void addUser(User user) { users.add(user); }
+
     public static void setLoggedUser(User user) { loggedUser = user; }
 
     ////////////// only use for searches in the given list
@@ -78,28 +102,38 @@ public class Scheduler {
     public static ObservableList<Customer> getCustomers(){ return customers; }
     public static ObservableList<User> getUsers(){ return users; }
     public static ObservableList<Appointment> getReportAppointments(){ return reportAppointments; }
-    public static User getLoggedUser() { return loggedUser; }
 
     ////////////////// update
-    public static void setAppointment(int index, Appointment selectedAppointment){
-        appointments.set(index, selectedAppointment);
+
+    public static int updateAppointment(int listIndex, Appointment selectedAppointment){
+        int dbIndex = AppointmentMysqlDao.updateAppointment(selectedAppointment);
+        appointments.set(listIndex, selectedAppointment);
+        return dbIndex;
     }
 
-    public static void setCustomer(int index, Customer selectedCustomer){
-        customers.set(index, selectedCustomer);
+    public static int updateCustomer(int index, Customer selectedCustomer){
+
+        int dbIndex = 0;
+        try {
+            dbIndex = CustomerMysqlDao.updateCustomer(selectedCustomer, loggedUser.getUserName());
+            customers.set(index, selectedCustomer);
+        } catch (SQLException e){
+            e.printStackTrace();
+            System.out.println(e.getMessage());
+        }
+
+        return dbIndex;
     }
 
     ///////////////// delete
 
-    public static boolean removeAppointment(Appointment selectedAppointment) {
+    public static void removeAppointment(Appointment selectedAppointment) {
         AppointmentMysqlDao.deleteAppointment(selectedAppointment.getAppointmentId());
         appointments.remove(selectedAppointment);
-        return true;
     }
 
-    public static boolean removeCustomer(Customer selectedCustomer){
+    public static void removeCustomer(Customer selectedCustomer){
         customers.remove(selectedCustomer);
-        return true;
     }
 
 
@@ -110,15 +144,21 @@ public class Scheduler {
     }
 
     public static void findAllAppointments(User user) {
-        AppointmentMysqlDao.findAllAppointments(user);
+
+        ObservableList<Appointment> appointmentsFound = AppointmentMysqlDao.findAllAppointments(user);
+        if(user == null){
+            appointments.addAll(appointmentsFound);
+        } else {
+            reportAppointments.addAll(appointmentsFound);
+        }
     }
 
     public static void findAllAppointments(int monthStart){
-        AppointmentMysqlDao.findAllAppointments(monthStart, 0);
+        appointments.addAll(AppointmentMysqlDao.findAllAppointments(monthStart));
     }
 
     public static void findAllAppointments(int monthStart, int dateStart){
-        AppointmentMysqlDao.findAllAppointments(monthStart, dateStart);
+        appointments.addAll(AppointmentMysqlDao.findAllAppointments(monthStart, dateStart));
     }
 
     public static int findAppointmentTypes(int monthStart) {
@@ -133,6 +173,11 @@ public class Scheduler {
     }
 
     public static void findAllAppointmentsByType(String searchVal) {
-        AppointmentMysqlDao.findAllAppointmentsByType(searchVal);
+        reportAppointments.addAll(AppointmentMysqlDao.findAllAppointmentsByType(searchVal));
+    }
+
+    public static void findOverlappingAppointment(User user, Appointment selectedAppointment,
+                                                  LocalDateTime start, LocalDateTime end) {
+        AppointmentMysqlDao.findOverlappingAppointment(user, selectedAppointment, start, end);
     }
 }

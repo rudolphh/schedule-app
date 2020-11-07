@@ -13,7 +13,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 
-import model.Scheduler;
+import app.SchedulerRepository;
 import model.User;
 
 import java.net.URL;
@@ -82,7 +82,7 @@ public class Login implements Initializable {
 
         if(searchedUser.isPresent()){
             User loggedIn = searchedUser.get();
-            Scheduler.setLoggedUser(loggedIn);
+            SchedulerRepository.setLoggedUser(loggedIn);
             UserFileDao.logUser(loggedIn);// log the user to text file
             loadMainScreen();
             App.closeThisWindow(actionEvent);

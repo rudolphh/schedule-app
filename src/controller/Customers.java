@@ -8,7 +8,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 
 import model.Customer;
-import model.Scheduler;
+import app.SchedulerRepository;
 
 import java.net.URL;
 import java.sql.SQLException;
@@ -128,25 +128,17 @@ public class Customers implements Initializable {
         }
 
 
-        int customerId = 0;
+        int customerId;
         if(selectedCustomer == null){// we have a new customer
 
             selectedCustomer = new Customer(0, 0, 0, 0, name, address, address2,
                     city, country, postal, phone, 1);
-            try {
-                Customer createdCustomer = CustomerMysqlDao.createCustomer(selectedCustomer);
-                customerId = createdCustomer.getCustomerId();
-                if(customerId > 0)
-                    Scheduler.addCustomer(createdCustomer);
-                else throw new SQLException("No new client was created - Customers.java");
 
-            } catch (SQLException e){
-                e.printStackTrace();
-                System.out.println(e.getMessage());
-            }
+            customerId = SchedulerRepository.createCustomer(selectedCustomer);
+
         } else {// we're modifying an existing customer
 
-            int selectedCustomerIndex = Scheduler.getCustomers().indexOf(selectedCustomer);
+            int selectedCustomerIndex = SchedulerRepository.getCustomers().indexOf(selectedCustomer);
             selectedCustomer.setCustomerName(name);
             selectedCustomer.setAddress(address);
             selectedCustomer.setAddress2(address2);
@@ -155,13 +147,7 @@ public class Customers implements Initializable {
             selectedCustomer.setPostalCode(postal);
             selectedCustomer.setPhone(phone);
 
-            try {
-                customerId = CustomerMysqlDao.updateCustomer(selectedCustomer);
-                Scheduler.setCustomer(selectedCustomerIndex, selectedCustomer);// essentially refresh tableView
-            } catch (SQLException e){
-                e.printStackTrace();
-                System.out.println(e.getMessage());
-            }
+            customerId = SchedulerRepository.updateCustomer(selectedCustomerIndex, selectedCustomer);
         }
 
         if(customerId > 0) {

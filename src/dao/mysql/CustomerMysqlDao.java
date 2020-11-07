@@ -1,7 +1,9 @@
 package dao.mysql;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import model.Customer;
-import model.Scheduler;
+import app.SchedulerRepository;
 
 import utils.DBConnection;
 import utils.TimeChanger;
@@ -55,19 +57,21 @@ public class CustomerMysqlDao {
 
     /////////// Read
 
-    public static void findAllCustomers(){
+    public static ObservableList<Customer> findAllCustomers(){
         String sql = selectCustomersQuery();
+        ObservableList<Customer> customers = FXCollections.observableArrayList();
 
         try {
             PreparedStatement preparedStatement = DBConnection.startConnection().prepareStatement(sql);
             ResultSet resultSet = preparedStatement.executeQuery();
 
             while (resultSet.next()) {
-                Scheduler.addCustomer(makeCustomer(resultSet));
+                customers.add(makeCustomer(resultSet));
             }
         } catch (SQLException e){
             System.out.println(e.getMessage());
         }
+        return customers;
     }
 
     public static Optional<Customer> findCustomer(int customerId){
@@ -88,6 +92,7 @@ public class CustomerMysqlDao {
         }
         return Optional.ofNullable(searchedCustomer);
     }
+
 
     public static int findNewCustomers(LocalDate localDate){
 
@@ -157,7 +162,8 @@ public class CustomerMysqlDao {
         return id;
     }
 
-    public static Customer createCustomer(Customer customer) throws SQLException {
+
+    public static Customer createCustomer(Customer customer, String updatedBy) throws SQLException {
 
         Connection conn = DBConnection.startConnection();
         PreparedStatement insertCountry = null;
@@ -169,7 +175,6 @@ public class CustomerMysqlDao {
         String citySql = "";
 
         Timestamp lastUpdate = TimeChanger.toUTC(LocalDateTime.now());
-        String lastUpdatedBy = Scheduler.getLoggedUser().getUserName();
 
         String selectCountrySql = "SELECT countryId from country WHERE LCASE(country) = ?;";
         int countryId = insertOrExists(selectCountrySql, customer, "country");
@@ -199,9 +204,9 @@ public class CustomerMysqlDao {
                 insertCountry = conn.prepareStatement(countrySql, Statement.RETURN_GENERATED_KEYS);
                 insertCountry.setString(1, customer.getCountry());
                 insertCountry.setTimestamp(2, lastUpdate);
-                insertCountry.setString(3, lastUpdatedBy);
+                insertCountry.setString(3, updatedBy);
                 insertCountry.setTimestamp(4, lastUpdate);
-                insertCountry.setString(5, lastUpdatedBy);
+                insertCountry.setString(5, updatedBy);
                 insertCountry.executeUpdate();
             }
 
@@ -211,9 +216,9 @@ public class CustomerMysqlDao {
                 insertCity.setString(1, customer.getCity());
                 insertCity.setInt(2, countryId);
                 insertCity.setTimestamp(3, lastUpdate);
-                insertCity.setString(4, lastUpdatedBy);
+                insertCity.setString(4, updatedBy);
                 insertCity.setTimestamp(5, lastUpdate);
-                insertCity.setString(6, lastUpdatedBy);
+                insertCity.setString(6, updatedBy);
                 insertCity.executeUpdate();
             }
 
@@ -225,9 +230,9 @@ public class CustomerMysqlDao {
             insertAddress.setString(4, customer.getPostalCode());
             insertAddress.setString(5, customer.getPhone());
             insertAddress.setTimestamp(6, lastUpdate);
-            insertAddress.setString(7, lastUpdatedBy);
+            insertAddress.setString(7, updatedBy);
             insertAddress.setTimestamp(8, lastUpdate);
-            insertAddress.setString(9, lastUpdatedBy);
+            insertAddress.setString(9, updatedBy);
             insertAddress.executeUpdate();
 
             // customer prepared statement
@@ -236,9 +241,9 @@ public class CustomerMysqlDao {
             insertCustomer.setInt(2, customer.getAddressId());
             insertCustomer.setInt(3, 1);
             insertCustomer.setTimestamp(4, lastUpdate);
-            insertCustomer.setString(5, lastUpdatedBy);
+            insertCustomer.setString(5, updatedBy);
             insertCustomer.setTimestamp(6, lastUpdate);
-            insertCustomer.setString(7, lastUpdatedBy);
+            insertCustomer.setString(7, updatedBy);
             insertCustomer.executeUpdate();
 
             conn.commit();
@@ -285,7 +290,7 @@ public class CustomerMysqlDao {
 
     ///////// Update
 
-    public static int updateCustomer(Customer customer) throws SQLException {
+    public static int updateCustomer(Customer customer, String updatedBy) throws SQLException {
 
         int customerId = customer.getCustomerId();
 
@@ -295,7 +300,6 @@ public class CustomerMysqlDao {
         PreparedStatement updateCountry = null;
 
         Timestamp lastUpdate = TimeChanger.toUTC(LocalDateTime.now());
-        String lastUpdatedBy = Scheduler.getLoggedUser().getUserName();
 
         String customerSql = "UPDATE customer " +
                 "SET customerName = ?, lastUpdate = ?, lastUpdateBy = ? " +
@@ -321,7 +325,7 @@ public class CustomerMysqlDao {
             updateCustomer = conn.prepareStatement(customerSql);
             updateCustomer.setString(1, customer.getCustomerName());
             updateCustomer.setTimestamp(2, lastUpdate);
-            updateCustomer.setString(3, lastUpdatedBy);
+            updateCustomer.setString(3, updatedBy);
             updateCustomer.setInt(4, customer.getCustomerId());
             updateCustomer.executeUpdate();
 
@@ -332,7 +336,7 @@ public class CustomerMysqlDao {
             updateAddress.setString(3, customer.getPostalCode());
             updateAddress.setString(4, customer.getPhone());
             updateAddress.setTimestamp(5, lastUpdate);
-            updateAddress.setString(6, lastUpdatedBy);
+            updateAddress.setString(6, updatedBy);
             updateAddress.setInt(7, customer.getAddressId());
             updateAddress.executeUpdate();
 
@@ -340,7 +344,7 @@ public class CustomerMysqlDao {
             updateCity = conn.prepareStatement(citySql);
             updateCity.setString(1, customer.getCity());
             updateCity.setTimestamp(2, lastUpdate);
-            updateCity.setString(3, lastUpdatedBy);
+            updateCity.setString(3, updatedBy);
             updateCity.setInt(4, customer.getCityId());
             updateCity.executeUpdate();
 
@@ -348,7 +352,7 @@ public class CustomerMysqlDao {
             updateCountry = conn.prepareStatement(countrySql);
             updateCountry.setString(1, customer.getCountry());
             updateCountry.setTimestamp(2, lastUpdate);
-            updateCountry.setString(3, lastUpdatedBy);
+            updateCountry.setString(3, updatedBy);
             updateCountry.setInt(4, customer.getCountryId());
             updateCountry.executeUpdate();
 

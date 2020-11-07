@@ -1,7 +1,6 @@
 package controller;
 
 import app.App;
-import dao.mysql.AppointmentMysqlDao;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -9,7 +8,7 @@ import javafx.scene.control.*;
 
 import model.Appointment;
 import model.Customer;
-import model.Scheduler;
+import app.SchedulerRepository;
 import model.User;
 import utils.NumberTextField;
 import utils.TimeChanger;
@@ -168,7 +167,7 @@ public class Appointments implements Initializable {
         }
 
         try {
-            AppointmentMysqlDao.findOverlappingAppointment(user, selectedAppointment, start, end);
+            SchedulerRepository.findOverlappingAppointment(user, selectedAppointment, start, end);
         } catch (RuntimeException e){
             System.out.println(e.getMessage());
             App.dialog(Alert.AlertType.INFORMATION, "Overlapping Meeting Times",
@@ -181,15 +180,18 @@ public class Appointments implements Initializable {
         if(selectedAppointment == null){
             selectedAppointment = new Appointment(0, customerId, userId, type, userName, customerName,
                                                     start, end);
-            index = AppointmentMysqlDao.createAppointment(selectedAppointment);
+            index = SchedulerRepository.createAppointment(selectedAppointment);
         } else {
+
+            int selectedAppointmentIndex = SchedulerRepository.getAppointments().indexOf(selectedAppointment);
+
             selectedAppointment.setUserId(userId);
             selectedAppointment.setUserName(userName);
             selectedAppointment.setStart(start);
             selectedAppointment.setEnd(end);
             selectedAppointment.setType(type);
 
-            index = AppointmentMysqlDao.updateAppointment(selectedAppointment);
+            index = SchedulerRepository.updateAppointment(selectedAppointmentIndex, selectedAppointment);
         }
 
         if(index > 0) {
@@ -220,8 +222,8 @@ public class Appointments implements Initializable {
         DateTimeFormatter hour = DateTimeFormatter.ofPattern("h");// get hour (non-military)
         DateTimeFormatter period = DateTimeFormatter.ofPattern("a");// get AM or PM
 
-        userCombo.setItems(Scheduler.getUsers());
-        customerCombo.setItems(Scheduler.getCustomers());
+        userCombo.setItems(SchedulerRepository.getUsers());
+        customerCombo.setItems(SchedulerRepository.getCustomers());
 
         if(selectedAppointment == null) { // then we are making a new appointment
 
