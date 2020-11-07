@@ -188,9 +188,11 @@ public class Main implements Initializable {
         customerPhoneCol.setCellValueFactory(new PropertyValueFactory<>("phone"));
     }
 
+    // alert if there is an appointment scheduled within 15 min of logging in.
     private void appointmentSoonAlert(){
-        // alert if appointment within 15 min of logging in.
-        int appointmentNearId = AppointmentMysqlDao.findAppointmentWithinFifteenMin(Scheduler.getLoggedUser());
+
+        int appointmentNearId = Scheduler.appointmentWithinFifteenMin();
+
         if( appointmentNearId > 0){
             Optional<ButtonType> result = App.dialog(Alert.AlertType.INFORMATION, "Scheduled Meeting Alert",
                     "Scheduled meeting start time near",
@@ -232,7 +234,7 @@ public class Main implements Initializable {
 
         if(monthCombo.getSelectionModel().getSelectedItem().equals("ALL")){
             appointmentTableView.getItems().clear();
-            AppointmentMysqlDao.findAllAppointments(null);
+            Scheduler.findAllAppointments(null);
             weekCheckBox.setDisable(true);
         } else {
             weekCheckBox.setDisable(false);
@@ -253,7 +255,7 @@ public class Main implements Initializable {
         int dateStart = currentWeek * 7 - 6;
 
         appointmentTableView.getItems().clear();
-        AppointmentMysqlDao.findAllAppointments(monthStart, dateStart);// update appointments
+        Scheduler.findAllAppointments(monthStart, dateStart);// update appointments
     }
 
     private void refreshMonthlyAppointmentsTableView(){
@@ -261,8 +263,8 @@ public class Main implements Initializable {
         int monthStart = monthCombo.getSelectionModel().getSelectedIndex();
 
         appointmentTableView.getItems().clear();
-        if(monthStart == 0) AppointmentMysqlDao.findAllAppointments(null);// we want all appointments
-        else AppointmentMysqlDao.findAllAppointments(monthStart);// else give the chosen month
+        if(monthStart == 0) Scheduler.findAllAppointments(null);// we want all appointments
+        else Scheduler.findAllAppointments(monthStart);// else give the chosen month
     }
 
     ///////////////////////////
@@ -334,7 +336,6 @@ public class Main implements Initializable {
                     "Are you sure you want to delete the meeting with " + customerName + "?\n\n");
 
             if (result.isPresent() && result.get() == ButtonType.OK) {
-                AppointmentMysqlDao.deleteAppointment(appointment.getAppointmentId());
                 Scheduler.removeAppointment(appointment);
             }
         }
@@ -482,7 +483,7 @@ public class Main implements Initializable {
             case "Types of Meetings":
                 hideSelectUser();
 
-                int appointmentTypes = AppointmentMysqlDao.findAppointmentTypes(monthStart);
+                int appointmentTypes = Scheduler.findAppointmentTypes(monthStart);
                 App.dialog(Alert.AlertType.INFORMATION, "Meeting Types by Month",
                         "Meeting types for the month of " + currentMonth,
                         "There are " + appointmentTypes + " different types of meetings this month.");
@@ -491,7 +492,7 @@ public class Main implements Initializable {
             case "New Clients This Month":
                 hideSelectUser();
 
-                int newCustomersThisMonth = CustomerMysqlDao.findNewCustomers(currentDate);
+                int newCustomersThisMonth = Scheduler.findNewCustomers(currentDate);
 
                 App.dialog(Alert.AlertType.INFORMATION, "New Clients This Month",
                         "The number of new clients for the month of " + currentMonth,
@@ -509,7 +510,7 @@ public class Main implements Initializable {
         if(reportUserCombo.isVisible()) {
             reportTableView.getItems().clear();
             User user = reportUserCombo.getSelectionModel().getSelectedItem();
-            AppointmentMysqlDao.findAllAppointments(user);
+            Scheduler.findAllAppointments(user);
         }
     }
 
@@ -554,7 +555,7 @@ public class Main implements Initializable {
         hideSelectUser();// reset other reporting mechanisms
 
         String searchVal = searchTypeTextField.getText();
-        AppointmentMysqlDao.findAllAppointmentsByType(searchVal);
+        Scheduler.findAllAppointmentsByType(searchVal);
     }
 
 }// end Main

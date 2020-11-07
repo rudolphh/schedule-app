@@ -6,6 +6,8 @@ import dao.mysql.UserMysqlDao;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
+import java.time.LocalDate;
+
 public class Scheduler {
 
     private static final ObservableList<Appointment> appointments = FXCollections.observableArrayList();
@@ -88,7 +90,9 @@ public class Scheduler {
     }
 
     ///////////////// delete
+
     public static boolean removeAppointment(Appointment selectedAppointment) {
+        AppointmentMysqlDao.deleteAppointment(selectedAppointment.getAppointmentId());
         appointments.remove(selectedAppointment);
         return true;
     }
@@ -96,5 +100,39 @@ public class Scheduler {
     public static boolean removeCustomer(Customer selectedCustomer){
         customers.remove(selectedCustomer);
         return true;
+    }
+
+
+    ////////////// appointments
+
+    public static int appointmentWithinFifteenMin() {
+        return AppointmentMysqlDao.findAppointmentWithinFifteenMin(loggedUser);
+    }
+
+    public static void findAllAppointments(User user) {
+        AppointmentMysqlDao.findAllAppointments(user);
+    }
+
+    public static void findAllAppointments(int monthStart){
+        AppointmentMysqlDao.findAllAppointments(monthStart, 0);
+    }
+
+    public static void findAllAppointments(int monthStart, int dateStart){
+        AppointmentMysqlDao.findAllAppointments(monthStart, dateStart);
+    }
+
+    public static int findAppointmentTypes(int monthStart) {
+       return AppointmentMysqlDao.findAppointmentTypes(monthStart);
+    }
+
+
+    ///////////// customers
+
+    public static int findNewCustomers(LocalDate currentDate) {
+        return CustomerMysqlDao.findNewCustomers(currentDate);
+    }
+
+    public static void findAllAppointmentsByType(String searchVal) {
+        AppointmentMysqlDao.findAllAppointmentsByType(searchVal);
     }
 }
