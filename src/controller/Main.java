@@ -1,7 +1,6 @@
 package controller;
 
 import app.App;
-import dao.mysql.CustomerMysqlDao;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -335,7 +334,7 @@ public class Main implements Initializable {
                     "Are you sure you want to delete the meeting with " + customerName + "?\n\n");
 
             if (result.isPresent() && result.get() == ButtonType.OK) {
-                SchedulerRepository.removeAppointment(appointment);
+                SchedulerRepository.deleteAppointment(appointment);
             }
         }
     }
@@ -397,14 +396,13 @@ public class Main implements Initializable {
                     "Are you sure you want to delete " + customerName + "?\n\n");
 
             if (result.isPresent() && result.get() == ButtonType.OK) {
-                int rowsAffected = CustomerMysqlDao.deleteCustomer(customer.getCustomerId());
+                int rowsAffected = SchedulerRepository.deleteCustomer(customer);
+
                 // if rowsAffected == -1 then a SQLException was thrown already
                 if(rowsAffected == 0){ // the customer cannot be deleted with scheduled appointments
                     App.dialog(Alert.AlertType.INFORMATION, "Client Cannot Be Deleted",
                             "Client has scheduled meeting(s)",
                             "A client with scheduled meeting(s) cannot be deleted.");
-                } else if (rowsAffected == 1){
-                    SchedulerRepository.removeCustomer(customer);
                 }
 
             }

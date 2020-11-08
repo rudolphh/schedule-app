@@ -127,13 +127,16 @@ public class SchedulerRepository {
 
     ///////////////// delete
 
-    public static void removeAppointment(Appointment selectedAppointment) {
+    public static void deleteAppointment(Appointment selectedAppointment) {
         AppointmentMysqlDao.deleteAppointment(selectedAppointment.getAppointmentId());
         appointments.remove(selectedAppointment);
     }
 
-    public static void removeCustomer(Customer selectedCustomer){
-        customers.remove(selectedCustomer);
+    public static int deleteCustomer(Customer selectedCustomer){
+        int rowsAffected = CustomerMysqlDao.deleteCustomer(selectedCustomer.getCustomerId());
+        if(rowsAffected > 0)
+            customers.remove(selectedCustomer);
+        return rowsAffected;
     }
 
 

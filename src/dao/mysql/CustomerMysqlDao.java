@@ -387,7 +387,7 @@ public class CustomerMysqlDao {
         try{
             PreparedStatement preparedStatement = DBConnection.startConnection().prepareStatement(sql);
             preparedStatement.setInt(1, customerId);
-            return preparedStatement.executeUpdate();
+            return preparedStatement.executeUpdate();// return rows affected
 
         } catch (SQLException e) {
             e.printStackTrace();
