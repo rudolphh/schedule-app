@@ -135,8 +135,8 @@ public class AppointmentMysqlDao {
             if(appointment != null) appointmentId = appointment.getAppointmentId();
             preparedStatement.setInt(2, appointmentId);
 
-            preparedStatement.setTimestamp(3, TimeChanger.toUTC(end));
-            preparedStatement.setTimestamp(4, TimeChanger.toUTC(start));
+            preparedStatement.setTimestamp(3, TimeChanger.localToUtc(end));
+            preparedStatement.setTimestamp(4, TimeChanger.localToUtc(start));
             ResultSet resultSet = preparedStatement.executeQuery();
 
             if(resultSet != null && resultSet.next()){
@@ -161,8 +161,8 @@ public class AppointmentMysqlDao {
         try {
             PreparedStatement preparedStatement = DBConnection.startConnection().prepareStatement(sql);
             preparedStatement.setInt(1, user.getId());
-            preparedStatement.setTimestamp(2, TimeChanger.toUTC(fifteenMinutesLater));
-            preparedStatement.setTimestamp(3, TimeChanger.toUTC(localDateTime));
+            preparedStatement.setTimestamp(2, TimeChanger.localToUtc(fifteenMinutesLater));
+            preparedStatement.setTimestamp(3, TimeChanger.localToUtc(localDateTime));
             ResultSet resultSet = preparedStatement.executeQuery();
 
             if(resultSet != null && resultSet.next()){
@@ -217,11 +217,11 @@ public class AppointmentMysqlDao {
             preparedStatement.setString(6,"not needed");
             preparedStatement.setString(7, appointment.getType());
             preparedStatement.setString(8,"not needed");
-            preparedStatement.setTimestamp(9, TimeChanger.toUTC(appointment.getStart()));
-            preparedStatement.setTimestamp(10, TimeChanger.toUTC(appointment.getEnd()));
-            preparedStatement.setTimestamp(11, TimeChanger.toUTC(LocalDateTime.now()));
+            preparedStatement.setTimestamp(9, TimeChanger.localToUtc(appointment.getStart()));
+            preparedStatement.setTimestamp(10, TimeChanger.localToUtc(appointment.getEnd()));
+            preparedStatement.setTimestamp(11, TimeChanger.localToUtc(LocalDateTime.now()));
             preparedStatement.setString(12, appointment.getUserName());
-            preparedStatement.setTimestamp(13, TimeChanger.toUTC(LocalDateTime.now()));
+            preparedStatement.setTimestamp(13, TimeChanger.localToUtc(LocalDateTime.now()));
             preparedStatement.setString(14, appointment.getUserName());
 
             preparedStatement.executeUpdate();
@@ -249,9 +249,9 @@ public class AppointmentMysqlDao {
             preparedStatement.setInt(1, appointment.getCustomerId());
             preparedStatement.setInt(2, appointment.getUserId());
             preparedStatement.setString(3, appointment.getType());
-            preparedStatement.setTimestamp(4, TimeChanger.toUTC(appointment.getStart()));
-            preparedStatement.setTimestamp(5, TimeChanger.toUTC(appointment.getEnd()));
-            preparedStatement.setTimestamp(6, TimeChanger.toUTC(LocalDateTime.now()));
+            preparedStatement.setTimestamp(4, TimeChanger.localToUtc(appointment.getStart()));
+            preparedStatement.setTimestamp(5, TimeChanger.localToUtc(appointment.getEnd()));
+            preparedStatement.setTimestamp(6, TimeChanger.localToUtc(LocalDateTime.now()));
             preparedStatement.setString(7, appointment.getUserName());
             preparedStatement.setInt(8, index);
 
@@ -299,7 +299,7 @@ public class AppointmentMysqlDao {
                 Timestamp end = resultSet.getTimestamp("end");
 
                 appointmentList.add(new Appointment(appointmentId, customerId, userId, type, userName, customerName,
-                        TimeChanger.fromUTC(start), TimeChanger.fromUTC(end)));
+                        TimeChanger.utcToLocal(start), TimeChanger.utcToLocal(end)));
             }
         } catch (SQLException e){
             System.out.println(e.getMessage());
@@ -321,7 +321,7 @@ public class AppointmentMysqlDao {
 
         // convert the appointment times we're looking for (in our time zone) to UTC time within the database
         LocalDateTime startDate = TimeChanger.ldtFromString(startTime, "yyyy-MM-dd HH:mm:ss");
-        return TimeChanger.toUTC(startDate);
+        return TimeChanger.localToUtc(startDate);
     }
 
     /* -- Used for producing an end Timestamp for querying an entire month or particular week.
@@ -345,7 +345,7 @@ public class AppointmentMysqlDao {
 
         // convert the appointment times we're looking for (in our time zone) to UTC time within the database
         LocalDateTime endDate = TimeChanger.ldtFromString(endTime, "yyyy-MM-dd HH:mm:ss");
-        return TimeChanger.toUTC(endDate);
+        return TimeChanger.localToUtc(endDate);
     }
 
 }// end AppointmentMysqlDao

@@ -24,7 +24,7 @@ public class TimeChanger {
     }
 
     // convert Timestamp in UTC from DB to LocalDateTime for use in the program
-    public static LocalDateTime fromUTC(Timestamp timestamp){
+    public static LocalDateTime utcToLocal(Timestamp timestamp){
         // convert to local date time without zone information
         LocalDateTime localDateTime = timestamp.toLocalDateTime();
 
@@ -38,7 +38,7 @@ public class TimeChanger {
     }
 
     // convert LocalDateTime to UTC Timestamp for DB
-    public static Timestamp toUTC(LocalDateTime localDateTime){
+    public static Timestamp localToUtc(LocalDateTime localDateTime){
 
         ZonedDateTime localZoned = localDateTime.atZone(local);// attach local time zone information
         ZonedDateTime utcZoned = localZoned.withZoneSameInstant(utc);// switch to UTC zone

@@ -3,7 +3,6 @@ package dao.mysql;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import model.Customer;
-import app.SchedulerRepository;
 
 import utils.DBConnection;
 import utils.TimeChanger;
@@ -118,8 +117,8 @@ public class CustomerMysqlDao {
 
         try {
             PreparedStatement preparedStatement = DBConnection.startConnection().prepareStatement(sql);
-            preparedStatement.setTimestamp(1, TimeChanger.toUTC(ldtStart));
-            preparedStatement.setTimestamp(2, TimeChanger.toUTC(ldtEnd));
+            preparedStatement.setTimestamp(1, TimeChanger.localToUtc(ldtStart));
+            preparedStatement.setTimestamp(2, TimeChanger.localToUtc(ldtEnd));
             ResultSet resultSet = preparedStatement.executeQuery();
 
             if(resultSet != null && resultSet.next()) return resultSet.getInt(1);
@@ -174,7 +173,7 @@ public class CustomerMysqlDao {
         String countrySql = "";
         String citySql = "";
 
-        Timestamp lastUpdate = TimeChanger.toUTC(LocalDateTime.now());
+        Timestamp lastUpdate = TimeChanger.localToUtc(LocalDateTime.now());
 
         String selectCountrySql = "SELECT countryId from country WHERE LCASE(country) = ?;";
         int countryId = insertOrExists(selectCountrySql, customer, "country");
@@ -299,7 +298,7 @@ public class CustomerMysqlDao {
         PreparedStatement updateCity = null;
         PreparedStatement updateCountry = null;
 
-        Timestamp lastUpdate = TimeChanger.toUTC(LocalDateTime.now());
+        Timestamp lastUpdate = TimeChanger.localToUtc(LocalDateTime.now());
 
         String customerSql = "UPDATE customer " +
                 "SET customerName = ?, lastUpdate = ?, lastUpdateBy = ? " +
