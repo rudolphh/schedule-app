@@ -1,14 +1,13 @@
 package utils;
 
+// org.junit.jupiter:junit-jupiter:5.4.2
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Timestamp;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.*;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -42,9 +41,21 @@ class TimeChangerTest {
     }
 
     @Test
+    void utcToLocal_UtcTimestampGiven_ShouldReturnIncorrectSystemLocalDateTime(){
+        assertNotEquals(localDateTime.plusHours(8), TimeChanger.utcToLocal(utcTimestamp));
+    }
+
+    @Test
     void localToUtc_SystemLocalDateTimeGiven_ShouldReturnUtcTimestamp() {
 
         // test whether the utc timestamp, matches the system local datetime
         assertEquals(utcTimestamp, TimeChanger.localToUtc(localDateTime));
+    }
+
+    @Test
+    void localToUtc_SystemLocalDateTimeGiven_ShouldReturnIncorrectUtcTimestamp() {
+
+        // test whether the utc timestamp, matches the system local datetime
+        assertNotEquals(utcTimestamp, TimeChanger.localToUtc(localDateTime.plusHours(8)));
     }
 }
