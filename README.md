@@ -1,4 +1,4 @@
-# ScheduleApp (c195)
+# Schedule Management Application
 
 ### New Features!
 
