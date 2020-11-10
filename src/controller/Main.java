@@ -341,7 +341,7 @@ public class Main implements Initializable {
 
     private void loadAppointmentScreen(Appointment appointment, String title, String exceptionMsg){
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("../view/appointment.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/appointment.fxml"));
             Parent theParent = loader.load();
             Appointments controller = loader.getController();
 
@@ -411,7 +411,7 @@ public class Main implements Initializable {
 
     private void loadCustomerScreen(Customer customer, String title, String exceptionMsg){
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("../view/customer.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/customer.fxml"));
             Parent theParent = loader.load();
             Customers controller = loader.getController();
 
