@@ -1,12 +1,12 @@
 <component name="ArtifactManager">
-  <artifact type="javafx" name="ScheduleApp">
-    <output-path>$PROJECT_DIR$/out/artifacts/ScheduleApp</output-path>
+  <artifact type="javafx" name="mma_scheduling">
+    <output-path>$PROJECT_DIR$/out/artifacts/mma_scheduling</output-path>
     <properties id="javafx-properties">
       <options>
         <option name="appClass" value="app.App" />
         <option name="description" value="" />
         <option name="htmlPlaceholderId" value="" />
-        <option name="nativeBundle" value="exe" />
+        <option name="nativeBundle" value="all" />
         <option name="title" value="" />
         <option name="vendor" value="" />
         <option name="version" value="" />
