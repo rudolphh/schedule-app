@@ -62,7 +62,7 @@ public class Login implements Initializable {
 
             Stage newWindow = new Stage();
 
-            newWindow.setTitle("Client Scheduling - Main");
+            newWindow.setTitle("Patient Scheduling - Main");
             newWindow.setMinHeight(500);
             newWindow.setMinWidth(996);
 

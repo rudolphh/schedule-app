@@ -66,8 +66,8 @@ public class Customers implements Initializable {
     }
 
     private void fieldEmptyDialog(String fieldName){
-        App.dialog(Alert.AlertType.INFORMATION, "Client " + fieldName, "No client " + fieldName,
-                "The client needs a(n) " + fieldName + ".");
+        App.dialog(Alert.AlertType.INFORMATION, "Patient " + fieldName, "No patient " + fieldName,
+                "The patient needs a(n) " + fieldName + ".");
     }
 
     private String validateField(TextField textField, String fieldName){
@@ -157,7 +157,7 @@ public class Customers implements Initializable {
 
     public void clickCancelCustomerBtn(ActionEvent actionEvent) {
         Optional<ButtonType> result = App.dialog(Alert.AlertType.CONFIRMATION,
-                "Cancel Add/Update Client", "Confirm cancel",
+                "Cancel Add/Update Patient", "Confirm cancel",
                 "Are you sure you want to cancel?\n\n");
 
         if (result.isPresent() && result.get() == ButtonType.OK)
@@ -167,7 +167,7 @@ public class Customers implements Initializable {
     ///////////////////////// Controller methods
 
     void initScreenLabel(String screenLabel){
-        customerScreenLabel.setText("Client: " + screenLabel);
+        customerScreenLabel.setText("Patient: " + screenLabel);
     }
 
     void setCustomer(Customer customer, Main mainController) {

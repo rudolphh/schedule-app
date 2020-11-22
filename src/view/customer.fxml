@@ -15,7 +15,7 @@
                 <HBox alignment="CENTER" minHeight="60.0">
                     
 
-                        <Label fx:id="customerScreenLabel" alignment="CENTER" text="New Client" HBox.hgrow="ALWAYS">
+                        <Label fx:id="customerScreenLabel" alignment="CENTER" text="New Patient" HBox.hgrow="ALWAYS">
                             <font>
                                 <Font name="System Bold Italic" size="16.0" />
                             </font>
@@ -39,7 +39,7 @@
                                         <Insets left="40.0" />
                                     </HBox.margin>
                                 </Label>
-                                <TextField fx:id="nameTextField" promptText="client name" />
+                                <TextField fx:id="nameTextField" promptText="patient name" />
                             
                      <padding>
                         <Insets bottom="10.0" top="10.0" />

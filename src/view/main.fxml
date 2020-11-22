@@ -20,7 +20,7 @@
         <padding>
             <Insets bottom="10.0" />
         </padding>
-        <Tab text="    Meetings    ">
+        <Tab text="    Appointments    ">
             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                 <HBox alignment="CENTER_LEFT" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                     <padding>
@@ -36,7 +36,7 @@
                         <CheckBox fx:id="weekCheckBox" mnemonicParsing="false" onAction="#confirmAppointmentTableViewTypeAndRefresh" text="Week of" />
                         <ComboBox fx:id="weekCombo" disable="true" maxHeight="85.0" minWidth="85.0" onAction="#selectWeekCombo" />
                         <Region HBox.hgrow="ALWAYS" />
-                        <Button fx:id="newAppointmentBtn" minWidth="150.0" mnemonicParsing="false" onAction="#clickNewAppointmentBtn" text="New Meeting" />
+                        <Button fx:id="newAppointmentBtn" minWidth="150.0" mnemonicParsing="false" onAction="#clickNewAppointmentBtn" text="New Appointment" />
                     </HBox>
                 </HBox>
                 <TableView fx:id="appointmentTableView" layoutY="35.0" AnchorPane.bottomAnchor="35.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="45.0">
@@ -45,8 +45,8 @@
                         <TableColumn fx:id="appointmentStartCol" maxWidth="300.0" minWidth="100.0" prefWidth="100.0" style="-fx-alignment: center;" text="Start" />
                         <TableColumn fx:id="appointmentEndCol" maxWidth="300.0" minWidth="100.0" prefWidth="100.0" style="-fx-alignment: center;" text="End" />
                         <TableColumn fx:id="appointmentTypeCol" maxWidth="600.0" minWidth="250.0" prefWidth="250.0" text="Type" />
-                        <TableColumn fx:id="appointmentConsultantCol" maxWidth="600.0" minWidth="200.0" prefWidth="200.0" text="Agent" />
-                        <TableColumn fx:id="appointmentCustomerCol" maxWidth="600.0" minWidth="200.0" prefWidth="200.0" text="Client" />
+                        <TableColumn fx:id="appointmentConsultantCol" maxWidth="600.0" minWidth="200.0" prefWidth="200.0" text="Doctor" />
+                        <TableColumn fx:id="appointmentCustomerCol" maxWidth="600.0" minWidth="200.0" prefWidth="200.0" text="Patient" />
                     </columns>
                     <columnResizePolicy>
                         <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
@@ -61,13 +61,13 @@
                 </HBox>
             </AnchorPane>
         </Tab>
-        <Tab text="       Clients       ">
+        <Tab text="       Patients       ">
             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                 <HBox alignment="CENTER_RIGHT" layoutX="14.0" layoutY="14.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                     <padding>
                         <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                     </padding>
-                    <Button minWidth="150.0" mnemonicParsing="false" onAction="#clickNewCustomerBtn" text="New Client" />
+                    <Button minWidth="150.0" mnemonicParsing="false" onAction="#clickNewCustomerBtn" text="New Patient" />
                 </HBox>
                 <TableView fx:id="customerTableView" layoutY="35.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="35.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="45.0">
                     <columns>
@@ -101,9 +101,9 @@
                         <Label text="Generate" />
                         <ComboBox fx:id="reportsCombo" maxWidth="150.0" minWidth="150.0" nodeOrientation="LEFT_TO_RIGHT" onAction="#selectReportsCombo" />
                         <Separator fx:id="reportSubSelectionSeparator" orientation="VERTICAL" visible="false" />
-                        <ComboBox fx:id="reportUserCombo" onAction="#selectUserCombo" promptText="Agent" visible="false" visibleRowCount="6" />
+                        <ComboBox fx:id="reportUserCombo" onAction="#selectUserCombo" promptText="Doctor" visible="false" visibleRowCount="6" />
                         <HBox alignment="CENTER_RIGHT" snapToPixel="false" HBox.hgrow="ALWAYS">
-                            <TextField fx:id="searchTypeTextField" promptText="type of meeting" />
+                            <TextField fx:id="searchTypeTextField" promptText="type of appointment" />
                      <Button mnemonicParsing="false" onAction="#clickSearchType" text="Search" />
                         </HBox>
                     </HBox>
@@ -117,8 +117,8 @@
                         <TableColumn fx:id="reportStartCol" maxWidth="300.0" minWidth="100.0" prefWidth="100.0" style="-fx-alignment: center;" text="Start" />
                         <TableColumn fx:id="reportEndCol" maxWidth="300.0" minWidth="100.0" prefWidth="100.0" style="-fx-alignment: center;" text="End" />
                         <TableColumn fx:id="reportTypeCol" maxWidth="600.0" minWidth="250.0" prefWidth="250.0" text="Type" />
-                        <TableColumn fx:id="reportConsultantCol" maxWidth="600.0" minWidth="200.0" prefWidth="200.0" text="Agent" />
-                        <TableColumn fx:id="reportCustomerCol" maxWidth="600.0" minWidth="200.0" prefWidth="200.0" text="Client" />
+                        <TableColumn fx:id="reportConsultantCol" maxWidth="600.0" minWidth="200.0" prefWidth="200.0" text="Doctor" />
+                        <TableColumn fx:id="reportCustomerCol" maxWidth="600.0" minWidth="200.0" prefWidth="200.0" text="Patient" />
                     </columns>
                 </TableView>
             </AnchorPane>

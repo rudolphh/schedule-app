@@ -110,8 +110,8 @@ public class Appointments implements Initializable {
         try {
             userId = user.getId();
         } catch (NullPointerException e){
-            App.dialog(Alert.AlertType.INFORMATION, "Select Agent", "No agent selected",
-                    "You must select an agent to schedule a meeting for");
+            App.dialog(Alert.AlertType.INFORMATION, "Select Doctor", "No doctor selected",
+                    "You must select an doctor to schedule a appointment for");
             return;
         }
         String userName = user.getUserName();
@@ -122,8 +122,8 @@ public class Appointments implements Initializable {
         try {
             customerId = customer.getCustomerId();
         } catch (NullPointerException e){
-            App.dialog(Alert.AlertType.INFORMATION, "Select Client", "No client selected",
-                    "You must select a client to set up a meeting with");
+            App.dialog(Alert.AlertType.INFORMATION, "Select Patient", "No patient selected",
+                    "You must select a patient to set up a appointment with");
             return;
         }
         String customerName = customer.getCustomerName();
@@ -131,8 +131,8 @@ public class Appointments implements Initializable {
         String type = typeTextField.getText();
 
         if(type.isEmpty()){
-            App.dialog(Alert.AlertType.INFORMATION, "Enter Type", "No type of meeting entered",
-                    "You must enter a type of meeting");
+            App.dialog(Alert.AlertType.INFORMATION, "Enter Type", "No type of appointment entered",
+                    "You must enter a type of appointment");
             return;
         }
 
@@ -170,9 +170,9 @@ public class Appointments implements Initializable {
             SchedulerRepository.findOverlappingAppointment(user, selectedAppointment, start, end);
         } catch (RuntimeException e){
             System.out.println(e.getMessage());
-            App.dialog(Alert.AlertType.INFORMATION, "Overlapping Meeting Times",
-                    "The meeting being scheduled overlaps another set meeting",
-                    "An meeting is already scheduled during this time.");
+            App.dialog(Alert.AlertType.INFORMATION, "Overlapping Appointment Times",
+                    "The appointment being scheduled overlaps another set appointment",
+                    "An appointment is already scheduled during this time.");
             return;
         }
 
@@ -202,7 +202,7 @@ public class Appointments implements Initializable {
 
     public void clickCancelAppointment(ActionEvent actionEvent) {
         Optional<ButtonType> result = App.dialog(Alert.AlertType.CONFIRMATION,
-                "Cancel Meeting", "Confirm cancel",
+                "Cancel Appointment", "Confirm cancel",
                 "Are you sure you want to cancel?\n\n");
 
         if (result.isPresent() && result.get() == ButtonType.OK)

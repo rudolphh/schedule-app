@@ -21,7 +21,7 @@
         <HBox alignment="CENTER_LEFT" minHeight="60.0">
 
 
-            <Label fx:id="appointmentScreenLabel" maxWidth="170.0" text="     Meeting for     " HBox.hgrow="ALWAYS">
+            <Label fx:id="appointmentScreenLabel" maxWidth="170.0" text="     Appointment for     " HBox.hgrow="ALWAYS">
                 <padding>
                     <Insets bottom="20.0" left="20.0" top="20.0"/>
                 </padding>
@@ -64,7 +64,7 @@
                         <Insets left="50.0"/>
                     </HBox.margin>
                 </Label>
-                <DatePicker fx:id="datePicker" maxWidth="150.0" promptText="date of meeting"/>
+                <DatePicker fx:id="datePicker" maxWidth="150.0" promptText="date of appointment"/>
 
 
                 <padding>
@@ -143,7 +143,7 @@
                         <Insets left="50.0"/>
                     </HBox.margin>
                 </Label>
-                <TextField fx:id="typeTextField" promptText="type of meeting"/>
+                <TextField fx:id="typeTextField" promptText="type of appointment"/>
 
 
                 <padding>

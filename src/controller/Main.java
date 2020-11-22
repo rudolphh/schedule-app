@@ -98,6 +98,11 @@ public class Main implements Initializable {
     @FXML
     private TableColumn<Appointment, String> reportCustomerCol;
 
+    private ResourceBundle rb;
+    private String consumerType;
+    private String providerType;
+    private String gatheringType;
+
 
     //////////// Current date value
     private static final LocalDate currentDate = LocalDate.now();
@@ -105,6 +110,9 @@ public class Main implements Initializable {
     ///////////////////////////////////////  Initialize Controller
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+
+        rb = resources;
+        setAppVerbage();
 
         // initialize the scheduler with all data for users, customers, and appointments
         SchedulerRepository.initialize();
@@ -127,7 +135,8 @@ public class Main implements Initializable {
 
         //  set table views to their respective ObservableList
         appointmentTableView.setItems(SchedulerRepository.getAppointments());
-        appointmentTableView.setPlaceholder(new Label("No appointments during this time"));
+        appointmentTableView.setPlaceholder(new Label(
+                "No " + gatheringType.toLowerCase() + "s during this time"));
 
         customerTableView.setItems(SchedulerRepository.getCustomers());
         customerTableView.setPlaceholder(new Label("Currently no customers"));
@@ -149,6 +158,12 @@ public class Main implements Initializable {
         });
 
     }// end initialize
+
+    private void setAppVerbage(){
+        consumerType = rb.getString("consumerType");
+        providerType = rb.getString("providerType");
+        gatheringType = rb.getString("gatheringType");
+    }
 
     //////////////////////////////////
 
@@ -192,9 +207,9 @@ public class Main implements Initializable {
         int appointmentNearId = SchedulerRepository.appointmentWithinFifteenMin();
 
         if( appointmentNearId > 0){
-            Optional<ButtonType> result = App.dialog(Alert.AlertType.INFORMATION, "Scheduled Meeting Alert",
-                    "Scheduled meeting start time near",
-                    "You have an ongoing meeting now or within 15 minutes");
+            Optional<ButtonType> result = App.dialog(Alert.AlertType.INFORMATION, "Scheduled Appointment Alert",
+                    "Scheduled appointment start time near",
+                    "You have an ongoing appointment now or within 15 minutes");
 
             if (result.isPresent() && result.get() == ButtonType.OK) {
                 int index = 0;
@@ -302,19 +317,19 @@ public class Main implements Initializable {
     //////////////////////////////// Appointment tab
 
     public void clickNewAppointmentBtn() {
-        loadAppointmentScreen(null, "Client Scheduling - New Meeting",
-                "Cannot load new meeting window");
+        loadAppointmentScreen(null, "Patient Scheduling - New appointment",
+                "Cannot load new appointment window");
     }
 
     public void clickEditAppointmentBtn(){
         Appointment theAppointment = appointmentTableView.getSelectionModel().getSelectedItem();
 
         if(theAppointment == null){
-            App.dialog(Alert.AlertType.INFORMATION, "Select Meeting", "No Meeting selected",
-                    "You must select a meeting to edit");
+            App.dialog(Alert.AlertType.INFORMATION, "Select Appointment", "No Appointment selected",
+                    "You must select a appointment to edit");
         } else {
-            loadAppointmentScreen(theAppointment,"Client Scheduling - Edit Meeting",
-                    "Cannot load edit meeting window");
+            loadAppointmentScreen(theAppointment,"Patient Scheduling - Edit Appointment",
+                    "Cannot load edit appointment window");
         }
     }
 
@@ -322,16 +337,16 @@ public class Main implements Initializable {
         int selectedIndex = appointmentTableView.getSelectionModel().getSelectedIndex();
 
         if(selectedIndex == -1){
-            App.dialog(Alert.AlertType.INFORMATION, "Select Meeting", "No meeting selected",
-                    "You must select a meeting to delete");
+            App.dialog(Alert.AlertType.INFORMATION, "Select Appointment", "No appointment selected",
+                    "You must select a appointment to delete");
         }
         else {
             Appointment appointment = appointmentTableView.getSelectionModel().getSelectedItem();
             String customerName = appointment.getCustomerName();
 
-            Optional<ButtonType> result = App.dialog(Alert.AlertType.CONFIRMATION, "Delete Meeting",
-                    "Confirm Delete - Meeting with " + appointment.getUserName(),
-                    "Are you sure you want to delete the meeting with " + customerName + "?\n\n");
+            Optional<ButtonType> result = App.dialog(Alert.AlertType.CONFIRMATION, "Delete Appointment",
+                    "Confirm Delete - Appointment with " + appointment.getUserName(),
+                    "Are you sure you want to delete the appointment with " + customerName + "?\n\n");
 
             if (result.isPresent() && result.get() == ButtonType.OK) {
                 SchedulerRepository.deleteAppointment(appointment);
@@ -364,19 +379,19 @@ public class Main implements Initializable {
     ///////////////////////////// Customer tab
 
     public void clickNewCustomerBtn() {
-        loadCustomerScreen(null, "New Client",
-                "Cannot load new client window");
+        loadCustomerScreen(null, "New Patient",
+                "Cannot load new patient window");
     }
 
     public void clickEditCustomerBtn(){
         Customer customer = customerTableView.getSelectionModel().getSelectedItem();
 
         if(customer == null){
-            App.dialog(Alert.AlertType.INFORMATION, "Select Client", "No client selected",
-                    "You must select a client to edit");
+            App.dialog(Alert.AlertType.INFORMATION, "Select Patient", "No patient selected",
+                    "You must select a patient to edit");
         } else {
-            loadCustomerScreen(customer,"Edit Client",
-                    "Cannot load edit meeting window");
+            loadCustomerScreen(customer,"Edit Patient",
+                    "Cannot load edit appointment window");
         }
     }
 
@@ -384,15 +399,15 @@ public class Main implements Initializable {
         int selectedIndex = customerTableView.getSelectionModel().getSelectedIndex();
 
         if(selectedIndex == -1){
-            App.dialog(Alert.AlertType.INFORMATION, "Select Client", "No client selected",
-                    "You must select a client to delete");
+            App.dialog(Alert.AlertType.INFORMATION, "Select Patient", "No patient selected",
+                    "You must select a patient to delete");
         }
         else {
             Customer customer = customerTableView.getSelectionModel().getSelectedItem();
             String customerName = customer.getCustomerName();
 
-            Optional<ButtonType> result = App.dialog(Alert.AlertType.CONFIRMATION, "Delete Client",
-                    "Confirm Delete - Client: " + customer.getCustomerName(),
+            Optional<ButtonType> result = App.dialog(Alert.AlertType.CONFIRMATION, "Delete Patient",
+                    "Confirm Delete - Patient: " + customer.getCustomerName(),
                     "Are you sure you want to delete " + customerName + "?\n\n");
 
             if (result.isPresent() && result.get() == ButtonType.OK) {
@@ -400,9 +415,9 @@ public class Main implements Initializable {
 
                 // if rowsAffected == -1 then a SQLException was thrown already
                 if(rowsAffected == 0){ // the customer cannot be deleted with scheduled appointments
-                    App.dialog(Alert.AlertType.INFORMATION, "Client Cannot Be Deleted",
-                            "Client has scheduled meeting(s)",
-                            "A client with scheduled meeting(s) cannot be deleted.");
+                    App.dialog(Alert.AlertType.INFORMATION, "Patient Cannot Be Deleted",
+                            "Patient has scheduled appointment(s)",
+                            "A patient with scheduled appointment(s) cannot be deleted.");
                 }
 
             }
@@ -436,8 +451,8 @@ public class Main implements Initializable {
     ////////////////  Reports tab
 
     private void initializeReportsCombo(){
-        reportsCombo.getItems().addAll("Select Report", "All Meetings For", "Types of Meetings",
-                "New Clients This Month");
+        reportsCombo.getItems().addAll("Select Report", "All Appointments For", "Types of Appointments",
+                "New Patients This Month");
         reportsCombo.setValue("Select Report");
     }
 
@@ -471,29 +486,29 @@ public class Main implements Initializable {
         int monthStart = month.getValue();
 
         switch (reportSelection) {
-            case "All Meetings For":
+            case "All Appointments For":
                 // make subselection separator and combo for selecting user visible
                 showSelectUser();
                 reportUserCombo.setItems(SchedulerRepository.getUsers());
 
                 break;
-            case "Types of Meetings":
+            case "Types of Appointments":
                 hideSelectUser();
 
                 int appointmentTypes = SchedulerRepository.findAppointmentTypes(monthStart);
-                App.dialog(Alert.AlertType.INFORMATION, "Meeting Types by Month",
-                        "Meeting types for the month of " + currentMonth,
-                        "There are " + appointmentTypes + " different types of meetings this month.");
+                App.dialog(Alert.AlertType.INFORMATION, "Appointment Types by Month",
+                        "Appointment types for the month of " + currentMonth,
+                        "There are " + appointmentTypes + " different types of appointments this month.");
 
                 break;
-            case "New Clients This Month":
+            case "New Patients This Month":
                 hideSelectUser();
 
                 int newCustomersThisMonth = SchedulerRepository.findNewCustomers(currentDate);
 
-                App.dialog(Alert.AlertType.INFORMATION, "New Clients This Month",
-                        "The number of new clients for the month of " + currentMonth,
-                        "There are " + newCustomersThisMonth + " new clients this month.");
+                App.dialog(Alert.AlertType.INFORMATION, "New Patients This Month",
+                        "The number of new patients for the month of " + currentMonth,
+                        "There are " + newCustomersThisMonth + " new patients this month.");
 
                 break;
             default:  // for Select Report (default prompt)
@@ -523,7 +538,7 @@ public class Main implements Initializable {
             appointmentRow.setOnMouseClicked(event -> {
                 if (event.getClickCount() == 2 && (! appointmentRow.isEmpty()) ) {
                     Appointment appointment = appointmentRow.getItem();
-                    loadAppointmentScreen(appointment, "Edit Meeting", "Could not load edit");
+                    loadAppointmentScreen(appointment, "Edit Appointment", "Could not load edit");
                 }
             });
             return appointmentRow ;
@@ -536,7 +551,7 @@ public class Main implements Initializable {
             customerRow.setOnMouseClicked(event -> {
                 if (event.getClickCount() == 2 && (! customerRow.isEmpty()) ) {
                     Customer customer = customerRow.getItem();
-                    loadCustomerScreen(customer, "Edit Client", "Could not load edit");
+                    loadCustomerScreen(customer, "Edit Patient", "Could not load edit");
                 }
             });
             return customerRow ;
@@ -545,7 +560,7 @@ public class Main implements Initializable {
     }// end setupTableViewRowClickHandlers
 
 
-    // Search by type of meeting (appointment)
+    // Search by type of appointment (appointment)
     // onAction for the search button in reports
     public void clickSearchType(ActionEvent actionEvent) {
 
