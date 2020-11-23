@@ -60,9 +60,18 @@ public class Appointments implements Initializable {
     private Main mainController;
     private String fieldVal;
 
+    private ResourceBundle rb;
+    private String consumerType;
+    private String providerType;
+    private String gatheringType;
+
+
     ////////////////////////////// Initialize
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+
+        rb = resources;
+        setVerbiage();
 
         setFocusedPropertyListener(startHourNumberTextField);
         setFocusedPropertyListener(startMinNumberTextField);
@@ -72,6 +81,13 @@ public class Appointments implements Initializable {
 
         appointmentSaveBtn.setDefaultButton(true);
         appointmentCancelBtn.setCancelButton(true);
+    }
+
+    private void setVerbiage(){
+        consumerType = rb.getString("consumerType");
+        providerType = rb.getString("providerType");
+        gatheringType = rb.getString("gatheringType");
+
     }
 
     private void setFocusedPropertyListener(NumberTextField ntf){
@@ -110,8 +126,10 @@ public class Appointments implements Initializable {
         try {
             userId = user.getId();
         } catch (NullPointerException e){
-            App.dialog(Alert.AlertType.INFORMATION, "Select Doctor", "No doctor selected",
-                    "You must select an doctor to schedule a appointment for");
+            App.dialog(Alert.AlertType.INFORMATION, "Select " + providerType,
+                    "No " + providerType.toLowerCase() + " selected",
+                    "You must select a(n) " + providerType.toLowerCase() + " to schedule a(n) " +
+                            gatheringType.toLowerCase() + " for");
             return;
         }
         String userName = user.getUserName();
@@ -122,8 +140,10 @@ public class Appointments implements Initializable {
         try {
             customerId = customer.getCustomerId();
         } catch (NullPointerException e){
-            App.dialog(Alert.AlertType.INFORMATION, "Select Patient", "No patient selected",
-                    "You must select a patient to set up a appointment with");
+            App.dialog(Alert.AlertType.INFORMATION, "Select " + consumerType,
+                    "No " + consumerType.toLowerCase() + " selected",
+                    "You must select a " + consumerType.toLowerCase() + " to set up a(n) " +
+                            gatheringType.toLowerCase() + " with");
             return;
         }
         String customerName = customer.getCustomerName();
@@ -131,8 +151,9 @@ public class Appointments implements Initializable {
         String type = typeTextField.getText();
 
         if(type.isEmpty()){
-            App.dialog(Alert.AlertType.INFORMATION, "Enter Type", "No type of appointment entered",
-                    "You must enter a type of appointment");
+            App.dialog(Alert.AlertType.INFORMATION, "Enter Type",
+                    "No type of " + gatheringType.toLowerCase() + " entered",
+                    "You must enter a type of " + gatheringType.toLowerCase());
             return;
         }
 
@@ -170,9 +191,10 @@ public class Appointments implements Initializable {
             SchedulerRepository.findOverlappingAppointment(user, selectedAppointment, start, end);
         } catch (RuntimeException e){
             System.out.println(e.getMessage());
-            App.dialog(Alert.AlertType.INFORMATION, "Overlapping Appointment Times",
-                    "The appointment being scheduled overlaps another set appointment",
-                    "An appointment is already scheduled during this time.");
+            App.dialog(Alert.AlertType.INFORMATION, "Overlapping " + gatheringType + " Times",
+                    "The " + gatheringType.toLowerCase() + " being scheduled overlaps another set " +
+                            gatheringType.toLowerCase(),
+                    "A(n) " + gatheringType.toLowerCase() + " is already scheduled during this time.");
             return;
         }
 
@@ -202,7 +224,7 @@ public class Appointments implements Initializable {
 
     public void clickCancelAppointment(ActionEvent actionEvent) {
         Optional<ButtonType> result = App.dialog(Alert.AlertType.CONFIRMATION,
-                "Cancel Appointment", "Confirm cancel",
+                "Cancel " + gatheringType, "Confirm cancel",
                 "Are you sure you want to cancel?\n\n");
 
         if (result.isPresent() && result.get() == ButtonType.OK)

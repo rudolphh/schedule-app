@@ -58,6 +58,7 @@ public class Login implements Initializable {
 
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/main.fxml"));
+            loader.setResources(rb);
             Parent theParent = loader.load();
 
             Stage newWindow = new Stage();

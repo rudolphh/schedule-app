@@ -50,8 +50,14 @@ public class Customers implements Initializable {
     private Customer selectedCustomer = null;
     private Main mainController;
 
+    private ResourceBundle rb;
+    private String consumerType;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+
+        rb = resources;
+        consumerType = rb.getString("consumerType");
 
         customerSaveBtn.setDefaultButton(true);
         customerCancelBtn.setCancelButton(true);
@@ -66,8 +72,9 @@ public class Customers implements Initializable {
     }
 
     private void fieldEmptyDialog(String fieldName){
-        App.dialog(Alert.AlertType.INFORMATION, "Patient " + fieldName, "No patient " + fieldName,
-                "The patient needs a(n) " + fieldName + ".");
+        App.dialog(Alert.AlertType.INFORMATION, consumerType + " " + fieldName,
+                "No " + consumerType.toLowerCase() + " " + fieldName,
+                "The " + consumerType.toLowerCase() + " needs a(n) " + fieldName + ".");
     }
 
     private String validateField(TextField textField, String fieldName){
@@ -157,7 +164,7 @@ public class Customers implements Initializable {
 
     public void clickCancelCustomerBtn(ActionEvent actionEvent) {
         Optional<ButtonType> result = App.dialog(Alert.AlertType.CONFIRMATION,
-                "Cancel Add/Update Patient", "Confirm cancel",
+                "Cancel Add/Update " + consumerType, "Confirm cancel",
                 "Are you sure you want to cancel?\n\n");
 
         if (result.isPresent() && result.get() == ButtonType.OK)
@@ -167,7 +174,7 @@ public class Customers implements Initializable {
     ///////////////////////// Controller methods
 
     void initScreenLabel(String screenLabel){
-        customerScreenLabel.setText("Patient: " + screenLabel);
+        customerScreenLabel.setText(consumerType + ": " + screenLabel);
     }
 
     void setCustomer(Customer customer, Main mainController) {

@@ -100,7 +100,6 @@ public class Main implements Initializable {
 
     private ResourceBundle rb;
     private String consumerType;
-    private String providerType;
     private String gatheringType;
 
 
@@ -112,7 +111,7 @@ public class Main implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
 
         rb = resources;
-        setAppVerbage();
+        setAppVerbiage();
 
         // initialize the scheduler with all data for users, customers, and appointments
         SchedulerRepository.initialize();
@@ -139,7 +138,7 @@ public class Main implements Initializable {
                 "No " + gatheringType.toLowerCase() + "s during this time"));
 
         customerTableView.setItems(SchedulerRepository.getCustomers());
-        customerTableView.setPlaceholder(new Label("Currently no customers"));
+        customerTableView.setPlaceholder(new Label("Currently no " + consumerType.toLowerCase()));
 
         reportTableView.setItems(SchedulerRepository.getReportAppointments());
         reportTableView.setPlaceholder(new Label("No report data"));
@@ -159,9 +158,8 @@ public class Main implements Initializable {
 
     }// end initialize
 
-    private void setAppVerbage(){
+    private void setAppVerbiage(){
         consumerType = rb.getString("consumerType");
-        providerType = rb.getString("providerType");
         gatheringType = rb.getString("gatheringType");
     }
 
@@ -207,9 +205,10 @@ public class Main implements Initializable {
         int appointmentNearId = SchedulerRepository.appointmentWithinFifteenMin();
 
         if( appointmentNearId > 0){
-            Optional<ButtonType> result = App.dialog(Alert.AlertType.INFORMATION, "Scheduled Appointment Alert",
-                    "Scheduled appointment start time near",
-                    "You have an ongoing appointment now or within 15 minutes");
+            Optional<ButtonType> result = App.dialog(Alert.AlertType.INFORMATION,
+                    "Scheduled " + gatheringType.toLowerCase() + " Alert",
+                    "Scheduled " + gatheringType.toLowerCase() + " start time near",
+                    "You have an ongoing " + gatheringType.toLowerCase() + " now, or within 15 minutes");
 
             if (result.isPresent() && result.get() == ButtonType.OK) {
                 int index = 0;
@@ -317,19 +316,22 @@ public class Main implements Initializable {
     //////////////////////////////// Appointment tab
 
     public void clickNewAppointmentBtn() {
-        loadAppointmentScreen(null, "Patient Scheduling - New appointment",
-                "Cannot load new appointment window");
+        loadAppointmentScreen(null,
+                consumerType + " Scheduling - New " + gatheringType,
+                "Cannot load new " + gatheringType.toLowerCase() + " window");
     }
 
     public void clickEditAppointmentBtn(){
         Appointment theAppointment = appointmentTableView.getSelectionModel().getSelectedItem();
 
         if(theAppointment == null){
-            App.dialog(Alert.AlertType.INFORMATION, "Select Appointment", "No Appointment selected",
-                    "You must select a appointment to edit");
+            App.dialog(Alert.AlertType.INFORMATION,
+                    "Select " + gatheringType, "No " + gatheringType + " selected",
+                    "You must select a " + gatheringType.toLowerCase() + " to edit");
         } else {
-            loadAppointmentScreen(theAppointment,"Patient Scheduling - Edit Appointment",
-                    "Cannot load edit appointment window");
+            loadAppointmentScreen(theAppointment,
+                    consumerType + " Scheduling - Edit " + gatheringType,
+                    "Cannot load edit " + gatheringType.toLowerCase() + " window");
         }
     }
 
@@ -337,16 +339,18 @@ public class Main implements Initializable {
         int selectedIndex = appointmentTableView.getSelectionModel().getSelectedIndex();
 
         if(selectedIndex == -1){
-            App.dialog(Alert.AlertType.INFORMATION, "Select Appointment", "No appointment selected",
-                    "You must select a appointment to delete");
+            App.dialog(Alert.AlertType.INFORMATION, "Select " + gatheringType,
+                    "No " + gatheringType.toLowerCase() + " selected",
+                    "You must select a " + gatheringType.toLowerCase() + " to delete");
         }
         else {
             Appointment appointment = appointmentTableView.getSelectionModel().getSelectedItem();
             String customerName = appointment.getCustomerName();
 
-            Optional<ButtonType> result = App.dialog(Alert.AlertType.CONFIRMATION, "Delete Appointment",
-                    "Confirm Delete - Appointment with " + appointment.getUserName(),
-                    "Are you sure you want to delete the appointment with " + customerName + "?\n\n");
+            Optional<ButtonType> result = App.dialog(Alert.AlertType.CONFIRMATION,
+                    "Delete " + gatheringType,
+                    "Confirm Delete - " + gatheringType + " with " + appointment.getUserName(),
+                    "Are you sure you want to delete the " + gatheringType + " with " + customerName + "?\n\n");
 
             if (result.isPresent() && result.get() == ButtonType.OK) {
                 SchedulerRepository.deleteAppointment(appointment);
@@ -379,19 +383,20 @@ public class Main implements Initializable {
     ///////////////////////////// Customer tab
 
     public void clickNewCustomerBtn() {
-        loadCustomerScreen(null, "New Patient",
-                "Cannot load new patient window");
+        loadCustomerScreen(null, "New " + consumerType,
+                "Cannot load new " + consumerType.toLowerCase() + " window");
     }
 
     public void clickEditCustomerBtn(){
         Customer customer = customerTableView.getSelectionModel().getSelectedItem();
 
         if(customer == null){
-            App.dialog(Alert.AlertType.INFORMATION, "Select Patient", "No patient selected",
-                    "You must select a patient to edit");
+            App.dialog(Alert.AlertType.INFORMATION,
+                    "Select " + consumerType, "No " + consumerType.toLowerCase() + " selected",
+                    "You must select a " + consumerType.toLowerCase() + " to edit");
         } else {
-            loadCustomerScreen(customer,"Edit Patient",
-                    "Cannot load edit appointment window");
+            loadCustomerScreen(customer,"Edit " + consumerType,
+                    "Cannot load edit " + consumerType.toLowerCase() + " window");
         }
     }
 
@@ -399,15 +404,16 @@ public class Main implements Initializable {
         int selectedIndex = customerTableView.getSelectionModel().getSelectedIndex();
 
         if(selectedIndex == -1){
-            App.dialog(Alert.AlertType.INFORMATION, "Select Patient", "No patient selected",
-                    "You must select a patient to delete");
+            App.dialog(Alert.AlertType.INFORMATION, "Select " + consumerType,
+                    "No " + consumerType.toLowerCase() + " selected",
+                    "You must select a " + consumerType.toLowerCase() + " to delete");
         }
         else {
             Customer customer = customerTableView.getSelectionModel().getSelectedItem();
             String customerName = customer.getCustomerName();
 
-            Optional<ButtonType> result = App.dialog(Alert.AlertType.CONFIRMATION, "Delete Patient",
-                    "Confirm Delete - Patient: " + customer.getCustomerName(),
+            Optional<ButtonType> result = App.dialog(Alert.AlertType.CONFIRMATION, "Delete " + consumerType,
+                    "Confirm Delete - " + consumerType + ": " + customer.getCustomerName(),
                     "Are you sure you want to delete " + customerName + "?\n\n");
 
             if (result.isPresent() && result.get() == ButtonType.OK) {
@@ -415,9 +421,10 @@ public class Main implements Initializable {
 
                 // if rowsAffected == -1 then a SQLException was thrown already
                 if(rowsAffected == 0){ // the customer cannot be deleted with scheduled appointments
-                    App.dialog(Alert.AlertType.INFORMATION, "Patient Cannot Be Deleted",
-                            "Patient has scheduled appointment(s)",
-                            "A patient with scheduled appointment(s) cannot be deleted.");
+                    App.dialog(Alert.AlertType.INFORMATION, consumerType + " Cannot Be Deleted",
+                            consumerType + " has scheduled " + gatheringType.toLowerCase() + "(s)",
+                            "A " + consumerType.toLowerCase() +
+                                    " with scheduled " + gatheringType.toLowerCase() + "(s) cannot be deleted.");
                 }
 
             }
@@ -451,8 +458,9 @@ public class Main implements Initializable {
     ////////////////  Reports tab
 
     private void initializeReportsCombo(){
-        reportsCombo.getItems().addAll("Select Report", "All Appointments For", "Types of Appointments",
-                "New Patients This Month");
+        reportsCombo.getItems().addAll("Select Report", "All " + gatheringType + "s For",
+                "Types of " + gatheringType + "s",
+                "New " + consumerType + "s This Month");
         reportsCombo.setValue("Select Report");
     }
 
@@ -475,7 +483,7 @@ public class Main implements Initializable {
     @FXML
     private void selectReportsCombo(){
 
-        String reportSelection = reportsCombo.getSelectionModel().getSelectedItem();
+        int reportSelection = reportsCombo.getSelectionModel().getSelectedIndex();
 
         Month month = currentDate.getMonth();
 
@@ -486,29 +494,30 @@ public class Main implements Initializable {
         int monthStart = month.getValue();
 
         switch (reportSelection) {
-            case "All Appointments For":
+            case 1: // "All " + gatheringType + " For"
                 // make subselection separator and combo for selecting user visible
                 showSelectUser();
                 reportUserCombo.setItems(SchedulerRepository.getUsers());
 
                 break;
-            case "Types of Appointments":
+            case 2: // "Types of " + gatheringType + "s"
                 hideSelectUser();
 
                 int appointmentTypes = SchedulerRepository.findAppointmentTypes(monthStart);
-                App.dialog(Alert.AlertType.INFORMATION, "Appointment Types by Month",
-                        "Appointment types for the month of " + currentMonth,
-                        "There are " + appointmentTypes + " different types of appointments this month.");
+                App.dialog(Alert.AlertType.INFORMATION, gatheringType + " Types by Month",
+                        gatheringType + " types for the month of " + currentMonth,
+                        "There are " + appointmentTypes + " different types of " +
+                                gatheringType.toLowerCase()  + " this month.");
 
                 break;
-            case "New Patients This Month":
+            case 3: // "New " + consumerType + "s This Month"
                 hideSelectUser();
 
                 int newCustomersThisMonth = SchedulerRepository.findNewCustomers(currentDate);
 
-                App.dialog(Alert.AlertType.INFORMATION, "New Patients This Month",
-                        "The number of new patients for the month of " + currentMonth,
-                        "There are " + newCustomersThisMonth + " new patients this month.");
+                App.dialog(Alert.AlertType.INFORMATION, "New " + consumerType + "s This Month",
+                        "The number of new " + consumerType.toLowerCase() + "s for the month of " + currentMonth,
+                        "There are " + newCustomersThisMonth + " new " + consumerType.toLowerCase() + "s this month.");
 
                 break;
             default:  // for Select Report (default prompt)
@@ -538,7 +547,7 @@ public class Main implements Initializable {
             appointmentRow.setOnMouseClicked(event -> {
                 if (event.getClickCount() == 2 && (! appointmentRow.isEmpty()) ) {
                     Appointment appointment = appointmentRow.getItem();
-                    loadAppointmentScreen(appointment, "Edit Appointment", "Could not load edit");
+                    loadAppointmentScreen(appointment, "Edit " + gatheringType, "Could not load edit");
                 }
             });
             return appointmentRow ;
@@ -551,7 +560,7 @@ public class Main implements Initializable {
             customerRow.setOnMouseClicked(event -> {
                 if (event.getClickCount() == 2 && (! customerRow.isEmpty()) ) {
                     Customer customer = customerRow.getItem();
-                    loadCustomerScreen(customer, "Edit Patient", "Could not load edit");
+                    loadCustomerScreen(customer, "Edit " + consumerType, "Could not load edit");
                 }
             });
             return customerRow ;
