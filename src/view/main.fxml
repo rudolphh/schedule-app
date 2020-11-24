@@ -103,7 +103,7 @@
                         <Separator fx:id="reportSubSelectionSeparator" orientation="VERTICAL" visible="false" />
                         <ComboBox fx:id="reportUserCombo" onAction="#selectUserCombo" promptText="Doctor" visible="false" visibleRowCount="6" />
                         <HBox alignment="CENTER_RIGHT" snapToPixel="false" HBox.hgrow="ALWAYS">
-                            <TextField fx:id="searchTypeTextField" promptText="type of appointment" />
+                            <TextField fx:id="searchTypeTextField" promptText="type / patient / doctor" />
                      <Button mnemonicParsing="false" onAction="#clickSearchType" text="Search" />
                         </HBox>
                     </HBox>
