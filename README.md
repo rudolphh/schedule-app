@@ -2,6 +2,8 @@
 
 [![Build Status](https://travis-ci.org/joemccann/dillinger.svg?branch=master)](https://github.com/rudolphh/ScheduleApp)
 
+![appts-tab](https://user-images.githubusercontent.com/949014/100031917-a7096380-2dab-11eb-8301-88ceb957898b.jpg)
+
 ### Tech
 Schedule App is written primarily in Java / XML, and uses several open-source libraries : 
 * [MySQL Connector J] - a driver that implements the Java Database Connectivity (JDBC) API
@@ -9,12 +11,16 @@ Schedule App is written primarily in Java / XML, and uses several open-source li
 
 And of course this is open source with a [public repository][ScheduleApp] on GitHub.
 
-### Screens
+### Features
+* View all appointments for the year, or by month and week.
+* Create, update, or delete appointments.
+* View, create, update, or delete patient information.
+* Generate reports, including specific practitioner schedules.
+* Search schedules by type of appointment, patient treated, and doctor involved
+
+### Other Screens
 
 This application was built as a project within [IntelliJ IDEA] 
-
-**Appointments**
-![appts-tab](https://user-images.githubusercontent.com/949014/100031917-a7096380-2dab-11eb-8301-88ceb957898b.jpg)
 
 **Patients**
 ![patients-tab](https://user-images.githubusercontent.com/949014/100031923-ab358100-2dab-11eb-8ef7-0a49d71f3668.jpg)
