@@ -12,7 +12,7 @@ Schedule App is written primarily in Java / XML, and uses several open-source li
 And of course this is open source with a [public repository][ScheduleApp] on GitHub.
 
 ### Features
-* Authentication via Login screen; customized login language (English/Spanish) based on user locale.  
+* Authentication via Login screen; language displayed (English/Spanish) based on user locale.  
 * View all appointments for the year, or by month and week.
 * Create, update, or delete appointments.
 * View, create, update, or delete patient information.
