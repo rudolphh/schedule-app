@@ -13,8 +13,13 @@ And of course this is open source with a [public repository][ScheduleApp] on Git
 
 This application was built as a project within [IntelliJ IDEA] 
 
+**Appointments**
 ![appts-tab](https://user-images.githubusercontent.com/949014/100031917-a7096380-2dab-11eb-8301-88ceb957898b.jpg)
+
+**Patients**
 ![patients-tab](https://user-images.githubusercontent.com/949014/100031923-ab358100-2dab-11eb-8ef7-0a49d71f3668.jpg)
+
+**Reports**
 ![reports-tab](https://user-images.githubusercontent.com/949014/100031931-ad97db00-2dab-11eb-888b-d775aa878f7f.jpg)
 
 
