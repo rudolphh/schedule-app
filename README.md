@@ -45,8 +45,8 @@ MIT
 [//]: # (These are reference links used in the body of this note and get stripped out when the markdown processor does its job. There is no need to format nicely because it shouldn't be seen. Thanks SO - http://stackoverflow.com/questions/4823468/store-comments-in-markdown-syntax)
 
 
-   [ScheduleApp]: <https://github.com/rudolphh/ScheduleApp>
-   [git-repo-url]: <https://github.com/rudolphh/ScheduleApp.git>
+   [ScheduleApp]: <https://github.com/rudolphh/schedule-app>
+   [git-repo-url]: <https://github.com/rudolphh/schedule-app.git>
    [MySQL Connector J]: <https://github.com/mysql/mysql-connector-j>
    [JavaFX 8]: <http://hg.openjdk.java.net/openjfx/8/master/rt>
    [IntelliJ IDEA]: <https://www.jetbrains.com/help/idea/import-project-or-module-wizard.html>
