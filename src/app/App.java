@@ -34,7 +34,6 @@ public class App extends Application {
         primaryStage.setResizable(false);// for login screen
         primaryStage.setScene(new Scene(root, 400, 300));
         primaryStage.show();
-
     }
 
     public static void main(String[] args) {
@@ -42,7 +41,6 @@ public class App extends Application {
         launch(args);
         DBConnection.closeConnection();
     }
-
 
     // Helpers
     public static Optional<ButtonType> dialog(Alert.AlertType alertType, String title, String header, String content){
