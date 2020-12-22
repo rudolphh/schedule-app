@@ -1,6 +1,6 @@
 # Schedule Management Application
 
-[![Build Status](https://travis-ci.org/joemccann/dillinger.svg?branch=master)](https://github.com/rudolphh/ScheduleApp)
+[![Build Status](https://travis-ci.org/joemccann/dillinger.svg?branch=master)](https://github.com/rudolphh/ScheduleApp) 
 
 ![appts-tab](https://user-images.githubusercontent.com/949014/100031917-a7096380-2dab-11eb-8301-88ceb957898b.jpg)
 
