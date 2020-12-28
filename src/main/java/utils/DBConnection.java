@@ -7,7 +7,7 @@ import java.util.ResourceBundle;
 
 public class DBConnection {
 
-    private static final ResourceBundle rb = ResourceBundle.getBundle("utils.config");
+    private static final ResourceBundle rb = ResourceBundle.getBundle("config");
 
     // JDBC URL parts
     private static final String protocol = rb.getString("protocol");
