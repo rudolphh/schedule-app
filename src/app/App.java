@@ -63,7 +63,7 @@ public class App extends Application {
         Locale loc = Locale.getDefault();// 1. Check for current locale
 
         // 2. Get appropriate Resource Bundle
-        if(!loc.toLanguageTag().equals("en-US")){ // if locale is NOT english (default)
+        if(!loc.toLanguageTag().equals("en-US") && !loc.toLanguageTag().equals("en")){ // if locale is NOT english (default)
 
             loc = new Locale("es", "ES"); // explicitly set locale to spanish
         }
