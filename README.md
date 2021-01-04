@@ -1,4 +1,4 @@
-# Schedule Management Application 
+# Schedule Management Application
 
 [![Build Status](https://travis-ci.org/joemccann/dillinger.svg?branch=master)](https://github.com/rudolphh/ScheduleApp) 
 
@@ -7,7 +7,7 @@
 ### Tech
 Schedule App is written primarily in Java / XML, and uses several open-source libraries : 
 * [MySQL Connector J] - a driver that implements the Java Database Connectivity (JDBC) API
-* [JavaFX 8] - client application platform for desktop, mobile and embedded systems built on Java
+* [JavaFX 11] - client application platform for desktop, mobile and embedded systems built on Java
 
 And of course this is open source with a [public repository][ScheduleApp] on GitHub. 
 
