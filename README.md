@@ -7,7 +7,7 @@
 ### Tech
 Schedule App is written primarily in Java / XML, and uses several open-source libraries : 
 * [MySQL Connector J] - a driver that implements the Java Database Connectivity (JDBC) API
-* [JavaFX 11] - client application platform for desktop, mobile and embedded systems built on Java
+* [JavaFX 15] - client application platform for desktop, mobile and embedded systems built on Java
 
 And of course this is open source with a [public repository][ScheduleApp] on GitHub. 
 
@@ -48,6 +48,6 @@ MIT
    [ScheduleApp]: <https://github.com/rudolphh/schedule-app>
    [git-repo-url]: <https://github.com/rudolphh/schedule-app.git>
    [MySQL Connector J]: <https://github.com/mysql/mysql-connector-j>
-   [JavaFX 8]: <http://hg.openjdk.java.net/openjfx/8/master/rt>
+   [JavaFX 15]: <https://openjfx.io/>
    [IntelliJ IDEA]: <https://www.jetbrains.com/help/idea/import-project-or-module-wizard.html>
 
