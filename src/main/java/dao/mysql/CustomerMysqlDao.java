@@ -162,7 +162,7 @@ public class CustomerMysqlDao {
     }
 
 
-    public static Customer createCustomer(Customer customer, String updatedBy) throws SQLException {
+    public static Customer create(Customer customer, String createdBy) {
 
         Connection conn = DBConnection.startConnection();
         PreparedStatement insertCountry = null;
@@ -194,7 +194,6 @@ public class CustomerMysqlDao {
                 "VALUES ( DEFAULT, ?, GREATEST( ?, LAST_INSERT_ID()), ?, ?, ?, ?, ? );";
 
 
-
         try{
             conn.setAutoCommit(false);// so we can commit all statements executed together as a unit
 
@@ -203,9 +202,9 @@ public class CustomerMysqlDao {
                 insertCountry = conn.prepareStatement(countrySql, Statement.RETURN_GENERATED_KEYS);
                 insertCountry.setString(1, customer.getCountry());
                 insertCountry.setTimestamp(2, lastUpdate);
-                insertCountry.setString(3, updatedBy);
+                insertCountry.setString(3, createdBy);
                 insertCountry.setTimestamp(4, lastUpdate);
-                insertCountry.setString(5, updatedBy);
+                insertCountry.setString(5, createdBy);
                 insertCountry.executeUpdate();
             }
 
@@ -215,9 +214,9 @@ public class CustomerMysqlDao {
                 insertCity.setString(1, customer.getCity());
                 insertCity.setInt(2, countryId);
                 insertCity.setTimestamp(3, lastUpdate);
-                insertCity.setString(4, updatedBy);
+                insertCity.setString(4, createdBy);
                 insertCity.setTimestamp(5, lastUpdate);
-                insertCity.setString(6, updatedBy);
+                insertCity.setString(6, createdBy);
                 insertCity.executeUpdate();
             }
 
@@ -229,9 +228,9 @@ public class CustomerMysqlDao {
             insertAddress.setString(4, customer.getPostalCode());
             insertAddress.setString(5, customer.getPhone());
             insertAddress.setTimestamp(6, lastUpdate);
-            insertAddress.setString(7, updatedBy);
+            insertAddress.setString(7, createdBy);
             insertAddress.setTimestamp(8, lastUpdate);
-            insertAddress.setString(9, updatedBy);
+            insertAddress.setString(9, createdBy);
             insertAddress.executeUpdate();
 
             // customer prepared statement
@@ -240,9 +239,9 @@ public class CustomerMysqlDao {
             insertCustomer.setInt(2, customer.getAddressId());
             insertCustomer.setInt(3, 1);
             insertCustomer.setTimestamp(4, lastUpdate);
-            insertCustomer.setString(5, updatedBy);
+            insertCustomer.setString(5, createdBy);
             insertCustomer.setTimestamp(6, lastUpdate);
-            insertCustomer.setString(7, updatedBy);
+            insertCustomer.setString(7, createdBy);
             insertCustomer.executeUpdate();
 
             conn.commit();
@@ -275,12 +274,19 @@ public class CustomerMysqlDao {
             e.printStackTrace();
             System.out.println(e.getMessage());
         } finally {
-            if(insertCustomer != null) insertCustomer.close();
-            if(insertAddress != null) insertAddress.close();
-            if(insertCity != null) insertCity.close();
-            if(insertCountry != null) insertCountry.close();
 
-            conn.setAutoCommit(true);
+            try {
+                if (insertCustomer != null) insertCustomer.close();
+                if (insertAddress != null) insertAddress.close();
+                if (insertCity != null) insertCity.close();
+                if (insertCountry != null) insertCountry.close();
+
+                conn.setAutoCommit(true);
+
+            } catch (SQLException e){
+                e.printStackTrace();
+                System.out.println(e.getMessage());
+            }
         }
 
         return customer;

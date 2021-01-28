@@ -40,7 +40,7 @@ public class SchedulerRepository {
         int customerId = 0;
 
         try {
-            Customer createdCustomer = CustomerMysqlDao.createCustomer(customer, loggedUser.getUserName());
+            Customer createdCustomer = CustomerMysqlDao.create(customer, loggedUser.getUserName());
             customerId = createdCustomer.getCustomerId();
 
             if (customerId > 0)
