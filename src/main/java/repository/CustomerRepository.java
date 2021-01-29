@@ -18,17 +18,8 @@ public class CustomerRepository {
     public int create(Customer customer, String createdBy){
 
         Customer createdCustomer = CustomerMysqlDao.create(customer, createdBy);
-
-        try {
-            if (isCreated(customer))
-                customers.add(createdCustomer);
-            else throw new SQLException("No new client was created - Customers.java");
-
-        } catch (SQLException e){
-            e.printStackTrace();
-            System.out.println(e.getMessage());
-        }
-
+        if (isCreated(customer))
+            customers.add(createdCustomer);
         return createdCustomer.getCustomerId();
     }
 

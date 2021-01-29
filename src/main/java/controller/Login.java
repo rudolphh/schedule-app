@@ -53,6 +53,25 @@ public class Login implements Initializable {
         exitBtn.setCancelButton(true);// default button for esc keypress
     }
 
+    public void clickLogin(ActionEvent actionEvent) {
+
+        String user = userTextField.getText();
+        String pass = passTextField.getText();
+
+        Optional<User> searchedUser = UserMysqlDao.findUser(user, pass);
+
+        if(searchedUser.isPresent()){
+            User loggedIn = searchedUser.get();
+            SchedulerRepository.setLoggedUser(loggedIn);
+            UserFileDao.logUser(loggedIn);// log the user to text file
+            loadMainScreen();
+            App.closeThisWindow(actionEvent);
+        } else {
+            App.dialog(Alert.AlertType.INFORMATION, rb.getString("loginFailTitle"),
+                    rb.getString("loginFailHeader"),
+                    rb.getString("loginFailContent"));
+        }
+    }
 
     private void loadMainScreen(){
 
@@ -71,26 +90,6 @@ public class Login implements Initializable {
             newWindow.show();
         } catch (Exception e){
             System.out.println(e.getMessage());
-        }
-    }
-
-    public void clickLogin(ActionEvent actionEvent) {
-
-        String user = userTextField.getText();
-        String pass = passTextField.getText();
-
-        Optional<User> searchedUser = UserMysqlDao.findUser(user, pass);
-
-        if(searchedUser.isPresent()){
-            User loggedIn = searchedUser.get();
-            SchedulerRepository.setLoggedUser(loggedIn);
-            UserFileDao.logUser(loggedIn);// log the user to text file
-            loadMainScreen();
-            App.closeThisWindow(actionEvent);
-        } else {
-            App.dialog(Alert.AlertType.INFORMATION, rb.getString("loginFailTitle"),
-                    rb.getString("loginFailHeader"),
-                    rb.getString("loginFailContent"));
         }
     }
 
