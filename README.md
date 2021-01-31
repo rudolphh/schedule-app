@@ -1,4 +1,4 @@
-# Schedule Management Application
+# Schedule Management Application 
 
 [![Build Status](https://travis-ci.org/joemccann/dillinger.svg?branch=master)](https://github.com/rudolphh/ScheduleApp) 
 
